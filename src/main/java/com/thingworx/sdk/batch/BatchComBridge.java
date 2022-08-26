@@ -31,6 +31,7 @@ public class BatchComBridge {
 		try {
 			return Dispatch.call(server,"GetItem",item).getString();
 		}catch(Exception e) {
+			e.printStackTrace();
 			LOG.error(e.toString());
 			return null;
 		}

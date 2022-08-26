@@ -14,10 +14,11 @@
 <script type="text/javascript">
 var path='<%=basePath %>';
 $(function(){
-	getItem("aaa");
+	//getItem();
 });
 
-function getItem(item){
+function getItem(){
+	var item=$("#item_sel").val();
 	$.post(path+"batch/getItem",
 		{item:item},
 		function(result){
@@ -28,6 +29,12 @@ function getItem(item){
 </script>
 </head>
 <body>
-
+<select id="item_sel">
+	<option value="UnitsList">UnitsList</option>
+	<option value="BadTagCount">BadTagCount</option>
+	<option value="Batchlist">Batchlist</option>
+	<option value="BatchListCt">BatchListCt</option>
+</select>
+<input type="button" value="send" onclick="getItem()"/>
 </body>
 </html>

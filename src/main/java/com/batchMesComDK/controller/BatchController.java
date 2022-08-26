@@ -31,7 +31,15 @@ public class BatchController {
 	@ResponseBody
 	public String getItem(String item) {
 		//TODO 针对分类的动态进行实时调整更新
-		System.out.println("item==="+item);
-		return BatchComBridge.getInstance().callGetItem(item);
+		String result=null;
+		try {
+			System.out.println("item==="+item);
+			result = BatchComBridge.getInstance().callGetItem(item);
+			System.out.println("result==="+result);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return result;
 	}
 }
