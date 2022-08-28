@@ -30,7 +30,6 @@ function getItem(){
 </head>
 <body>
 <select id="item_sel">
-	<option value="UnitsList">UnitsList</option>
 	<option value="BadTagCount">BadTagCount</option>
 	<option value="Batchlist">Batchlist</option>
 	<option value="BatchListCt">BatchListCt</option>
@@ -40,22 +39,38 @@ function getItem(){
 	<option value="BLCreateID_3">BLCreateID_3</option>
 	<option value="BLDESC_3">BLDESC_3</option>
 	<option value="BLFailure_3">BLFailure_3</option>
+	<option value="BLMode_3">BLMode_3</option>
+	<option value="BLRecipe_3">BLRecipe_3</option>
+	<option value="BLStartTime_3">BLStartTime_3</option>
+	<option value="BLState_3">BLState_3</option>
+	<option value="BLType_3">BLType_3</option>
+	<option value="COMClientCount">COMClientCount</option>
+	<option value="CPRVersion">CPRVersion</option>
+	<option value=""></option>
+	<option value=""></option>
 	<option value="5BatchStepDataList">5BatchStepDataList</option>
 	<option value="5EventData">5EventData</option>
 	<option value="5EventDataFile">5EventDataFile</option>
 	<option value="5scale">5scale</option>
 	<option value="DataServersList">DataServersList</option>
 	<option value="DataServerStatistics">DataServerStatistics</option>
-	<option value="DDEClientCount">DecimalSeparator</option>
+	<option value="DDEClientCount">DDEClientCount</option>
+	<option value="DecimalSeparator">DecimalSeparator</option>
 	<option value="Domains">Domains</option>
 	<option value="YES_NOEnumSet">YES_NOEnumSet</option>
 	<option value="EquipmentModel">EquipmentModel</option>
 	<option value="EquipmentModelDate">EquipmentModelDate</option>
 	<option value="EquipmentModelUpdateVersion">EquipmentModelUpdateVersion</option>
 	<option value="ErrorMessage">ErrorMessage</option>
+	<option value="EventDataFiles">EventDataFiles</option>
+	<option value="15_4_Values">15_4_Values</option>
 	<option value="9ParamExprValues">9ParamExprValues</option>
+	<option value="15ReportExprValues">15ReportExprValues</option>
+	<option value="HyperlinkLabels">HyperlinkLabels</option>
+	<option value="InfoMessage">InfoMessage</option>
 	<option value="ItemCount">ItemCount</option>
 	<option value="JournalDir">JournalDir</option>
+	
 	<option value="ListSeparator">ListSeparator</option>
 	<option value="Locale">Locale</option>
 	<option value="LogDir">LogDir</option>
@@ -139,15 +154,12 @@ function getItem(){
 	<option value="55Phases">55Phases</option>
 	<option value="55Phases2">55Phases2</option>
 	<option value="55UnitTagData">55UnitTagData</option>
-	<option value=""></option>
-	<option value=""></option>
-	<option value=""></option>
-	<option value=""></option>
-	<option value=""></option>
-	<option value=""></option>
-	<option value=""></option>
-	<option value=""></option>
-	<option value=""></option>
+	<option value="13BindingPreferences">13BindingPreferences</option>
+	<option value="13BindingRequirements">13BindingRequirements</option>
+	<option value="UnitsList">UnitsList</option>
+	<option value="VerifiedTagCount">VerifiedTagCount</option>
+	<option value="Version">Version</option>
+	<option value="WarningMessage">WarningMessage</option>
 </select>
 <input type="button" value="send" onclick="getItem()"/>
 </body>
