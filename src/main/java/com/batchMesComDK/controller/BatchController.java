@@ -1,5 +1,8 @@
 package com.batchMesComDK.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Controller;
@@ -27,19 +30,25 @@ public class BatchController {
 	 * @param item
 	 * @return
 	 */
-	@RequestMapping(value="/getItem",produces="plain/text; charset=UTF-8")
+	@RequestMapping(value="/getItem",produces="application/json;charset=utf-8")
 	@ResponseBody
 	public String getItem(String item) {
 		//TODO 针对分类的动态进行实时调整更新
+		PlanResult plan=new PlanResult();
+		String json=null;
 		String result=null;
 		try {
 			System.out.println("item==="+item);
 			result = BatchComBridge.getInstance().callGetItem(item);
 			System.out.println("result==="+result);
+			plan.setStatus(1);
+			plan.setMsg("成功");
+			plan.setData(result);
+			json=JsonUtil.getJsonFromObject(plan);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return result;
+		return json;
 	}
 }
