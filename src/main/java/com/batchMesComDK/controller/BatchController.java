@@ -1,14 +1,16 @@
 package com.batchMesComDK.controller;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.batchMesComDK.entity.*;
+import com.batchMesComDK.service.*;
 import com.batchMesComDK.util.JsonUtil;
 import com.batchMesComDK.util.PlanResult;
 import com.thingworx.sdk.batch.BatchComBridge;
@@ -18,10 +20,15 @@ import com.thingworx.sdk.batch.BatchComBridge;
 @RequestMapping("/batch")
 public class BatchController {
 
+	@Autowired
+	private FormulaDtoService formulaDtoService;
 	public static final String MODULE_NAME="batch";
 	
 	@RequestMapping(value="/test")
 	public String goTest(HttpServletRequest request) {
+		
+		List<FormulaDto> fdList=formulaDtoService.getList();
+		System.out.println("size==="+fdList.size());
 		
 		return MODULE_NAME+"/test";
 	}
