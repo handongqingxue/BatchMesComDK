@@ -23,6 +23,9 @@ function getItem(){
 		{item:item},
 		function(result){
 			console.log("result==="+JSON.stringify(result));
+			var data=JSON.stringify(result.data);
+			data=data.substring(1,data.length-1);
+			splitData(item,data);
 		}
 	,"json");
 }
@@ -37,6 +40,371 @@ function execute(){
 		}
 	,"json");
 }
+
+function splitData(item,data){
+	if(item=="Batchlist")
+		splitBatchlist(data);
+	else if(item=="BatchOverrides")
+		splitBatchOverrides(data);
+	else if(item=="5BatchStepDataList")
+		splitBatchStepDataList(data);
+	else if(item=="5EventData")
+		splitEventData(data);
+	else if(item=="DataServersList")
+		splitDataServersList(data);
+	else if(item=="DataServerStatistics")
+		splitDataServerStatistics(data);
+	else if(item=="YES_NOEnumSet")
+		splitEnumSetEnumSet(data);
+	else if(item=="ErrorMessage")
+		splitErrorMessage(data);
+	else if(item=="EventDataFiles")
+		splitEventDataFiles(data);
+	else if(item=="HyperlinkLabels")
+		splitHyperlinkLabels(data);
+	else if(item=="InfoMessage")
+		splitInfoMessage(data);
+	else if(item=="OperationDataList")
+		splitOperationDataList(data);
+	else if(item=="PhaseDataList")
+		splitPhaseDataList(data);
+	else if(item=="PhaseErrs")
+		splitPhaseErrs(data);
+}
+
+function splitBatchlist(data){
+	var items=data.split("\\r\\n");
+	console.log("length==="+items.length);
+	var prclStartLoc;
+	var prclEndLoc;
+	var unitStartLoc;
+	var unitEndLoc;
+	var phaseStartLoc;
+	var phaseEndLoc;
+	for(var i=0;i<items.length-1;i++){
+		console.log("i==="+i);
+		var item=items[i];
+		var itemArr=item.split("\\t");
+		console.log("BatchID==="+itemArr[0]);
+		console.log("RecipeName==="+itemArr[1]);
+		console.log("BatchDesc==="+itemArr[2]);
+		console.log("StartTime==="+itemArr[3]);
+		console.log("ElapsedTime==="+itemArr[4]);
+		console.log("State==="+itemArr[5]);
+		console.log("Mode==="+itemArr[6]);
+		console.log("Failures==="+itemArr[7]);
+		console.log("CreateID==="+itemArr[8]);
+		console.log("CmdMask==="+itemArr[9]);
+		console.log("BatchType==="+itemArr[10]);
+		
+		prclStartLoc=item.indexOf("$PRCL\\t");
+		prclEndLoc=item.indexOf("\\t$END",0);
+		var procCellList=item.substring(prclStartLoc+7,prclEndLoc);
+		var pCellNames=procCellList.split("\\t");
+		for(var j=0;j<pCellNames.length;j++){
+			console.log("pCellName==="+pCellNames[j]);
+		}
+
+		unitStartLoc=item.indexOf("$UNIT\\t");
+		unitEndLoc=item.indexOf("\\t$END",prclEndLoc+1);
+		var unitList=item.substring(unitStartLoc+7,unitEndLoc);
+		var unitNames=unitList.split("\\t");
+		for(var j=0;j<unitNames.length;j++){
+			console.log("unitName"+i+"==="+unitNames[j]);
+		}
+		
+		phaseStartLoc=item.indexOf("$PHASE\\t");
+		phaseEndLoc=item.indexOf(" $END",unitEndLoc+1);
+		var phaseList=item.substring(phaseStartLoc+8,phaseEndLoc);
+		console.log(phaseList=="")//NullList
+	}
+}
+
+function splitBatchOverrides(data){
+	var items=data.split("\\r\\n");
+	console.log("length==="+items.length);
+	for(var i=0;i<items.length-1;i++){
+		console.log("i==="+i);
+		var item=items[i];
+		var itemArr=item.split("\\t");
+		console.log("CreateID==="+itemArr[0]);
+		console.log("NumOverrides==="+itemArr[1]);
+	}
+}
+
+function splitBatchStepDataList(data){
+	var items=data.split("\\r\\n");
+	console.log("length==="+items.length);
+	var parmStartLoc;
+	var parmEndLoc;
+	var repParmStartLoc;
+	var repParmEndLoc;
+	var ownerIDStartLoc;
+	var ownerIDEndLoc;
+	var ownerNameStartLoc;
+	var ownerNameEndLoc;
+	for(var i=0;i<items.length-1;i++){
+		console.log("i==="+i);
+		var item=items[i];
+		var itemArr=item.split("\\t");
+		console.log("ID==="+itemArr[0]);
+		console.log("Name==="+itemArr[1]);
+		console.log("SP88Type==="+itemArr[2]);
+		console.log("KeyPName==="+itemArr[3]);
+		console.log("KeyValue==="+itemArr[4]);
+		console.log("State==="+itemArr[5]);
+		console.log("Mode==="+itemArr[6]);
+		console.log("UnitName==="+itemArr[7]);
+		console.log("Control==="+itemArr[8]);
+		console.log("Index==="+itemArr[9]);
+		console.log("Paused==="+itemArr[10]);
+		console.log("Msg==="+itemArr[11]);
+		console.log("Rqst==="+itemArr[12]);
+		console.log("Fail==="+itemArr[13]);
+		
+		parmStartLoc=item.indexOf("$PARM\\t");
+		parmEndLoc=item.indexOf("\\t$END",0);
+		var parmList=item.substring(parmStartLoc+7,parmEndLoc);
+		var parameters=parmList.split("\\t");
+		for(var j=0;j<parameters.length;j++){
+			console.log("parameter==="+parameters[j]);
+		}
+
+		repParmStartLoc=item.indexOf("$REPORT\\t");
+		repParmEndLoc=item.indexOf("\\t$END",parmEndLoc+1);
+		var repParmList=item.substring(repParmStartLoc+9,repParmEndLoc);
+		parameters=repParmList.split("\\t");
+		for(var j=0;j<repParmList.length;j++){
+			console.log("parameters"+i+"==="+parameters[j]);
+		}
+		
+		ownerIDStartLoc=item.indexOf("\\t",repParmEndLoc+1);
+		ownerIDEndLoc=item.indexOf("\\t",ownerIDStartLoc+1);
+		//alert(ownerIDStartLoc+","+ownerIDEndLoc)
+		var ownerID=item.substring(ownerIDStartLoc+2,ownerIDEndLoc);
+		console.log("ownerID==="+ownerID);
+		
+		/*
+		ownerNameStartLoc=item.indexOf("\\t",ownerIDEndLoc+1);
+		ownerNameEndLoc=item.indexOf("\\t",ownerNameStartLoc+1);
+		alert(ownerNameStartLoc+","+ownerNameEndLoc)
+		var ownerName=item.substring(ownerNameStartLoc+2,ownerNameEndLoc);
+		console.log("ownerName==="+ownerName);
+		*/
+	}
+}
+
+function splitEventData(data){
+	var items=data.split("\\r\\n");
+	console.log("length==="+items.length);
+	for(var i=0;i<items.length-1;i++){
+		console.log("i==="+i);
+		var item=items[i];
+		var itemArr=item.split("\\t");
+		console.log("Time==="+itemArr[0]);
+		console.log("BatchID==="+itemArr[1]);
+		console.log("RecipePath==="+itemArr[2]);
+		console.log("Description==="+itemArr[3]);
+		console.log("EventType==="+itemArr[4]);
+		console.log("Value==="+itemArr[5]);
+		console.log("EngUnits==="+itemArr[6]);
+		console.log("Area==="+itemArr[7]);
+		console.log("PCell==="+itemArr[8]);
+		console.log("Unit==="+itemArr[9]);
+		console.log("EQMName==="+itemArr[10]);
+		console.log("PhaseType==="+itemArr[11]);
+		console.log("UserID==="+itemArr[12]);
+		console.log("CreateID==="+itemArr[13]);
+	}
+}
+
+function splitDataServersList(data){
+	var items=data.split("\\r\\n");
+	console.log("length==="+items.length);
+	for(var i=0;i<items.length-1;i++){
+		console.log("i==="+i);
+		var item=items[i];
+		var itemArr=item.split("\\t");
+		console.log("DataServerName==="+itemArr[0]);
+		console.log("WatchdogProtocol==="+itemArr[1]);
+		console.log("Location==="+itemArr[2]);
+		console.log("RemoteNodeName==="+itemArr[3]);
+		console.log("Protocol==="+itemArr[4]);
+		console.log("ServerIdentifier==="+itemArr[5]);
+		console.log("ConfigString1==="+itemArr[6]);
+		console.log("ConfigString2==="+itemArr[7]);
+		console.log("ConfigString3==="+itemArr[8]);
+		console.log("ConfigString4==="+itemArr[9]);
+		console.log("LocaleID==="+itemArr[10]);
+		console.log("BadValueString==="+itemArr[11]);
+	}
+}
+
+function splitDataServerStatistics(data){
+	var items=data.split("\\r\\n");
+	console.log("length==="+items.length);
+	for(var i=0;i<items.length-1;i++){
+		console.log("i==="+i);
+		var item=items[i];
+		var itemArr=item.split("\\t");
+		console.log("ServerName==="+itemArr[0]);
+		console.log("ConfigString1==="+itemArr[1]);
+		console.log("ConfigString2==="+itemArr[2]);
+		console.log("ConversationStatus==="+itemArr[3]);
+		console.log("WatchDog==="+itemArr[4]);
+	}
+}
+
+function splitEnumSetEnumSet(data){
+	var items=data.split("\\r\\n");
+	console.log("length==="+items.length);
+	for(var i=0;i<items.length-1;i++){
+		console.log("i==="+i);
+		var item=items[i];
+		var itemArr=item.split("\\t");
+		console.log("EnumName==="+itemArr[0]);
+		console.log("OrdValue==="+itemArr[1]);
+	}
+}
+
+function splitErrorMessage(data){
+	var items=data.split("\\r\\n");
+	console.log("length==="+items.length);
+	for(var i=0;i<items.length-1;i++){
+		console.log("i==="+i);
+		var item=items[i];
+		var itemArr=item.split("\\t");
+		console.log("Time==="+itemArr[0]);
+		console.log("Description==="+itemArr[1]);
+		console.log("Additional Data==="+itemArr[2]);
+	}
+}
+
+function splitEventDataFiles(data){
+	var items=data.split("\\r\\n");
+	console.log("length==="+items.length);
+	for(var i=0;i<items.length-1;i++){
+		console.log("i==="+i);
+		var item=items[i];
+		var itemArr=item.split("\\t");
+		console.log("BatchID==="+itemArr[0]);
+		console.log("CreateID==="+itemArr[1]);
+		console.log("Description==="+itemArr[2]);
+		console.log("FilePath==="+itemArr[3]);
+		console.log("StartTime==="+itemArr[4]);
+		console.log("RecipeName==="+itemArr[5]);
+	}
+}
+
+function splitHyperlinkLabels(data){
+	var items=data.split("\\r\\n");
+	console.log("length==="+items.length);
+	for(var i=0;i<items.length-1;i++){
+		var item=items[i];
+		var itemArr=item.split("\\t");
+		var itemName;
+		switch(i){
+			case 0:
+				itemName="PCellLabels.PCL";
+				break;
+			case 1:
+				itemName="UnitLabels.UL";
+				break;
+			case 2:
+				itemName="PhaseLabels.PL";
+				break;
+			case 3:
+				itemName="ShResrcLabels.SRL";
+				break;
+		}
+		for(var j=0;j<itemArr.length-1;j++){
+			console.log(itemName+(j+1)+"==="+itemArr[j]);
+		}
+	}
+}
+
+function splitInfoMessage(data){
+	var items=data.split("\\r\\n");
+	console.log("length==="+items.length);
+	for(var i=0;i<items.length-1;i++){
+		console.log("i==="+i);
+		var item=items[i];
+		var itemArr=item.split("\\t");
+		console.log("Time==="+itemArr[0]);
+		console.log("Description==="+itemArr[1]);
+		console.log("Additional Data==="+itemArr[2]);
+	}
+}
+
+function splitOperationDataList(data){
+	var items=data.split("\\r\\n");
+	console.log("length==="+items.length);
+	for(var i=0;i<items.length-1;i++){
+		console.log("i==="+i);
+		var item=items[i];
+		var itemArr=item.split("\\t");
+		console.log("OpSeqID==="+itemArr[0]);
+		console.log("OpSeqName==="+itemArr[1]);
+		console.log("OpSeqState==="+itemArr[2]);
+		console.log("Pausing==="+itemArr[3]);
+		console.log("Mode==="+itemArr[4]);
+		console.log("ArbMask==="+itemArr[5]);
+		console.log("UnitName==="+itemArr[6]);
+		console.log("CmdMask==="+itemArr[7]);
+		console.log("UnitID==="+itemArr[8]);
+		console.log("Owner==="+itemArr[9]);
+		console.log("BatchID==="+itemArr[10]);
+		console.log("FailMsg==="+itemArr[11]);
+		console.log("OperationMsg==="+itemArr[12]);
+		console.log("StepIndex==="+itemArr[13]);
+		console.log("ValidUList==="+itemArr[14]);
+	}
+}
+
+function splitPhaseDataList(data){
+	var items=data.split("\\r\\n");
+	console.log("length==="+items.length);
+	for(var i=0;i<items.length-1;i++){
+		console.log("i==="+i);
+		var item=items[i];
+		var itemArr=item.split("\\t");
+		console.log("PhaseID==="+itemArr[0]);
+		console.log("PhaseName==="+itemArr[1]);
+		console.log("PhaseState==="+itemArr[2]);
+		console.log("Pausing==="+itemArr[3]);
+		console.log("Mode==="+itemArr[4]);
+		console.log("ArbMask==="+itemArr[5]);
+		console.log("CmdMask==="+itemArr[6]);
+		console.log("UnitID==="+itemArr[7]);
+		console.log("UnitName==="+itemArr[8]);
+		console.log("Owner==="+itemArr[9]);
+		console.log("BatchID==="+itemArr[10]);
+		console.log("FailMsg==="+itemArr[11]);
+		console.log("PhaseMsg==="+itemArr[12]);
+		console.log("StepIndex==="+itemArr[13]);
+		console.log("ValidUList==="+itemArr[14]);
+	}
+}
+
+function splitPhaseErrs(data){
+	var items=data.split("\\r\\n");
+	console.log("length==="+items.length);
+	for(var i=0;i<items.length-1;i++){
+		console.log("i==="+i);
+		var item=items[i];
+		var itemArr=item.split("\\t");
+		console.log("PhaseID==="+itemArr[0]);
+		console.log("PhaseName==="+itemArr[1]);
+		console.log("UnitID==="+itemArr[2]);
+		console.log("UnitName==="+itemArr[3]);
+		console.log("PCellName==="+itemArr[4]);
+		console.log("AreaName==="+itemArr[5]);
+		console.log("Owner==="+itemArr[6]);
+		console.log("BatchID==="+itemArr[7]);
+		console.log("PhErrMsg==="+itemArr[8]);
+		console.log("State==="+itemArr[9]);
+	}
+}
 </script>
 </head>
 <body>
@@ -46,7 +414,7 @@ function execute(){
 		<option value="Batchlist">Batchlist</option>
 		<option value="BatchListCt">BatchListCt</option>
 		<option value="BatchOverrides">BatchOverrides</option>
-		<option value="BLBatchID_3">BLBatchID_3-?</option>
+		<option value="BLBatchID_1">BLBatchID_1-?</option>
 		<option value="BatchOverrides">BLCMDMask_3</option>
 		<option value="BLCreateID_1">BLCreateID_1-?</option>
 		<option value="BLDESC_3">BLDESC_3-?</option>
