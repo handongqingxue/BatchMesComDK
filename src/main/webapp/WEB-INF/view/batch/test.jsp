@@ -14,8 +14,18 @@
 <script type="text/javascript">
 var path='<%=basePath %>';
 $(function(){
-	//getItem();
+	addDataToDB();
 });
+
+function addDataToDB(){
+	var tabName="OrderMateriaBody";
+	$.post(path+"batch/addDataToDB",
+		{tabName:tabName},
+		function(data){
+			alert(data.info);
+		}
+	,"json");
+}
 
 function getItem(){
 	var item=$("#item_sel").val();
@@ -70,6 +80,22 @@ function splitData(item,data){
 		splitPhaseDataList(data);
 	else if(item=="PhaseErrs")
 		splitPhaseErrs(data);
+	else if(item=="5PhaseData")
+		splitPhaseData(data);
+	else if(item=="1Units")
+		splitUnits(data);
+	else if(item=="5Hyperlinks")
+		splitHyperlinks(data);
+	else if(item=="5Strings")
+		splitStrings(data);
+	else if(item=="4PhaseBitmaps")
+		splitPhaseBitmaps(data);
+	else if(item=="4Phases")
+		splitPhases(data);
+	else if(item=="4Phases2")
+		splitPhases2(data);
+	else if(item=="4UnitTagData")
+		splitUnitTagData(data);
 }
 
 function splitBatchlist(data){
@@ -405,6 +431,168 @@ function splitPhaseErrs(data){
 		console.log("State==="+itemArr[9]);
 	}
 }
+
+function splitPhaseData(data){
+	var items=data.split("\\r\\n");
+	console.log("length==="+items.length);
+	for(var i=0;i<items.length;i++){
+		console.log("i==="+i);
+		var item=items[i];
+		var itemArr=item.split("\\t");
+		console.log("PhaseID==="+itemArr[0]);
+		console.log("PhaseName==="+itemArr[1]);
+		console.log("PhaseState==="+itemArr[2]);
+		console.log("Pausing==="+itemArr[3]);
+		console.log("Mode==="+itemArr[4]);
+		console.log("ArbMask==="+itemArr[5]);
+		console.log("CmdMask==="+itemArr[6]);
+		console.log("UnitID==="+itemArr[7]);
+		console.log("UnitName==="+itemArr[8]);
+		console.log("Owner==="+itemArr[9]);
+		console.log("BatchID==="+itemArr[10]);
+		console.log("FailMsg==="+itemArr[11]);
+		console.log("PhaseMsg==="+itemArr[12]);
+		console.log("StepIndex==="+itemArr[13]);
+		var validUListArr=itemArr[14].split("\\t");
+		for(var j=0;j<validUListArr.length;j++){
+			console.log("UnitName==="+validUListArr[j]);
+		}
+	}
+}
+
+function splitUnits(data){
+	var items=data.split("\\r\\n");
+	console.log("length==="+items.length);
+	for(var i=0;i<items.length-1;i++){
+		console.log("i==="+i);
+		var item=items[i];
+		var itemArr=item.split("\\t");
+		console.log("UnitID==="+itemArr[0]);
+		console.log("UnitName==="+itemArr[1]);
+		console.log("UnitClass==="+itemArr[2]);
+		console.log("MaxOwners==="+itemArr[3]);
+		console.log("XCord==="+itemArr[4]);
+		console.log("YCord==="+itemArr[5]);
+		console.log("BitMapIndex==="+itemArr[6]);
+		
+		var connStartLoc=item.indexOf("$PARM\\t");
+		var connEndLoc=item.indexOf("\\t$END",0);
+		var connections=item.substring(connStartLoc+7,connEndLoc);
+		var connArr=connections.split("\\t");
+		for(var j=0;j<connArr.length;j++){
+			console.log("UnitName==="+connArr[j]);
+			console.log("UnitID==="+connArr[j]);
+		}
+	}
+}
+
+function splitHyperlinks(data){
+	var items=data.split("\\r\\n");
+	console.log("length==="+items.length);
+	for(var i=0;i<items.length;i++){
+		console.log("i==="+i);
+		var item=items[i];
+		var itemArr=item.split("\\t");
+		console.log("ResourceName==="+itemArr[0]);
+		console.log("Hyperlink1==="+itemArr[1]);
+		console.log("Hyperlink2==="+itemArr[2]);
+		console.log("Hyperlink3==="+itemArr[3]);
+		console.log("Hyperlink4==="+itemArr[4]);
+		console.log("Hyperlink5==="+itemArr[5]);
+	}
+}
+
+function splitStrings(data){
+	var dataArr=data.split("\\t");
+	console.log("ResourceName==="+dataArr[0]);
+	console.log("GenericString1==="+dataArr[1]);
+	console.log("GenericString2==="+dataArr[2]);
+	console.log("GenericString3==="+dataArr[3]);
+	console.log("GenericString4==="+dataArr[4]);
+	console.log("GenericString5==="+dataArr[5]);
+}
+
+function splitPhaseBitmaps(data){
+	var items=data.split("\\r\\n");
+	console.log("length==="+items.length);
+	for(var i=0;i<items.length-1;i++){
+		console.log("i==="+i);
+		var item=items[i];
+		var itemArr=item.split("\\t");
+		console.log("BitMapIndex==="+itemArr[0]);
+		console.log("FileName==="+itemArr[1]);
+	}
+}
+
+function splitPhases(data){
+	var items=data.split("\\r\\n");
+	console.log("length==="+items.length);
+	for(var i=0;i<items.length-1;i++){
+		console.log("i==="+i);
+		var item=items[i];
+		var itemArr=item.split("\\t");
+		console.log("PhaseID==="+itemArr[0]);
+		console.log("PhaseName==="+itemArr[1]);
+		console.log("MaxOwners==="+itemArr[2]);
+		console.log("XCord==="+itemArr[3]);
+		console.log("Ycord==="+itemArr[4]);
+		console.log("BitMapIndex==="+itemArr[5]);
+	}
+}
+
+function splitPhases2(data){
+	var items=data.split("\\r\\n");
+	console.log("length==="+items.length);
+	for(var i=0;i<items.length-1;i++){
+		console.log("i==="+i);
+		var item=items[i];
+		var itemArr=item.split("\\t");
+		console.log("PhaseID==="+itemArr[0]);
+		console.log("PhaseName==="+itemArr[1]);
+		console.log("MaxOwners==="+itemArr[2]);
+		console.log("PhaseType==="+itemArr[3]);
+		console.log("XCord==="+itemArr[4]);
+		console.log("Ycord==="+itemArr[5]);
+		console.log("BitMapIndex==="+itemArr[6]);
+	}
+}
+
+function splitUnitTagData(data){
+	var unitNameStartLoc=0;
+	var unitNameEndLoc=data.indexOf("\\r\\n",0);
+	var UnitName=data.substring(unitNameStartLoc,unitNameEndLoc);
+	
+	var unitClassNameStartLoc=unitNameEndLoc+4;
+	var unitClassNameEndLoc=data.indexOf("\\r\\n",unitClassNameStartLoc);
+	var UnitClassName=data.substring(unitClassNameStartLoc,unitClassNameEndLoc);
+	var tagsStartLoc=unitClassNameEndLoc+4;
+	var tagsEndLoc=data.indexOf("\\r\\n",tagsStartLoc);
+	var Tags=data.substring(tagsStartLoc,tagsEndLoc);
+	var TagArr=Tags.split("\\t");
+	console.log("TagName==="+TagArr[0]);
+	console.log("DataServerName==="+TagArr[1]);
+	console.log("ConfigString1==="+TagArr[2]);
+	console.log("ConfigString2==="+TagArr[3]);
+	console.log("ConfigString3==="+TagArr[4]);
+	console.log("ConfigString4==="+TagArr[5]);
+	console.log("Protocol==="+TagArr[6]);
+	console.log("ConfiguredDataType==="+TagArr[7]);
+	console.log("OPCAdviseItemDataType==="+TagArr[8]);
+	console.log("OPCReadItemDataType==="+TagArr[9]);
+	console.log("OPCWriteItemDataType==="+TagArr[10]);
+	console.log("AdviseStatus==="+TagArr[11]);
+	console.log("LatestAdviseValue==="+TagArr[12]);
+	console.log("LatestAdviseValueQuality==="+TagArr[13]);
+	console.log("LatestAdviseValueTimestamp==="+TagArr[14]);
+	console.log("ReadStatus==="+TagArr[15]);
+	console.log("LatestReadValue==="+TagArr[16]);
+	console.log("LatestReadValueQuality==="+TagArr[17]);
+	console.log("LatestReadValueTimestamp==="+TagArr[18]);
+	console.log("WriteStatus==="+TagArr[19]);
+	console.log("LastValueWritten==="+TagArr[20]);
+	console.log("LastWriteResult==="+TagArr[21]);
+	console.log("LastWriteTimestamp==="+TagArr[22]);
+}
 </script>
 </head>
 <body>
@@ -459,40 +647,40 @@ function splitPhaseErrs(data){
 		<option value="PhaseDataList">PhaseDataList</option>
 		<option value="PhaseErrs">PhaseErrs</option>
 		<option value="PhaseErrsCt">PhaseErrsCt</option>
-		<option value="68BatchID">68BatchID-?</option>
-		<option value="68Failure">68Failure-?</option>
-		<option value="68Info">68Info-?</option>
-		<option value="68Message">68Message-?</option>
-		<option value="68Parms">68Parms-?</option>
-		<option value="68Pause">68Pause-?</option>
-		<option value="68Pausing">68Pausing-?</option>
-		<option value="68PhaseData">68PhaseData-?</option>
-		<option value="68Requests">68Requests-?</option>
-		<option value="68SS">68SS-?</option>
-		<option value="68State">68State-?</option>
-		<option value="12stepindex">12stepindex</option>
-		<option value="68Unit">68Unit-?</option>
+		<option value="5BatchID">5BatchID</option>
+		<option value="5Failure">5Failure</option>
+		<option value="5Info">5Info</option>
+		<option value="5Message">5Message</option>
+		<option value="5Parms">5Parms</option>
+		<option value="5Pause">5Pause</option>
+		<option value="5Pausing">5Pausing</option>
+		<option value="5PhaseData">5PhaseData</option>
+		<option value="5Requests">5Requests</option>
+		<option value="5SS">5SS</option>
+		<option value="5State">5State</option>
+		<option value="5stepindex">5stepindex</option>
+		<option value="5Unit">5Unit</option>
 		<option value="PhasesList">PhasesList</option>
 		<option value="PhasesList2">PhasesList2</option>
 		<option value="PhasesList3">PhasesList3</option>
-		<option value="17Data">17Data-?</option>
-		<option value="17\tMCLS_SWEETCREAM_UP:1\tMCLS_SWEETCREAM_OP:1DATA">17\tMCLS_SWEETCREAM_UP:1\tMCLS_SWEETCREAM_OP:1DATA-?</option>
-		<option value="17Status">17Status-?</option>
-		<option value="17\tMCLS_SWEETCREAM_UP:1\tMCLS_SWEETCREAM_OP:1Status">17\t MCLS_SWEETCREAM_UP:1\tMCLS_SWEETCREAM_OP:1Status-?</option>
+		<option value="5Data">5Data</option>
+		<option value="5Data2">5Data2</option>
+		<option value="5Data3">5Data3</option>
+		<option value="5Status">5Status</option>
 		<option value="5UnitRequirements">5UnitRequirements</option>
 		<option value="ProcessCellBitMaps">ProcessCellBitMaps</option>
-		<option value="54Units">54Units-?</option>
+		<option value="1Units">1Units</option>
 		<option value="ProcessCellsList">ProcessCellsList</option>
 		<option value="ProcessCellsList2">ProcessCellsList2</option>
 		<option value="RecipeDir">RecipeDir</option>
 		<option value="RecipeList">RecipeList</option>
-		<option value="68EqData">68EqData-?</option>
-		<option value="68Hyperlinks">68Hyperlinks-?</option>
-		<option value="68Owned">68Owned-?</option>
-		<option value="119Owners">119Owners-?</option>
-		<option value="68Requested">68Requested-?</option>
-		<option value="119Requesters">119Requesters-?</option>
-		<option value="68Strings">68Strings-?</option>
+		<option value="5EqData">5EqData</option>
+		<option value="5Hyperlinks">5Hyperlinks</option>
+		<option value="5Owned">5Owned</option>
+		<option value="5Owners">5Owners</option>
+		<option value="5Requested">5Requested</option>
+		<option value="5Requesters">5Requesters</option>
+		<option value="5Strings">5Strings</option>
 		<option value="ResourcesList">ResourcesList</option>
 		<option value="RunMode">RunMode</option>
 		<option value="RunWithoutMatSvr">RunWithoutMatSvr</option>
@@ -531,14 +719,14 @@ function splitPhaseErrs(data){
 		<option value="UnAcknowledgedEvents">UnAcknowledgedEvents</option>
 		<option value="UnacknowledgedEventsCt">UnacknowledgedEventsCt</option>
 		<option value="UnitBitMaps">UnitBitMaps</option>
-		<option value="55BatchID">55BatchID-?</option>
-		<option value="55Operations">55Operations-?</option>
-		<option value="55PhaseBitmaps">55PhaseBitmaps-?</option>
-		<option value="55Phases">55Phases-?</option>
-		<option value="55Phases2">55Phases2-?</option>
-		<option value="55UnitTagData">55UnitTagData-?</option>
-		<option value="13BindingPreferences">13BindingPreferences-?</option>
-		<option value="13BindingRequirements">13BindingRequirements-?</option>
+		<option value="4BatchID">4BatchID</option>
+		<option value="4Operations">4Operations</option>
+		<option value="4PhaseBitmaps">4PhaseBitmaps</option>
+		<option value="4Phases">4Phases</option>
+		<option value="4Phases2">4Phases2</option>
+		<option value="4UnitTagData">4UnitTagData</option>
+		<option value="4BindingPreferences">4BindingPreferences</option>
+		<option value="4BindingRequirements">4BindingRequirements</option>
 		<option value="UnitsList">UnitsList</option>
 		<option value="VerifiedTagCount">VerifiedTagCount</option>
 		<option value="Version">Version</option>

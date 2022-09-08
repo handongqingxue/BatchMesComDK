@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.batchMesComDK.dao.FeedIssusBodyMapper">
+	<insert id="add" parameterType="com.batchMesComDK.entity.FeedIssusBody">
+		insert into FeedIssusBody
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id!=null">
+				id,
+			</if>
+			<if test="workOrder!=null">
+				workOrder,
+			</if>
+			<if test="feedportCode!=null">
+				feedportCode,
+			</if>
+			<if test="feedTime!=null">
+				feedTime,
+			</if>
+			<if test="materialCode!=null">
+				materialCode,
+			</if>
+			<if test="suttle!=null">
+				suttle,
+			</if>
+			<if test="unit!=null">
+				unit,
+			</if>
+			<if test="sort!=null">
+				sort,
+			</if>
+		</trim>
+		values
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id!=null">
+				#{id},
+			</if>
+			<if test="workOrder!=null">
+				#{workOrder},
+			</if>
+			<if test="feedportCode!=null">
+				#{feedportCode},
+			</if>
+			<if test="feedTime!=null">
+				#{feedTime},
+			</if>
+			<if test="materialCode!=null">
+				#{materialCode},
+			</if>
+			<if test="suttle!=null">
+				#{suttle},
+			</if>
+			<if test="unit!=null">
+				#{unit},
+			</if>
+			<if test="sort!=null">
+				#{sort},
+			</if>
+		</trim>
+	</insert>
+</mapper>
