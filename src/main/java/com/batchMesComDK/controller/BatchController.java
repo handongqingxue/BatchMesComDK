@@ -31,6 +31,10 @@ public class BatchController {
 	private FeedIssusBodyService feedIssusBodyService;
 	@Autowired
 	private OrderMateriaBodyService orderMateriaBodyService;
+	@Autowired
+	private PasteWorkingNumBodyService pasteWorkingNumBodyService;
+	@Autowired
+	private WorkOrderBodyService workOrderBodyService;
 	public static final String MODULE_NAME="batch";
 	
 	@RequestMapping(value="/test")
@@ -77,6 +81,26 @@ public class BatchController {
 			omb.setStep("1");
 			omb.setPhase("ccc");
 			count=orderMateriaBodyService.add(omb);
+		}
+		else if("PasteWorkingNumBody".equals(tabName)) {
+			PasteWorkingNumBody pwnb=new PasteWorkingNumBody();
+			pwnb.setId("123456");
+			pwnb.setWorkOrder("aaaaaaaaaaaaa");
+			pwnb.setCreamCode("fdsffgfdgf");
+			pwnb.setCreamWaterNo("dfertrgtrgt");
+			count=pasteWorkingNumBodyService.add(pwnb);
+		}
+		else if("WorkOrderBody".equals(tabName)) {
+			WorkOrderBody wob=new WorkOrderBody();
+			wob.setId("123456");
+			wob.setWorkOrder("aaaaaaaaaaaaa");
+			wob.setProductcode("fdfgffgfg");
+			wob.setProductName("це");
+			wob.setTotalOutput("ccc");
+			wob.setMfgCode("ddd");
+			wob.setMfgVersion("1.0");
+			wob.setFormulaId("1");
+			count=workOrderBodyService.add(wob);
 		}
 		
 		if(count>0) {

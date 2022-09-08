@@ -18,7 +18,7 @@ $(function(){
 });
 
 function addDataToDB(){
-	var tabName="OrderMateriaBody";
+	var tabName="WorkOrderBody";
 	$.post(path+"batch/addDataToDB",
 		{tabName:tabName},
 		function(data){
