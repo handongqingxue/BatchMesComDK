@@ -51,6 +51,12 @@ public class WorkOrderBody {
 	public void setFormulaId(String formulaId) {
 		this.formulaId = formulaId;
 	}
+	public Integer getState() {
+		return state;
+	}
+	public void setState(Integer state) {
+		this.state = state;
+	}
 	private String workOrder;
 	private String productcode;
 	private String productName;
@@ -58,4 +64,5 @@ public class WorkOrderBody {
 	private String mfgCode;
 	private String mfgVersion;
 	private String formulaId;
+	private Integer state;
 }

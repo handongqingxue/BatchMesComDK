@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.batchMesComDK.dao.FormulaMaterialDtoMapper">
+	<insert id="add" parameterType="com.batchMesComDK.entity.FormulaMaterialDto">
+		insert into FormulaMaterialDto
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id!=null">
+				id,
+			</if>
+			<if test="createdAt!=null">
+				createdAt,
+			</if>
+			<if test="updatedAt!=null">
+				updatedAt,
+			</if>
+			<if test="createUser!=null">
+				createUser,
+			</if>
+			<if test="updateUser!=null">
+				updateUser,
+			</if>
+			<if test="phase!=null">
+				phase,
+			</if>
+			<if test="phaseDes!=null">
+				phaseDes,
+			</if>
+			<if test="step!=null">
+				step,
+			</if>
+			<if test="isUniqueLot!=null">
+				isUniqueLot,
+			</if>
+			<if test="tolerance!=null">
+				tolerance,
+			</if>
+			<if test="materialCode!=null">
+				materialCode,
+			</if>
+			<if test="materialName!=null">
+				materialName,
+			</if>
+			<if test="isCompensateur!=null">
+				isCompensateur,
+			</if>
+			<if test="qty!=null">
+				qty,
+			</if>
+			<if test="unit!=null">
+				unit,
+			</if>
+			<if test="isWeightingWeight!=null">
+				isWeightingWeight,
+			</if>
+			<if test="isMfgWeight!=null">
+				isMfgWeight,
+			</if>
+			<if test="isPackWeight!=null">
+				isPackWeight,
+			</if>
+			<if test="dosage!=null">
+				dosage,
+			</if>
+			<if test="isPotency!=null">
+				isPotency,
+			</if>
+			<if test="potency!=null">
+				potency,
+			</if>
+			<if test="isFixedQty!=null">
+				isFixedQty,
+			</if>
+			<if test="isMasterMaterial!=null">
+				isMasterMaterial,
+			</if>
+			<if test="attribute1!=null">
+				attribute1,
+			</if>
+			<if test="isTailSemiFinishedPrd!=null">
+				isTailSemiFinishedPrd,
+			</if>
+			<if test="formula!=null">
+				formula,
+			</if>
+			<if test="weightStationCode!=null">
+				weightStationCode,
+			</if>
+			<if test="beginValidDate!=null">
+				beginValidDate,
+			</if>
+			<if test="endValidDate!=null">
+				endValidDate,
+			</if>
+		</trim>
+		values
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id!=null">
+				#{id},
+			</if>
+			<if test="createdAt!=null">
+				#{createdAt},
+			</if>
+			<if test="updatedAt!=null">
+				#{updatedAt},
+			</if>
+			<if test="createUser!=null">
+				#{createUser},
+			</if>
+			<if test="updateUser!=null">
+				#{updateUser},
+			</if>
+			<if test="phase!=null">
+				#{phase},
+			</if>
+			<if test="phaseDes!=null">
+				#{phaseDes},
+			</if>
+			<if test="step!=null">
+				#{step},
+			</if>
+			<if test="isUniqueLot!=null">
+				#{isUniqueLot},
+			</if>
+			<if test="tolerance!=null">
+				#{tolerance},
+			</if>
+			<if test="materialCode!=null">
+				#{materialCode},
+			</if>
+			<if test="materialName!=null">
+				#{materialName},
+			</if>
+			<if test="isCompensateur!=null">
+				#{isCompensateur},
+			</if>
+			<if test="qty!=null">
+				#{qty},
+			</if>
+			<if test="isWeightingWeight!=null">
+				#{isWeightingWeight},
+			</if>
+			<if test="isMfgWeight!=null">
+				#{isMfgWeight},
+			</if>
+			<if test="isPackWeight!=null">
+				#{isPackWeight},
+			</if>
+			<if test="dosage!=null">
+				#{dosage},
+			</if>
+			<if test="isPotency!=null">
+				#{isPotency},
+			</if>
+			<if test="potency!=null">
+				#{potency},
+			</if>
+			<if test="isFixedQty!=null">
+				#{isFixedQty},
+			</if>
+			<if test="isMasterMaterial!=null">
+				#{isMasterMaterial},
+			</if>
+			<if test="attribute1!=null">
+				#{attribute1},
+			</if>
+			<if test="isTailSemiFinishedPrd!=null">
+				#{isTailSemiFinishedPrd},
+			</if>
+			<if test="formula!=null">
+				#{formula},
+			</if>
+			<if test="weightStationCode!=null">
+				#{weightStationCode},
+			</if>
+			<if test="beginValidDate!=null">
+				#{beginValidDate},
+			</if>
+			<if test="endValidDate!=null">
+				#{endValidDate},
+			</if>
+		</trim>
+	</insert>
+</mapper>

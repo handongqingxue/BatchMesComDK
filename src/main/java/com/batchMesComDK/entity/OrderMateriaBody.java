@@ -51,6 +51,12 @@ public class OrderMateriaBody {
 	public void setPhase(String phase) {
 		this.phase = phase;
 	}
+	public String getWorkOrderId() {
+		return workOrderId;
+	}
+	public void setWorkOrderId(String workOrderId) {
+		this.workOrderId = workOrderId;
+	}
 	private String materialCode;
 	private String materialName;
 	private String lot;
@@ -58,4 +64,5 @@ public class OrderMateriaBody {
 	private String unit;
 	private String step;
 	private String phase;
+	private String workOrderId;
 }

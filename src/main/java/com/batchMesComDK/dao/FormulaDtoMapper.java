@@ -6,6 +6,8 @@ import com.batchMesComDK.entity.*;
 
 public interface FormulaDtoMapper {
 
+	int add(FormulaDto fd);
+	
 	List<FormulaDto> getList();
 
 }
