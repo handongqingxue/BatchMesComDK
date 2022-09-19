@@ -70,6 +70,52 @@ public class BatchController {
 		    fib.setSort("1");
 			count=feedIssusBodyService.add(fib);
 		}
+		else if("FormulaDto".equals(tabName)) {
+			FormulaDto fd=new FormulaDto();
+			fd.setId("cl310l32l09en0a693iho2ezr");
+			fd.setCode("F000001");
+			fd.setVersion("0");
+			fd.setName("¿‰À·¡Èøπ√Ù∏–—¿∏‡90øÀ≈‰∑Ω");
+			fd.setFactory(null);
+			fd.setWorkcenterId(null);
+			fd.setRefQuantity(null);
+			fd.setUnit("");
+			fd.setBeginValidDate(null);
+			fd.setEndValidDate(null);
+			fd.setStatus("V");
+			fd.setCreatedAt("2022-05-11T03:20:42.955");
+			fd.setUpdatedAt("2022-07-01T09:17:01.342");
+			fd.setCreateUser("wang");
+			fd.setUpdateUser("wang");
+			fd.setOriginalFormulaCode("F000001");
+			fd.setOrigineVersion("0");
+			fd.setProductCode("1010051");
+			fd.setProductName("¿‰À·¡Èøπ√Ù∏–—¿∏‡90øÀ≈‰∑Ω");
+			fd.setProductDesc("");
+			fd.setStageType("G");
+			fd.setIsStandBom("1");
+			fd.setType("T");
+			/*
+			private String project;
+			private String dosageType;
+			private String dosage;
+			private String form;
+			private String folder;
+			private String unitType;
+			private String weightEquivalent;
+			private String weightEquivalentUnit;
+			private String refQuantityUnit;
+			private String message;
+			private String approveUser;
+			private String approveDate;
+			private String verifyUser;
+			private String verifyDate;
+			private String cancelAt;
+			private String cancelUser;
+			private String zoneCode;
+			*/
+			count=formulaDtoService.add(fd);
+		}
 		else if("OrderMateriaBody".equals(tabName)) {
 			OrderMateriaBody omb=new OrderMateriaBody();
 			omb.setId("123456");

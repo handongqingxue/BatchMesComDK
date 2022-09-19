@@ -21,4 +21,10 @@ public class FormulaDtoServiceImpl implements FormulaDtoService {
 		return formulaDtoDao.getList();
 	}
 
+	@Override
+	public int add(FormulaDto fd) {
+		// TODO Auto-generated method stub
+		return formulaDtoDao.add(fd);
+	}
+
 }
