@@ -1,6 +1,7 @@
 package com.batchMesComDK.service.serviceImpl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,12 @@ public class FormulaDtoServiceImpl implements FormulaDtoService {
 	public int add(FormulaDto fd) {
 		// TODO Auto-generated method stub
 		return formulaDtoDao.add(fd);
+	}
+
+	@Override
+	public List<Map<String, Object>> getCodeMaterialDosage() {
+		// TODO Auto-generated method stub
+		return formulaDtoDao.getCodeMaterialDosage();
 	}
 
 }

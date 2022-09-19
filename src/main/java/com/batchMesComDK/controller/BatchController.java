@@ -42,8 +42,8 @@ public class BatchController {
 	@RequestMapping(value="/test")
 	public String goTest(HttpServletRequest request) {
 		
-		//List<FormulaDto> fdList=formulaDtoService.getList();
-		//System.out.println("size==="+fdList.size());
+		List<FormulaDto> fdList=formulaDtoService.getList();
+		System.out.println("size==="+fdList.size());
 		//ActiveXTest.printVersion("BatchViewHMI.BatchesList");
 		
 		//List<BHBatch> bhbList=bHBatchService.getList();
@@ -239,5 +239,25 @@ public class BatchController {
 			e.printStackTrace();
 		}
 		return json;
+	}
+
+	@RequestMapping(value="/getFormulaCodeMaterialDosage")
+	@ResponseBody
+	public Map<String, Object> getFormulaCodeMaterialDosage() {
+		
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
+
+		//List<Map<String,Object>> codeDosageList=formulaDtoService.getCodeMaterialDosage();
+		List<FormulaDto> list = formulaDtoService.getList();
+		
+		if(list.size()>0) {
+			jsonMap.put("message", "ok");
+			jsonMap.put("codeDosageList", list);
+		}
+		else {
+			jsonMap.put("message", "no");
+			jsonMap.put("info", "‘›Œﬁ–≈œ¢£°");
+		}
+		return jsonMap;
 	}
 }

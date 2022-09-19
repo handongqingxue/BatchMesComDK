@@ -254,4 +254,7 @@
 	<select id="getList" resultType="com.batchMesComDK.entity.FormulaDto">
 		select * from FormulaDto
 	</select>
+	<select id="getCodeMaterialDosage" resultType="java.util.Map">
+		select fd.code,COUNT(fmd.id) dosage from FormulaDto fd left join FormulaMaterialDto fmd on fd.id=fmd.formula group by fd.code,fmd.formula
+	</select>
 </mapper>

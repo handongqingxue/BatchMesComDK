@@ -14,8 +14,17 @@
 <script type="text/javascript">
 var path='<%=basePath %>';
 $(function(){
-	addDataToDB();
+	//addDataToDB();
+	//getFormulaCodeMaterialDosage();
 });
+
+function getFormulaCodeMaterialDosage(){
+	$.post(path+"batch/getFormulaCodeMaterialDosage",
+		function(data){
+			alert(data.message);
+		}
+	,"json");
+}
 
 function addDataToDB(){
 	var tabName="FormulaMaterialDto";
