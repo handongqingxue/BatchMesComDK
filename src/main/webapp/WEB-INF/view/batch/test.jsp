@@ -18,7 +18,7 @@ $(function(){
 });
 
 function addDataToDB(){
-	var tabName="FormulaDto";
+	var tabName="FormulaMaterialDto";
 	$.post(path+"batch/addDataToDB",
 		{tabName:tabName},
 		function(data){

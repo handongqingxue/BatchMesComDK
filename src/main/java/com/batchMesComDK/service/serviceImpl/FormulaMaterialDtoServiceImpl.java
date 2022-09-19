@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.batchMesComDK.dao.*;
+import com.batchMesComDK.entity.FormulaMaterialDto;
 import com.batchMesComDK.service.*;
 
 @Service
@@ -11,4 +12,10 @@ public class FormulaMaterialDtoServiceImpl implements FormulaMaterialDtoService 
 
 	@Autowired
 	private FormulaMaterialDtoMapper formulaMaterialDtoDao;
+
+	@Override
+	public int add(FormulaMaterialDto fmd) {
+		// TODO Auto-generated method stub
+		return formulaMaterialDtoDao.add(fmd);
+	}
 }

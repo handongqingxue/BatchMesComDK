@@ -26,6 +26,8 @@ public class BatchController {
 	@Autowired
 	private FormulaDtoService formulaDtoService;
 	@Autowired
+	private FormulaMaterialDtoService formulaMaterialDtoService;
+	@Autowired
 	private BHBatchService bHBatchService;
 	@Autowired
 	private FeedIssusBodyService feedIssusBodyService;
@@ -113,6 +115,39 @@ public class BatchController {
 			fd.setCancelUser("");
 			fd.setZoneCode(null);
 			count=formulaDtoService.add(fd);
+		}
+		else if("FormulaMaterialDto".equals(tabName)) {
+			FormulaMaterialDto fmd=new FormulaMaterialDto();
+			fmd.setId("cl38bsxwr0fd10a69oqs63267");
+			fmd.setCreatedAt("2022-05-16T06:09:08.521");
+			fmd.setUpdatedAt("2022-05-16T06:09:08.521");
+			fmd.setCreateUser("wang");
+			fmd.setUpdateUser("wang");
+			fmd.setPhase("0001");
+			fmd.setPhaseDes("");
+			fmd.setStep("0001");
+			fmd.setIsUniqueLot("0");
+			fmd.setTolerance(null);
+			fmd.setMaterialCode("4030038");
+			fmd.setMaterialName("¿‰À·¡Èøπ√Ù∏–—¿∏‡90øÀ¥Ûœ‰");
+			fmd.setIsCompensateur("N");
+			fmd.setQty("1.000000000000000000000000000000");
+			fmd.setUnit("un");
+			fmd.setIsWeightingWeight("1");
+			fmd.setIsMfgWeight("1");
+			fmd.setIsPackWeight("1");
+			fmd.setDosage("1");
+			fmd.setIsPotency("0");
+			fmd.setPotency("0E-30");
+			fmd.setIsFixedQty("0");
+			fmd.setIsMasterMaterial("0");
+			fmd.setAttribute1(null);
+			fmd.setIsTailSemiFinishedPrd("0");
+			fmd.setFormula("cl310l32l09en0a693iho2ezr");
+			fmd.setWeightStationCode(null);
+			fmd.setBeginValidDate(null);
+			fmd.setEndValidDate(null);
+			count=formulaMaterialDtoService.add(fmd);
 		}
 		else if("OrderMateriaBody".equals(tabName)) {
 			OrderMateriaBody omb=new OrderMateriaBody();

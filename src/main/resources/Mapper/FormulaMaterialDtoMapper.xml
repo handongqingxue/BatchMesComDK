@@ -138,6 +138,9 @@
 			<if test="qty!=null">
 				#{qty},
 			</if>
+			<if test="unit!=null">
+				#{unit},
+			</if>
 			<if test="isWeightingWeight!=null">
 				#{isWeightingWeight},
 			</if>
