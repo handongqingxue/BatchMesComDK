@@ -95,25 +95,23 @@ public class BatchController {
 			fd.setStageType("G");
 			fd.setIsStandBom("1");
 			fd.setType("T");
-			/*
-			private String project;
-			private String dosageType;
-			private String dosage;
-			private String form;
-			private String folder;
-			private String unitType;
-			private String weightEquivalent;
-			private String weightEquivalentUnit;
-			private String refQuantityUnit;
-			private String message;
-			private String approveUser;
-			private String approveDate;
-			private String verifyUser;
-			private String verifyDate;
-			private String cancelAt;
-			private String cancelUser;
-			private String zoneCode;
-			*/
+			fd.setProject("");
+			fd.setDosageType("");
+			fd.setDosage("");
+			fd.setForm(null);
+			fd.setFolder("");
+			fd.setUnitType("Q");
+			fd.setWeightEquivalent("0E-30");
+			fd.setWeightEquivalentUnit("");
+			fd.setRefQuantityUnit("un");
+			fd.setMessage(null);
+			fd.setApproveUser("");
+			fd.setApproveDate(null);
+			fd.setVerifyUser("wang");
+			fd.setVerifyDate("2022-07-01T09:17:01");
+			fd.setCancelAt(null);
+			fd.setCancelUser("");
+			fd.setZoneCode(null);
 			count=formulaDtoService.add(fd);
 		}
 		else if("OrderMateriaBody".equals(tabName)) {
