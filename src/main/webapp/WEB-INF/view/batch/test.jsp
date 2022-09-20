@@ -15,19 +15,25 @@
 var path='<%=basePath %>';
 $(function(){
 	//addDataToDB();
-	//getFormulaCodeMaterialDosage();
+	getFormulaCodeMaterialDosage();
 });
 
 function getFormulaCodeMaterialDosage(){
 	$.post(path+"batch/getFormulaCodeMaterialDosage",
 		function(data){
-			alert(data.message);
+			if(data.message){
+				var codeDosageList=data.codeDosageList;
+				for(var i=0;i<codeDosageList.length;i++){
+					var codeDosage=codeDosageList[i];
+					console.log("code==="+codeDosage.code+",dosage==="+codeDosage.dosage);
+				}
+			}
 		}
 	,"json");
 }
 
 function addDataToDB(){
-	var tabName="FormulaMaterialDto";
+	var tabName="FormulaDto";
 	$.post(path+"batch/addDataToDB",
 		{tabName:tabName},
 		function(data){

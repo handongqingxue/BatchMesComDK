@@ -185,4 +185,7 @@
 			</if>
 		</trim>
 	</insert>
+	<select id="getList" resultType="com.batchMesComDK.entity.FormulaMaterialDto">
+		select * from FormulaMaterialDto
+	</select>
 </mapper>
