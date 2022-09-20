@@ -14,6 +14,13 @@ import java.util.Map.Entry;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.batchMesComDK.entity.FeedIssusBody;
+import com.batchMesComDK.entity.FormulaDto;
+import com.batchMesComDK.entity.FormulaMaterialDto;
+import com.batchMesComDK.entity.OrderMateriaBody;
+import com.batchMesComDK.entity.PasteWorkingNumBody;
+import com.batchMesComDK.entity.WorkOrderBody;
+
 public class APIUtil {
 
 	public static final String SERVICE_URL="http://10.10.99.20:8080/ZnczLfyl/gkj/";
@@ -79,5 +86,138 @@ public class APIUtil {
         parames.put("ddztMc", ddztMc);
         JSONObject resultJO = doHttp("getDingDan",parames);
 		return resultJO;
+	}
+	
+	public static JSONObject getTabTestItem(String tabName) {
+		JSONObject jo=new JSONObject();
+		try {
+			if("FeedIssusBody".equals(tabName)) {
+				FeedIssusBody fib=new FeedIssusBody();
+			    fib.setId("123456");
+			    fib.setWorkOrder("aaaaaaaaaaaaa");
+			    fib.setFeedportCode("dfgrgrgergr");
+			    fib.setFeedTime("1997-07-01");
+			    fib.setMaterialCode("fdfertrgg");
+			    fib.setSuttle("fgfhgth");
+			    fib.setUnit("kg");
+			    fib.setSort("1");
+				jo.put("FeedIssusBody", fib);
+			}
+			else if("FormulaDto".equals(tabName)) {
+				FormulaDto fd=new FormulaDto();
+				fd.setId("cl310l32l09en0a693iho2ezr");
+				fd.setCode("F000001");
+				fd.setVersion("0");
+				fd.setName("¿‰À·¡Èøπ√Ù∏–—¿∏‡90øÀ≈‰∑Ω");
+				fd.setFactory(null);
+				fd.setWorkcenterId(null);
+				fd.setRefQuantity(null);
+				fd.setUnit("");
+				fd.setBeginValidDate(null);
+				fd.setEndValidDate(null);
+				fd.setStatus("V");
+				fd.setCreatedAt("2022-05-11T03:20:42.955");
+				fd.setUpdatedAt("2022-07-01T09:17:01.342");
+				fd.setCreateUser("wang");
+				fd.setUpdateUser("wang");
+				fd.setOriginalFormulaCode("F000001");
+				fd.setOrigineVersion("0");
+				fd.setProductCode("1010051");
+				fd.setProductName("¿‰À·¡Èøπ√Ù∏–—¿∏‡90øÀ≈‰∑Ω");
+				fd.setProductDesc("");
+				fd.setStageType("G");
+				fd.setIsStandBom("1");
+				fd.setType("T");
+				fd.setProject("");
+				fd.setDosageType("");
+				fd.setDosage("");
+				fd.setForm(null);
+				fd.setFolder("");
+				fd.setUnitType("Q");
+				fd.setWeightEquivalent("0E-30");
+				fd.setWeightEquivalentUnit("");
+				fd.setRefQuantityUnit("un");
+				fd.setMessage(null);
+				fd.setApproveUser("");
+				fd.setApproveDate(null);
+				fd.setVerifyUser("wang");
+				fd.setVerifyDate("2022-07-01T09:17:01");
+				fd.setCancelAt(null);
+				fd.setCancelUser("");
+				fd.setZoneCode(null);
+				jo.put("FormulaDto", fd);
+			}
+			else if("FormulaMaterialDto".equals(tabName)) {
+				FormulaMaterialDto fmd=new FormulaMaterialDto();
+				fmd.setId("cl38bsxwr0fd10a69oqs63267");
+				fmd.setCreatedAt("2022-05-16T06:09:08.521");
+				fmd.setUpdatedAt("2022-05-16T06:09:08.521");
+				fmd.setCreateUser("wang");
+				fmd.setUpdateUser("wang");
+				fmd.setPhase("0001");
+				fmd.setPhaseDes("");
+				fmd.setStep("0001");
+				fmd.setIsUniqueLot("0");
+				fmd.setTolerance(null);
+				fmd.setMaterialCode("4030038");
+				fmd.setMaterialName("¿‰À·¡Èøπ√Ù∏–—¿∏‡90øÀ¥Ûœ‰");
+				fmd.setIsCompensateur("N");
+				fmd.setQty("1.000000000000000000000000000000");
+				fmd.setUnit("un");
+				fmd.setIsWeightingWeight("1");
+				fmd.setIsMfgWeight("1");
+				fmd.setIsPackWeight("1");
+				fmd.setDosage("1");
+				fmd.setIsPotency("0");
+				fmd.setPotency("0E-30");
+				fmd.setIsFixedQty("0");
+				fmd.setIsMasterMaterial("0");
+				fmd.setAttribute1(null);
+				fmd.setIsTailSemiFinishedPrd("0");
+				fmd.setFormula("cl310l32l09en0a693iho2ezr");
+				fmd.setWeightStationCode(null);
+				fmd.setBeginValidDate(null);
+				fmd.setEndValidDate(null);
+				jo.put("FormulaMaterialDto", fmd);
+			}
+			else if("OrderMateriaBody".equals(tabName)) {
+				OrderMateriaBody omb=new OrderMateriaBody();
+				omb.setId("123456");
+				omb.setMaterialCode("fdfertrgg");
+				omb.setMaterialName("Ê’");
+				omb.setLot("aaa");
+				omb.setDosage("bbb");
+				omb.setUnit("kg");
+				omb.setStep("1");
+				omb.setPhase("ccc");
+				jo.put("OrderMateriaBody", omb);
+			}
+			else if("PasteWorkingNumBody".equals(tabName)) {
+				PasteWorkingNumBody pwnb=new PasteWorkingNumBody();
+				pwnb.setId("123456");
+				pwnb.setWorkOrder("aaaaaaaaaaaaa");
+				pwnb.setCreamCode("fdsffgfdgf");
+				pwnb.setCreamWaterNo("dfertrgtrgt");
+				jo.put("PasteWorkingNumBody", pwnb);
+			}
+			else if("WorkOrderBody".equals(tabName)) {
+				WorkOrderBody wob=new WorkOrderBody();
+				wob.setId("123456");
+				wob.setWorkOrder("aaaaaaaaaaaaa");
+				wob.setProductcode("fdfgffgfg");
+				wob.setProductName("Ê’");
+				wob.setTotalOutput("ccc");
+				wob.setMfgCode("ddd");
+				wob.setMfgVersion("1.0");
+				wob.setFormulaId("1");
+				jo.put("WorkOrderBody", wob);
+			}
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally {
+			return jo;
+		}
 	}
 }
