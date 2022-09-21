@@ -7,24 +7,25 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.batchMesComDK.entity.FeedIssusBody;
-import com.batchMesComDK.entity.FormulaDto;
-import com.batchMesComDK.entity.FormulaMaterialDto;
-import com.batchMesComDK.entity.OrderMateriaBody;
-import com.batchMesComDK.entity.PasteWorkingNumBody;
-import com.batchMesComDK.entity.WorkOrderBody;
+import com.batchMesComDK.entity.*;
+
+//import net.sf.json.JSONArray;
 
 public class APIUtil {
 
 	public static final String SERVICE_URL="http://10.10.99.20:8080/ZnczLfyl/gkj/";
 	//public static final String SERVICE_URL="http://localhost:8080/ZnczLfyl/gkj/";
+	public static final String ITEM_RESULT="item";
+	public static final String LIST_RESULT="list";;
 
 	//https://www.cnblogs.com/aeolian/p/7746158.html
 	//https://www.cnblogs.com/bobc/p/8809761.html
@@ -219,5 +220,162 @@ public class APIUtil {
 		finally {
 			return jo;
 		}
+	}
+	
+	public static JSONObject getTabTestList(String tabName) {
+		//https://blog.csdn.net/LC_Liangchao/article/details/121793583
+		JSONObject jo=new JSONObject();
+		StringBuilder jaSB=new StringBuilder();
+		try {
+			if("FeedIssusBody".equals(tabName)) {
+				
+			}
+			else if("FormulaDto".equals(tabName)) {
+				jaSB.append("[");
+				jaSB.append("{");
+				jaSB.append("\"approveUser\":\"\",");
+				jaSB.append("\"cancelUser\":\"\",");
+				jaSB.append("\"code\":\"F000001\",");
+				jaSB.append("\"createUser\":\"wang\",");
+				jaSB.append("\"createdAt\":1652210442955,");
+				jaSB.append("\"dosage\":\"\",");
+				jaSB.append("\"dosageType\":\"\",");
+				jaSB.append("\"folder\":\"\",");
+				jaSB.append("\"id\":\"cl310l32l09en0a693iho2ezr\",");
+				jaSB.append("\"isStandBom\":1,");
+				jaSB.append("\"name\":\"¿‰À·¡Èøπ√Ù∏–—¿∏‡90øÀ≈‰∑Ω\",");
+				jaSB.append("\"originalFormulaCode\":\"F000001\",");
+				jaSB.append("\"origineVersion\":0,");
+				jaSB.append("\"productCode\":\"1010051\",");
+				jaSB.append("\"productDesc\":\"\",");
+				jaSB.append("\"productName\":\"¿‰À·¡Èøπ√Ù∏–—¿∏‡90øÀ≈‰∑Ω\",");
+				jaSB.append("\"project\":\"\",");
+				jaSB.append("\"refQuantityUnit\":\"un\",");
+				jaSB.append("\"stageType\":\"G\",");
+				jaSB.append("\"status\":\"V\",");
+				jaSB.append("\"type\":\"T\",");
+				jaSB.append("\"unit\":\"\",");
+				jaSB.append("\"unitType\":\"Q\",");
+				jaSB.append("\"updateUser\":\"wang\",");
+				jaSB.append("\"updatedAt\":1656638221342,");
+				jaSB.append("\"verifyDate\":\"2022-07-01 09:17:01\",");
+				jaSB.append("\"verifyUser\":\"wang\",");
+				jaSB.append("\"version\":\"0\",");
+				jaSB.append("\"weightEquivalent\":\"0E-30\",");
+				jaSB.append("\"weightEquivalentUnit\":\"\"");
+				jaSB.append("},");
+				jaSB.append("{");
+				jaSB.append("\"approveUser\":\"\",");
+				jaSB.append("\"cancelUser\":\"\",");
+				jaSB.append("\"code\":\"F000016\",");
+				jaSB.append("\"createUser\":\"wang\",");
+				jaSB.append("\"createdAt\":\"1652823369218\",");
+				jaSB.append("\"dosage\":\"\",");
+				jaSB.append("\"dosageType\":\"\",");
+				jaSB.append("\"folder\":\"\",");
+				jaSB.append("\"id\":\"cl3b5i8030ip70a69c1seqy6y\",");
+				jaSB.append("\"isStandBom\":1,");
+				jaSB.append("\"name\":\"∆’¿‰—¿∏‡∏‡ÃÂ≈‰∑Ω\",");
+				jaSB.append("\"originalFormulaCode\":\"F000016\",");
+				jaSB.append("\"origineVersion\":0,");
+				jaSB.append("\"productCode\":\"3010001\",");
+				jaSB.append("\"productDesc\":\"\",");
+				jaSB.append("\"productName\":\"∆’¿‰—¿∏‡∏‡ÃÂ\",");
+				jaSB.append("\"project\":\"\",");
+				jaSB.append("\"refQuantityUnit\":\"kg\",");
+				jaSB.append("\"stageType\":\"Z\",");
+				jaSB.append("\"status\":\"V\",");
+				jaSB.append("\"type\":\"T\",");
+				jaSB.append("\"unit\":\"\",");
+				jaSB.append("\"unitType\":\"Q\",");
+				jaSB.append("\"updateUser\":\"wang\",");
+				jaSB.append("\"updatedAt\":1652837139583,");
+				jaSB.append("\"verifyDate\":\"2022-05-18 09:25:39\",");
+				jaSB.append("\"verifyUser\":\"wang\",");
+				jaSB.append("\"version\":\"0\",");
+				jaSB.append("\"weightEquivalent\":\"0E-30\",");
+				jaSB.append("\"weightEquivalentUnit\":\"\"");
+				jaSB.append("},");
+				jaSB.append("{");
+				jaSB.append("\"approveUser\":\"\",");
+				jaSB.append("\"cancelUser\":\"\",");
+				jaSB.append("\"code\":\"F000029\",");
+				jaSB.append("\"createUser\":\"wang\",");
+				jaSB.append("\"createdAt\":\"1653418782720\",");
+				jaSB.append("\"dosage\":\"\",");
+				jaSB.append("\"dosageType\":\"\",");
+				jaSB.append("\"folder\":\"\",");
+				jaSB.append("\"id\":\"cl3l000010sbk0a695c5nyk2v\",");
+				jaSB.append("\"isStandBom\":\"1\",");
+				jaSB.append("\"name\":\"øπ√Ù√¿∞◊¥Ÿœ˙≈‰∑Ω\",");
+				jaSB.append("\"originalFormulaCode\":\"F000029\",");
+				jaSB.append("\"origineVersion\":\"0\",");
+				jaSB.append("\"productCode\":\"1010891\",");
+				jaSB.append("\"productDesc\":\"\",");
+				jaSB.append("\"productName\":\"¿‰À·¡È◊®—–øπ√Ù—¿∏‡140ÀÕ¿‰À·¡È√¿∞◊60øÀ\",");
+				jaSB.append("\"project\":\"\",");
+				jaSB.append("\"refQuantityUnit\":\"un\",");
+				jaSB.append("\"stageType\":\"C\",");
+				jaSB.append("\"status\":\"V\",");
+				jaSB.append("\"type\":\"T\",");
+				jaSB.append("\"unit\":\"\",");
+				jaSB.append("\"unitType\":\"Q\",");
+				jaSB.append("\"updateUser\":\"wang\",");
+				jaSB.append("\"updatedAt\":\"1653418821307\",");
+				jaSB.append("\"verifyDate\":\"2022-05-25 03:00:21\",");
+				jaSB.append("\"verifyUser\":\"wang\",");
+				jaSB.append("\"version\":\"0\",");
+				jaSB.append("\"weightEquivalent\":\"0E-30\",");
+				jaSB.append("\"weightEquivalentUnit\":\"\"");
+				jaSB.append("}");
+				jaSB.append("]");
+				jaSB.append("");
+				jaSB.append("");
+				jaSB.append("");
+				jaSB.append("");
+				jaSB.append("");
+				net.sf.json.JSONArray fdJA = net.sf.json.JSONArray.fromObject(jaSB.toString());
+				
+				
+				List<FormulaDto> fdList=new ArrayList<FormulaDto>();
+				for (int i = 0; i < fdJA.size(); i++) {
+					net.sf.json.JSONObject fdJO = (net.sf.json.JSONObject)fdJA.get(i);
+					FormulaDto fd=(FormulaDto)net.sf.json.JSONObject.toBean(fdJO, FormulaDto.class);
+					System.out.println("id==="+fd.getId());
+					fdList.add(fd);
+				}
+				
+				jo.put("FormulaDtoList", fdList);
+					
+				
+						/*
+						"formulaMaterialList":
+						[
+							{"createUser":"wang","createdAt":1652652548521,"dosage":1,"formula":"cl310l32l09en0a693iho2ezr","id":"cl38bsxwr0fd10a69oqs63267","isCompensateur":"N","isFixedQty":0,"isMasterMaterial":0,"isMfgWeight":1,"isPackWeight":1,"isPotency":0,"isTailSemiFinishedPrd":0,"isUniqueLot":0,"isWeightingWeight":1,"materialCode":"4030038","materialName":"¿‰À·¡Èøπ√Ù∏–—¿∏‡90øÀ¥Ûœ‰","phase":"0001","phaseDes":"","potency":0E-30,"qty":1.000000000000000000000000000000,"step":"0001","unit":"un","updateUser":"wang","updatedAt":1652652548521},
+							{"createUser":"wang","createdAt":1652652570950,"dosage":1,"formula":"cl310l32l09en0a693iho2ezr","id":"cl38btf7s0fdj0a693fr8dsp0","isCompensateur":"N","isFixedQty":0,"isMasterMaterial":0,"isMfgWeight":1,"isPackWeight":1,"isPotency":0,"isTailSemiFinishedPrd":0,"isUniqueLot":0,"isWeightingWeight":1,"materialCode":"4010023","materialName":"¿‰À·¡Èøπ√Ù∏–—¿∏‡90øÀª®∫–","phase":"0001","phaseDes":"","potency":0E-30,"qty":72.000000000000000000000000000000,"step":"0002","unit":"un","updateUser":"wang","updatedAt":1652652570950},
+							{"createUser":"wang","createdAt":1652652585446,"dosage":1,"formula":"cl310l32l09en0a693iho2ezr","id":"cl38btqeh0fdx0a69q9tjxz2s","isCompensateur":"N","isFixedQty":0,"isMasterMaterial":0,"isMfgWeight":1,"isPackWeight":1,"isPotency":0,"isTailSemiFinishedPrd":0,"isUniqueLot":0,"isWeightingWeight":1,"materialCode":"4020028","materialName":"¿‰À·¡Èøπ√Ù∏–—¿∏‡90øÀ»Ìπ‹","phase":"0001","phaseDes":"","potency":0E-30,"qty":72.000000000000000000000000000000,"step":"0003","unit":"un","updateUser":"wang","updatedAt":1652652585446},
+							{"createUser":"wang","createdAt":1652652605979,"dosage":1,"formula":"cl310l32l09en0a693iho2ezr","id":"cl38bu68t0fep0a6905xysp16","isCompensateur":"N","isFixedQty":0,"isMasterMaterial":1,"isMfgWeight":1,"isPackWeight":1,"isPotency":0,"isTailSemiFinishedPrd":0,"isUniqueLot":0,"isWeightingWeight":1,"materialCode":"3010001","materialName":"∆’¿‰—¿∏‡∏‡ÃÂ","phase":"0001","phaseDes":"","potency":0E-30,"qty":6.480000000000000000000000000000,"step":"0004","unit":"kg","updateUser":"wang","updatedAt":1652652605979}
+						],
+						"formulaMaterialList":
+						[
+							{"createUser":"wang","createdAt":1652824504504,"dosage":1,"formula":"cl3b5i8030ip70a69c1seqy6y","id":"cl3b66jzu0ist0a69p7szrr7t","isCompensateur":"N","isFixedQty":0,"isMasterMaterial":0,"isMfgWeight":1,"isPackWeight":1,"isPotency":0,"isTailSemiFinishedPrd":0,"isUniqueLot":0,"isWeightingWeight":1,"materialCode":"2010012","materialName":"…Ω¿ÊÃ«¥º","phase":"0001","phaseDes":"","potency":0E-30,"qty":30.000000000000000000000000000000,"step":"0001","unit":"l","updateUser":"wang","updatedAt":1652824504504},
+							{"createUser":"wang","createdAt":1652824552047,"dosage":1,"formula":"cl3b5i8030ip70a69c1seqy6y","id":"cl3b67koh0itd0a69poqcirpk","isCompensateur":"N","isFixedQty":0,"isMasterMaterial":0,"isMfgWeight":1,"isPackWeight":1,"isPotency":0,"isTailSemiFinishedPrd":0,"isUniqueLot":0,"isWeightingWeight":1,"materialCode":"9010101","materialName":"ÀÆ","phase":"0001","phaseDes":"","potency":0E-30,"qty":50.000000000000000000000000000000,"step":"0002","unit":"kg","updateUser":"wang","updatedAt":1652824552047},
+							{"createUser":"wang","createdAt":1652824587911,"dosage":1,"formula":"cl3b5i8030ip70a69c1seqy6y","id":"cl3b68ccp0itp0a69ze3snrnt","isCompensateur":"N","isFixedQty":0,"isMasterMaterial":0,"isMfgWeight":1,"isPackWeight":1,"isPotency":0,"isTailSemiFinishedPrd":0,"isUniqueLot":0,"isWeightingWeight":1,"materialCode":"2010014","materialName":"∂˛—ıªØπË","phase":"0001","phaseDes":"","potency":0E-30,"qty":15.000000000000000000000000000000,"step":"0003","unit":"kg","updateUser":"wang","updatedAt":1652824587911},
+							{"createUser":"wang","createdAt":1652824605415,"dosage":1,"formula":"cl3b5i8030ip70a69c1seqy6y","id":"cl3b68pux0iu10a695galj5dw","isCompensateur":"N","isFixedQty":0,"isMasterMaterial":0,"isMfgWeight":1,"isPackWeight":1,"isPotency":0,"isTailSemiFinishedPrd":0,"isUniqueLot":0,"isWeightingWeight":1,"materialCode":"2010017","materialName":"ø®¿≠Ω∫","phase":"0001","phaseDes":"","potency":0E-30,"qty":10.000000000000000000000000000000,"step":"0004","unit":"kg","updateUser":"wang","updatedAt":1652824605415},
+							{"createUser":"wang","createdAt":1652824631371,"dosage":1,"formula":"cl3b5i8030ip70a69c1seqy6y","id":"cl3b699vy0iul0a6916hum6em","isCompensateur":"N","isFixedQty":0,"isMasterMaterial":0,"isMfgWeight":1,"isPackWeight":1,"isPotency":0,"isTailSemiFinishedPrd":0,"isUniqueLot":0,"isWeightingWeight":1,"materialCode":"2010040","materialName":"œıÀ·ºÿ","phase":"0001","phaseDes":"","potency":0E-30,"qty":5.000000000000000000000000000000,"step":"0005","unit":"kg","updateUser":"wang","updatedAt":1652824631371},
+							{"createUser":"wang","createdAt":1652824645699,"dosage":1,"formula":"cl3b5i8030ip70a69c1seqy6y","id":"cl3b69kxx0iv20a69b4kbtkwt","isCompensateur":"N","isFixedQty":0,"isMasterMaterial":0,"isMfgWeight":1,"isPackWeight":1,"isPotency":0,"isTailSemiFinishedPrd":0,"isUniqueLot":0,"isWeightingWeight":1,"materialCode":"2010031","materialName":"¿∂…´—’¡œ","phase":"0001","phaseDes":"","potency":0E-30,"qty":1.000000000000000000000000000000,"step":"0006","unit":"g","updateUser":"wang","updatedAt":1652824645699}
+						],
+					"formulaMaterialList":
+						[
+							{"createUser":"wang","createdAt":1653418796132,"dosage":1,"formula":"cl3l000010sbk0a695c5nyk2v","id":"cl3l00acm0sc60a69bo0ncc42","isCompensateur":"N","isFixedQty":0,"isMasterMaterial":0,"isMfgWeight":1,"isPackWeight":1,"isPotency":0,"isTailSemiFinishedPrd":0,"isUniqueLot":0,"isWeightingWeight":1,"materialCode":"3030101","materialName":"¿‰À·¡Èøπ√Ù—¿∏‡140øÀ","phase":"0001","phaseDes":"","potency":0E-30,"qty":1.000000000000000000000000000000,"step":"0001","unit":"un","updateUser":"wang","updatedAt":1653418796132},
+							{"createUser":"wang","createdAt":1653418814887,"dosage":1,"formula":"cl3l000010sbk0a695c5nyk2v","id":"cl3l00otk0scu0a69m6thdw8o","isCompensateur":"N","isFixedQty":0,"isMasterMaterial":0,"isMfgWeight":1,"isPackWeight":1,"isPotency":0,"isTailSemiFinishedPrd":0,"isUniqueLot":0,"isWeightingWeight":1,"materialCode":"3030801","materialName":"¿‰À·¡È√¿∞◊60øÀ","phase":"0001","phaseDes":"","potency":0E-30,"qty":1.000000000000000000000000000000,"step":"0002","unit":"un","updateUser":"wang","updatedAt":1653418814887}
+						],
+						*/
+			}
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return jo;
 	}
 }

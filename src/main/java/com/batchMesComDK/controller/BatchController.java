@@ -60,21 +60,39 @@ public class BatchController {
 	
 	@RequestMapping(value="/addDataToDB")
 	@ResponseBody
-	public Map<String, Object> addDataToDB(String tabName) {
+	public Map<String, Object> addDataToDB(String tabName,String resultType) {
 
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 
 		try {
+			boolean success=false;
 			int count=0;
 			if("FeedIssusBody".equals(tabName)) {
 				JSONObject jo = APIUtil.getTabTestItem(tabName);
 				FeedIssusBody fib=(FeedIssusBody)jo.get("FeedIssusBody");
 				count=feedIssusBodyService.add(fib);
+				if(count>0)
+					success=true;
 			}
 			else if("FormulaDto".equals(tabName)) {
-				JSONObject jo = APIUtil.getTabTestItem(tabName);
-				FormulaDto fd=(FormulaDto)jo.get("FormulaDto");
-				count=formulaDtoService.add(fd);
+				JSONObject jo =null;
+				if(APIUtil.ITEM_RESULT.equals(resultType)) {
+					jo = APIUtil.getTabTestItem(tabName);
+					FormulaDto fd=(FormulaDto)jo.get("FormulaDto");
+					count=formulaDtoService.add(fd);
+					if(count>0)
+						success=true;
+				}
+				else if(APIUtil.LIST_RESULT.equals(resultType)) {
+					jo =APIUtil.getTabTestList(tabName);
+					List<FormulaDto> fdList=(List<FormulaDto>)jo.get("FormulaDtoList");
+					int fdListSize = fdList.size();
+					for(int i=0;i<fdListSize;i++) {
+						count+=formulaDtoService.add(fdList.get(i));
+					}
+					if(count==fdListSize)
+						success=true;
+				}
 			}
 			else if("FormulaMaterialDto".equals(tabName)) {
 				JSONObject jo = APIUtil.getTabTestItem(tabName);
@@ -97,7 +115,7 @@ public class BatchController {
 				count=workOrderBodyService.add(wob);
 			}
 			
-			if(count>0) {
+			if(success) {
 				jsonMap.put("message", "ok");
 				jsonMap.put("info", "添加数据成功！");
 			}

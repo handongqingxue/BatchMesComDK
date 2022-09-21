@@ -33,9 +33,9 @@ function getFormulaCodeMaterialDosage(){
 }
 
 function addDataToDB(){
-	var tabName="WorkOrderBody";
+	var tabName="FormulaDto";
 	$.post(path+"batch/addDataToDB",
-		{tabName:tabName},
+		{tabName:tabName,resultType:"list"},
 		function(data){
 			alert(data.info);
 		}
