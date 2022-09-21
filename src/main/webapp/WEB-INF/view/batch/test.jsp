@@ -33,7 +33,7 @@ function getFormulaCodeMaterialDosage(){
 }
 
 function addDataToDB(){
-	var tabName="FormulaMaterialDto";
+	var tabName="FormulaDto";
 	$.post(path+"batch/addDataToDB",
 		{tabName:tabName,resultType:"list"},
 		function(data){
