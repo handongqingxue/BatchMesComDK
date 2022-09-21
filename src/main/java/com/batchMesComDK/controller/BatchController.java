@@ -95,9 +95,24 @@ public class BatchController {
 				}
 			}
 			else if("FormulaMaterialDto".equals(tabName)) {
-				JSONObject jo = APIUtil.getTabTestItem(tabName);
-				FormulaMaterialDto fmd=(FormulaMaterialDto)jo.get("FormulaMaterialDto");
-				count=formulaMaterialDtoService.add(fmd);
+				JSONObject jo = null;
+				if(APIUtil.ITEM_RESULT.equals(resultType)) {
+					jo = APIUtil.getTabTestItem(tabName);
+					FormulaMaterialDto fmd=(FormulaMaterialDto)jo.get("FormulaMaterialDto");
+					count=formulaMaterialDtoService.add(fmd);
+					if(count>0)
+						success=true;
+				}
+				else if(APIUtil.LIST_RESULT.equals(resultType)) {
+					jo =APIUtil.getTabTestList(tabName);
+					List<FormulaMaterialDto> fmdList=(List<FormulaMaterialDto>)jo.get("FormulaMaterialDtoList");
+					int fmdListSize = fmdList.size();
+					for(int i=0;i<fmdListSize;i++) {
+						count+=formulaMaterialDtoService.add(fmdList.get(i));
+					}
+					if(count==fmdListSize)
+						success=true;
+				}
 			}
 			else if("OrderMateriaBody".equals(tabName)) {
 				JSONObject jo = APIUtil.getTabTestItem(tabName);
