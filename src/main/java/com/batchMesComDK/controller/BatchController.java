@@ -1,5 +1,6 @@
 package com.batchMesComDK.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import com.batchMesComDK.service.*;
 import com.batchMesComDK.util.APIUtil;
 import com.batchMesComDK.util.ActiveXTest;
 import com.batchMesComDK.util.JsonUtil;
+import com.batchMesComDK.util.PinyinUtil;
 import com.batchMesComDK.util.PlanResult;
 import com.thingworx.sdk.batch.BatchComBridge;
 
@@ -40,6 +42,8 @@ public class BatchController {
 	private PasteWorkingNumBodyService pasteWorkingNumBodyService;
 	@Autowired
 	private WorkOrderBodyService workOrderBodyService;
+	@Autowired
+	private TranslateService translateService;
 	public static final String MODULE_NAME="batch";
 	
 	@RequestMapping(value="/test")
@@ -76,10 +80,37 @@ public class BatchController {
 			}
 			else if("FormulaDto".equals(tabName)) {
 				JSONObject jo =null;
+				List<Translate> translateList=new ArrayList<Translate>();
 				if(APIUtil.ITEM_RESULT.equals(resultType)) {
 					jo = APIUtil.getTabTestItem(tabName);
 					FormulaDto fd=(FormulaDto)jo.get("FormulaDto");
+					
+					String nameChinese = fd.getName();
+					String namePinYin = PinyinUtil.getPinYinString(nameChinese);
+					fd.setName(namePinYin);
+					
+					String productNameChinese = fd.getProductName();
+					String productNamePinYin = PinyinUtil.getPinYinString(productNameChinese);
+					fd.setProductName(productNamePinYin);
+					
 					count=formulaDtoService.add(fd);
+					
+					Translate translate=new Translate();
+					translate.setTabName(tabName);
+					translate.setColName("name");
+					translate.setChinese(nameChinese);
+					translate.setPinYin(namePinYin);
+					translate.setForeignKey(fd.getId());
+					translateList.add(translate);
+					
+					translate=new Translate();
+					translate.setTabName(tabName);
+					translate.setColName("productName");
+					translate.setChinese(productNameChinese);
+					translate.setPinYin(productNamePinYin);
+					translate.setForeignKey(fd.getId());
+					translateList.add(translate);
+					
 					if(count>0)
 						success=true;
 				}
@@ -88,10 +119,41 @@ public class BatchController {
 					List<FormulaDto> fdList=(List<FormulaDto>)jo.get("FormulaDtoList");
 					int fdListSize = fdList.size();
 					for(int i=0;i<fdListSize;i++) {
-						count+=formulaDtoService.add(fdList.get(i));
+						FormulaDto fd=fdList.get(i);
+						
+						String nameChinese = fd.getName();
+						String namePinYin = PinyinUtil.getPinYinString(nameChinese);
+						fd.setName(namePinYin);
+						
+						String productNameChinese = fd.getProductName();
+						String productNamePinYin = PinyinUtil.getPinYinString(productNameChinese);
+						fd.setProductName(productNamePinYin);
+						
+						count+=formulaDtoService.add(fd);
+						
+						Translate translate=new Translate();
+						translate.setTabName(tabName);
+						translate.setColName("name");
+						translate.setChinese(nameChinese);
+						translate.setPinYin(namePinYin);
+						translate.setForeignKey(fd.getId());
+						translateList.add(translate);
+						
+						translate=new Translate();
+						translate.setTabName(tabName);
+						translate.setColName("productName");
+						translate.setChinese(productNameChinese);
+						translate.setPinYin(productNamePinYin);
+						translate.setForeignKey(fd.getId());
+						translateList.add(translate);
 					}
 					if(count==fdListSize)
 						success=true;
+				}
+				
+				for (int i = 0; i < translateList.size(); i++) {
+					Translate translate = translateList.get(i);
+					translateService.add(translate);
 				}
 			}
 			else if("FormulaMaterialDto".equals(tabName)) {
