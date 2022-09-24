@@ -1,6 +1,8 @@
 package com.batchMesComDK.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +47,7 @@ public class BatchController {
 	@Autowired
 	private TranslateService translateService;
 	public static final String MODULE_NAME="batch";
+	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 	@RequestMapping(value="/test")
 	public String goTest(HttpServletRequest request) {
@@ -223,7 +226,7 @@ public class BatchController {
 			result = BatchComBridge.getInstance().callGetItem(item);
 			System.out.println("result==="+result);
 			plan.setStatus(1);
-			plan.setMsg("成功");
+			plan.setMsg("Success");
 			plan.setData(result);
 			json=JsonUtil.getJsonFromObject(plan);
 		} catch (Exception e) {
@@ -241,17 +244,34 @@ public class BatchController {
 		String json=null;
 		String result=null;
 		try {
-			System.out.println("command==="+command);
+			System.out.println("------------------------------------------------------------------------------------------");
+			System.out.println("DateTime==="+sdf.format(new Date()));
+			System.out.println("Command==="+command);
+			System.out.println("------------------------------------------------------------------------------------------");
 			result = BatchComBridge.getInstance().callExecute(command);
-			System.out.println("result==="+result);
+			System.out.println("Result==="+result);
+			System.out.println(" ");
 			plan.setStatus(1);
-			plan.setMsg("成功");
+			plan.setMsg("Success");
 			plan.setData(result);
 			json=JsonUtil.getJsonFromObject(plan);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return json;
+	}
+
+	@RequestMapping(value="/create",produces="application/json;charset=utf-8")
+	@ResponseBody
+	public String create(String parms) {
+		// TODO Auto-generated method stub
+		StringBuilder sb=new StringBuilder();
+		sb.append("[BATCH(Item,batchsvr1/ADMINISTRATOR,CLS_FRENCHVANILLA.BPC,BATCH_ID,100,FRENCHVANILLA PREMIUM -CLASSBASED,FREEZER,4,MIXER,2,PARMS,");
+		sb.append(parms);
+		sb.append(")]");
+		String json=execute(sb.toString());
+		//"CREAM_AMOUNT,2001,EGG_AMOUNT,200,FLAVOR_AMOUNT,50,MILK_AMOUNT,1999,SUGAR_AMOUNT, 750"
 		return json;
 	}
 

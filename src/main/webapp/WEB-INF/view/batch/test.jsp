@@ -14,9 +14,19 @@
 <script type="text/javascript">
 var path='<%=basePath %>';
 $(function(){
-	addDataToDB();
+	//addDataToDB();
 	//getFormulaCodeMaterialDosage();
 });
+
+function createBatch(){
+	var parms=$("#batch_parms").val();
+	$.post("http://192.168.1.100:8080/BatchMesComDK/batch/create",
+		{parms:parms},
+		function(data){
+			alert(data);
+		}
+	,"json");
+}
 
 function getFormulaCodeMaterialDosage(){
 	$.post(path+"batch/getFormulaCodeMaterialDosage",
@@ -762,6 +772,11 @@ function splitUnitTagData(data){
 		<option value="[RECIPELIST(Item,batchsvr1\ADMINISTRATOR)]">RecipeList</option>
 	</select>
 	<input type="button" value="send" onclick="execute()"/>
+</div>
+<div>
+mes端发送给java端的数据:
+<input type="text" size="50" id="batch_parms"/>
+	<input type="button" value="send" onclick="createBatch()"/>
 </div>
 </body>
 </html>
