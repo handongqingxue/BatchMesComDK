@@ -1,5 +1,7 @@
 package com.batchMesComDK.entity;
 
+import java.util.List;
+
 public class WorkOrderBody {
 
 	private String id;
@@ -65,4 +67,11 @@ public class WorkOrderBody {
 	private String mfgVersion;
 	private String formulaId;
 	private Integer state;
+	private List<OrderMateriaBody> orderMaterialList;
+	public List<OrderMateriaBody> getOrderMaterialList() {
+		return orderMaterialList;
+	}
+	public void setOrderMaterialList(List<OrderMateriaBody> orderMaterialList) {
+		this.orderMaterialList = orderMaterialList;
+	}
 }

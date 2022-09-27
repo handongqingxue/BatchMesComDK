@@ -20,7 +20,7 @@ $(function(){
 
 function createBatch(){
 	var parms=$("#batch_parms").val();
-	$.post("http://192.168.1.100:8080/BatchMesComDK/batch/create",
+	$.post("http://10.0.3.150:8080/BatchMesComDK/batch/create",
 		{parms:parms},
 		function(data){
 			alert(data);

@@ -13,13 +13,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.batchMesComDK.entity.*;
 import com.batchMesComDK.service.*;
 import com.batchMesComDK.util.APIUtil;
 import com.batchMesComDK.util.ActiveXTest;
+import com.batchMesComDK.util.DesUtil;
 import com.batchMesComDK.util.JsonUtil;
 import com.batchMesComDK.util.PinyinUtil;
 import com.batchMesComDK.util.PlanResult;
@@ -197,11 +200,11 @@ public class BatchController {
 			
 			if(success) {
 				jsonMap.put("message", "ok");
-				jsonMap.put("info", "Ìí¼ÓÊı¾İ³É¹¦£¡");
+				jsonMap.put("info", "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ³É¹ï¿½ï¿½ï¿½");
 			}
 			else {
 				jsonMap.put("message", "no");
-				jsonMap.put("info", "Ìí¼ÓÊı¾İÊ§°Ü£¡");
+				jsonMap.put("info", "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½Ü£ï¿½");
 			}
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
@@ -217,7 +220,7 @@ public class BatchController {
 	@RequestMapping(value="/getItem",produces="application/json;charset=utf-8")
 	@ResponseBody
 	public String getItem(String item) {
-		//TODO Õë¶Ô·ÖÀàµÄ¶¯Ì¬½øĞĞÊµÊ±µ÷Õû¸üĞÂ
+		//TODO ï¿½ï¿½Ô·ï¿½ï¿½ï¿½Ä¶ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½ÊµÊ±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		PlanResult plan=new PlanResult();
 		String json=null;
 		String result=null;
@@ -239,7 +242,7 @@ public class BatchController {
 	@RequestMapping(value="/execute",produces="application/json;charset=utf-8")
 	@ResponseBody
 	public String execute(String command) {
-		//TODO Õë¶Ô·ÖÀàµÄ¶¯Ì¬½øĞĞÊµÊ±µ÷Õû¸üĞÂ
+		//TODO ï¿½ï¿½Ô·ï¿½ï¿½ï¿½Ä¶ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½ÊµÊ±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		PlanResult plan=new PlanResult();
 		String json=null;
 		String result=null;
@@ -289,8 +292,52 @@ public class BatchController {
 		}
 		else {
 			jsonMap.put("message", "no");
-			jsonMap.put("info", "ÔİÎŞĞÅÏ¢£¡");
+			jsonMap.put("info", "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½");
 		}
 		return jsonMap;
+	}
+	
+	/**
+	 * é…æ–¹æ•°æ®
+	 * @param bodyEnc
+	 */
+	@RequestMapping(value="/formulaData", method = RequestMethod.POST)
+	@ResponseBody
+	public void formulaData(@RequestBody String bodyEnc) {
+		System.out.println("bodyEnc==="+bodyEnc);
+		String bodyDec = DesUtil.decrypt(bodyEnc,DesUtil.SECRET_KEY);
+		List<FormulaDto> fdList=new ArrayList<FormulaDto>();
+		net.sf.json.JSONArray fdJA = net.sf.json.JSONArray.fromObject(bodyDec);
+		for (int i = 0; i < fdJA.size(); i++) {
+			net.sf.json.JSONObject fdJO = (net.sf.json.JSONObject)fdJA.get(i);
+			FormulaDto fd=(FormulaDto)net.sf.json.JSONObject.toBean(fdJO, FormulaDto.class);
+			System.out.println("id==="+fd.getId());
+			fdList.add(fd);
+		}
+		formulaDtoService.add(fdList.get(0));
+	}
+
+	/**
+	 * å·¥å•ä¸‹è¾¾
+	 * @param bodyEnc
+	 */
+	@RequestMapping(value="/workOrderDown", method = RequestMethod.POST)
+	@ResponseBody
+	public void workOrderDown(@RequestBody String bodyEnc) {
+		System.out.println("bodyEnc==="+bodyEnc);
+		String bodyDec = DesUtil.decrypt(bodyEnc,DesUtil.SECRET_KEY);
+		List<WorkOrderBody> wobList=new ArrayList<WorkOrderBody>();
+		net.sf.json.JSONArray wobJA = net.sf.json.JSONArray.fromObject(bodyDec);
+		for (int i = 0; i < wobJA.size(); i++) {
+			net.sf.json.JSONObject wobJO = (net.sf.json.JSONObject)wobJA.get(i);
+			WorkOrderBody wob=(WorkOrderBody)net.sf.json.JSONObject.toBean(wobJO, WorkOrderBody.class);
+			System.out.println("id==="+wob.getId());
+			wobList.add(wob);
+		}
+		workOrderBodyService.add(wobList.get(0));
+	}
+	
+	public void workOrderCannel() {
+		
 	}
 }
