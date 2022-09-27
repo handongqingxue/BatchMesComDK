@@ -49,6 +49,8 @@ public class BatchController {
 	private WorkOrderBodyService workOrderBodyService;
 	@Autowired
 	private TranslateService translateService;
+	@Autowired
+	private MaterialCheckOverIssusBodyService materialCheckOverIssusBodyService;
 	public static final String MODULE_NAME="batch";
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
@@ -448,7 +450,6 @@ public class BatchController {
 		return plan;
 	}
 	
-	//MaterialCheckOverIssus
 	@RequestMapping(value="/materialCheckOverIssusDown", method = RequestMethod.POST)
 	@ResponseBody
 	public PlanResult materialCheckOverIssusDown(@RequestBody String bodyEnc) {
@@ -457,15 +458,9 @@ public class BatchController {
 		
 		System.out.println("bodyEnc==="+bodyEnc);
 		String bodyDec = DesUtil.decrypt(bodyEnc,DesUtil.SECRET_KEY);
-		List<PasteWorkingNumBody> pwnbList=new ArrayList<PasteWorkingNumBody>();
-		net.sf.json.JSONArray pwnbJA = net.sf.json.JSONArray.fromObject(bodyDec);
-		for (int i = 0; i < pwnbJA.size(); i++) {
-			net.sf.json.JSONObject pwnbJO = (net.sf.json.JSONObject)pwnbJA.get(i);
-			PasteWorkingNumBody pwnb=(PasteWorkingNumBody)net.sf.json.JSONObject.toBean(pwnbJO, PasteWorkingNumBody.class);
-			System.out.println("id==="+pwnb.getId());
-			pwnbList.add(pwnb);
-		}
-		int c=pasteWorkingNumBodyService.add(pwnbList.get(0));
+		net.sf.json.JSONObject mcoibJO = net.sf.json.JSONObject.fromObject(bodyDec);
+		MaterialCheckOverIssusBody mcoib=(MaterialCheckOverIssusBody)net.sf.json.JSONObject.toBean(mcoibJO, MaterialCheckOverIssusBody.class);
+		int c=materialCheckOverIssusBodyService.add(mcoib);
 		if(c>0) {
 			plan.setSuccess(true);
 			plan.setStatus(1);
