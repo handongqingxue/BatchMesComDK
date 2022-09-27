@@ -205,7 +205,7 @@ public class APIUtil {
 				WorkOrderBody wob=new WorkOrderBody();
 				wob.setId("123456");
 				wob.setWorkOrder("aaaaaaaaaaaaa");
-				wob.setProductcode("fdfgffgfg");
+				wob.setProductCode("fdfgffgfg");
 				wob.setProductName(PinyinUtil.getPinYinString("це"));
 				wob.setTotalOutput("ccc");
 				wob.setMfgCode("ddd");

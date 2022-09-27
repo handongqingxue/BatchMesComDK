@@ -12,8 +12,8 @@
 			<if test="workOrder!=null">
 				workOrder,
 			</if>
-			<if test="productcode!=null">
-				productcode,
+			<if test="productCode!=null">
+				productCode,
 			</if>
 			<if test="productName!=null">
 				productName,
@@ -39,8 +39,8 @@
 			<if test="workOrder!=null">
 				#{workOrder},
 			</if>
-			<if test="productcode!=null">
-				#{productcode},
+			<if test="productCode!=null">
+				#{productCode},
 			</if>
 			<if test="productName!=null">
 				#{productName},

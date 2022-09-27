@@ -1,5 +1,7 @@
 package com.batchMesComDK.entity;
 
+import java.util.List;
+
 public class FormulaDto {
 
 	private String id;
@@ -282,4 +284,11 @@ public class FormulaDto {
 	private String cancelAt;
 	private String cancelUser;
 	private String zoneCode;
+	private List<FormulaMaterialDto> formulaMaterialList;
+	public List<FormulaMaterialDto> getFormulaMaterialList() {
+		return formulaMaterialList;
+	}
+	public void setFormulaMaterialList(List<FormulaMaterialDto> formulaMaterialList) {
+		this.formulaMaterialList = formulaMaterialList;
+	}
 }

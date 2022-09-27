@@ -17,11 +17,11 @@ public class WorkOrderBody {
 	public void setWorkOrder(String workOrder) {
 		this.workOrder = workOrder;
 	}
-	public String getProductcode() {
-		return productcode;
+	public String getProductCode() {
+		return productCode;
 	}
-	public void setProductcode(String productcode) {
-		this.productcode = productcode;
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
 	}
 	public String getProductName() {
 		return productName;
@@ -60,7 +60,7 @@ public class WorkOrderBody {
 		this.state = state;
 	}
 	private String workOrder;
-	private String productcode;
+	private String productCode;
 	private String productName;
 	private String totalOutput;
 	private String mfgCode;

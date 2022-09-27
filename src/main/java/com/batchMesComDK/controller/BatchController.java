@@ -298,12 +298,15 @@ public class BatchController {
 	}
 	
 	/**
-	 * 配方数据
+	 * 4.3 配方数据推送
 	 * @param bodyEnc
 	 */
-	@RequestMapping(value="/formulaData", method = RequestMethod.POST)
+	@RequestMapping(value="/formulaPush", method = RequestMethod.POST)
 	@ResponseBody
-	public void formulaData(@RequestBody String bodyEnc) {
+	public PlanResult formulaPush(@RequestBody String bodyEnc) {
+		
+		PlanResult plan=new PlanResult();
+		
 		System.out.println("bodyEnc==="+bodyEnc);
 		String bodyDec = DesUtil.decrypt(bodyEnc,DesUtil.SECRET_KEY);
 		List<FormulaDto> fdList=new ArrayList<FormulaDto>();
@@ -314,16 +317,30 @@ public class BatchController {
 			System.out.println("id==="+fd.getId());
 			fdList.add(fd);
 		}
-		formulaDtoService.add(fdList.get(0));
+		int c=formulaDtoService.add(fdList.get(0));
+		if(c>0) {
+			plan.setSuccess(true);
+			plan.setStatus(1);
+			plan.setMsg("成功");
+		}
+		else {
+			plan.setSuccess(false);
+			plan.setStatus(0);
+			plan.setMsg("失败");
+		}
+		return plan;
 	}
 
 	/**
-	 * 工单下达
+	 * 4.4 工单下达
 	 * @param bodyEnc
 	 */
 	@RequestMapping(value="/workOrderDown", method = RequestMethod.POST)
 	@ResponseBody
-	public void workOrderDown(@RequestBody String bodyEnc) {
+	public PlanResult workOrderDown(@RequestBody String bodyEnc) {
+
+		PlanResult plan=new PlanResult();
+		
 		System.out.println("bodyEnc==="+bodyEnc);
 		String bodyDec = DesUtil.decrypt(bodyEnc,DesUtil.SECRET_KEY);
 		List<WorkOrderBody> wobList=new ArrayList<WorkOrderBody>();
@@ -334,10 +351,131 @@ public class BatchController {
 			System.out.println("id==="+wob.getId());
 			wobList.add(wob);
 		}
-		workOrderBodyService.add(wobList.get(0));
+		int c=workOrderBodyService.add(wobList.get(0));
+		if(c>0) {
+			plan.setSuccess(true);
+			plan.setStatus(1);
+			plan.setMsg("成功");
+		}
+		else {
+			plan.setSuccess(false);
+			plan.setStatus(0);
+			plan.setMsg("失败");
+		}
+		return plan;
+	}
+
+	/**
+	 * 4.5 工单取消
+	 * @param bodyEnc
+	 */
+	@RequestMapping(value="/workOrderCannel", method = RequestMethod.POST)
+	@ResponseBody
+	public PlanResult workOrderCannel(@RequestBody String bodyEnc) {
+
+		PlanResult plan=new PlanResult();
+		
+		System.out.println("bodyEnc==="+bodyEnc);
+		String bodyDec = DesUtil.decrypt(bodyEnc,DesUtil.SECRET_KEY);
+		
+		plan.setSuccess(true);
+		plan.setStatus(1);
+		plan.setMsg("成功");
+		return plan;
 	}
 	
-	public void workOrderCannel() {
+	/**
+	 * 4.6 投料信息下发
+	 * @param bodyEnc
+	 * @return
+	 */
+	@RequestMapping(value="/feedIssusDown", method = RequestMethod.POST)
+	@ResponseBody
+	public PlanResult feedIssusDown(@RequestBody String bodyEnc) {
+
+		PlanResult plan=new PlanResult();
+
+		System.out.println("bodyEnc==="+bodyEnc);
+		String bodyDec = DesUtil.decrypt(bodyEnc,DesUtil.SECRET_KEY);
+		net.sf.json.JSONObject fibJO = net.sf.json.JSONObject.fromObject(bodyDec);
+		FeedIssusBody fib=(FeedIssusBody)net.sf.json.JSONObject.toBean(fibJO, FeedIssusBody.class);
+		int c=feedIssusBodyService.add(fib);
+		if(c>0) {
+			plan.setSuccess(true);
+			plan.setStatus(1);
+			plan.setMsg("成功");
+		}
+		else {
+			plan.setSuccess(false);
+			plan.setStatus(0);
+			plan.setMsg("失败");
+		}
+		return plan;
+	}
+	
+	/**
+	 * 4.7 制膏编号下发
+	 * @param bodyEnc
+	 * @return
+	 */
+	@RequestMapping(value="/pasteWorkingNumDown", method = RequestMethod.POST)
+	@ResponseBody
+	public PlanResult pasteWorkingNumDown(@RequestBody String bodyEnc) {
+
+		PlanResult plan=new PlanResult();
 		
+		System.out.println("bodyEnc==="+bodyEnc);
+		String bodyDec = DesUtil.decrypt(bodyEnc,DesUtil.SECRET_KEY);
+		List<PasteWorkingNumBody> pwnbList=new ArrayList<PasteWorkingNumBody>();
+		net.sf.json.JSONArray pwnbJA = net.sf.json.JSONArray.fromObject(bodyDec);
+		for (int i = 0; i < pwnbJA.size(); i++) {
+			net.sf.json.JSONObject pwnbJO = (net.sf.json.JSONObject)pwnbJA.get(i);
+			PasteWorkingNumBody pwnb=(PasteWorkingNumBody)net.sf.json.JSONObject.toBean(pwnbJO, PasteWorkingNumBody.class);
+			System.out.println("id==="+pwnb.getId());
+			pwnbList.add(pwnb);
+		}
+		int c=pasteWorkingNumBodyService.add(pwnbList.get(0));
+		if(c>0) {
+			plan.setSuccess(true);
+			plan.setStatus(1);
+			plan.setMsg("成功");
+		}
+		else {
+			plan.setSuccess(false);
+			plan.setStatus(0);
+			plan.setMsg("失败");
+		}
+		return plan;
+	}
+	
+	//MaterialCheckOverIssus
+	@RequestMapping(value="/materialCheckOverIssusDown", method = RequestMethod.POST)
+	@ResponseBody
+	public PlanResult materialCheckOverIssusDown(@RequestBody String bodyEnc) {
+
+		PlanResult plan=new PlanResult();
+		
+		System.out.println("bodyEnc==="+bodyEnc);
+		String bodyDec = DesUtil.decrypt(bodyEnc,DesUtil.SECRET_KEY);
+		List<PasteWorkingNumBody> pwnbList=new ArrayList<PasteWorkingNumBody>();
+		net.sf.json.JSONArray pwnbJA = net.sf.json.JSONArray.fromObject(bodyDec);
+		for (int i = 0; i < pwnbJA.size(); i++) {
+			net.sf.json.JSONObject pwnbJO = (net.sf.json.JSONObject)pwnbJA.get(i);
+			PasteWorkingNumBody pwnb=(PasteWorkingNumBody)net.sf.json.JSONObject.toBean(pwnbJO, PasteWorkingNumBody.class);
+			System.out.println("id==="+pwnb.getId());
+			pwnbList.add(pwnb);
+		}
+		int c=pasteWorkingNumBodyService.add(pwnbList.get(0));
+		if(c>0) {
+			plan.setSuccess(true);
+			plan.setStatus(1);
+			plan.setMsg("成功");
+		}
+		else {
+			plan.setSuccess(false);
+			plan.setStatus(0);
+			plan.setMsg("失败");
+		}
+		return plan;
 	}
 }

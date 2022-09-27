@@ -9,7 +9,8 @@ public class PlanResult {
 	private static final long serialVersionUID = 1L;
 	//定义jackson对象  
     private static final ObjectMapper MAPPER = new ObjectMapper();  
-    //响应业务状态 
+    private Boolean success; 
+	//响应业务状态 
     private Integer status;  
     //相应消息  
     private String msg;  
@@ -29,6 +30,14 @@ public class PlanResult {
 	public static ObjectMapper getMAPPER() {  
         return MAPPER;  
     }
+	 
+    public Boolean getSuccess() {
+		return success;
+	}
+
+	public void setSuccess(Boolean success) {
+		this.success = success;
+	}
 
 	public Integer getStatus() {
 		return status;
