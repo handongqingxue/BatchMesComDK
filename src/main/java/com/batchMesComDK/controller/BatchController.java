@@ -474,6 +474,7 @@ public class BatchController {
 		return plan;
 	}
 	
-	//http://1.1.130.171:19888/mesPlatform/api/remote/batch/changeOrderStatus 工单状态变更
-	//http://1.1.130.171:19888/mesPlatform/api/remote/batch/batchProcessParameters 工艺参数采集
+	//http://1.1.4.14:19888/mesPlatform/api/remote/batch/changeOrderStatus 工单状态变更
+	//http://1.1.4.14:19888/mesPlatform/api/remote/batch/batchProcessParameters 工艺参数采集
+	//http://1.1.4.14:19888/mesPlatform/api/remote/batch/devicationRecord 偏差数据采集
 }

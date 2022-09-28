@@ -156,16 +156,9 @@ public class DesUtil {
 
     public static void main(String[] args) {
         StringBuilder sb=new StringBuilder();
-        sb.append("[{");
-        sb.append("\"id\":\"1560473134986047489\",\"workOrder\":\"WO166088076219277\",\"materialCode\":\"2010001\",");
-        sb.append("\"feedingTime\":\"2022-07-14 12:12:12,2022-07-14 13:13:13\",");
-        sb.append("\"suctionTime\":\"2022-07-14 14:12:12,2022-07-14 14:13:13\",");
-        sb.append("\"feedingAmount\":\"20\",\"jacketStartTemperature\":\"90\",\"degassingVacuum\":\"120\",");
-        sb.append("\"pasteoutTemperature\":\"50\",\"mfgParameter\":\"30\",\"remark\":\"暂无备注\"");
-        sb.append("}]");
-        sb.append("");
-        sb.append("");
-        sb.append("");
+        sb.append("{\"id\":\"eb87b7c00a0920460267530ecedc78c6\",\"deviationTop\":\"120\",\"deviationBottom\":\"80\",");
+        sb.append("\"deviationType \":\"W\",\"actualNum\":\"130\",\"occurTime\":\"2022-8-10 12:12:12\",");
+        sb.append("\"workOrder\":\"w10023564\",\"productName\":\"冷酸灵美白\",\"productCode\":\"10023\",\"remark\":\"\"}");
         sb.append("");
         sb.append("");
         String str = sb.toString();
@@ -216,6 +209,16 @@ public class DesUtil {
          工单状态变更
          sb.append("[{\"id\":\"1560473134986047489\",\"workOrder\":\"WO166088076219277\",\"orderExecuteStatus\":\"CLOSE\",\"updateTime\":\"2022-1-13 12:14:13\"");
          sb.append("}]");
+         
+         工艺参数采集
+         sb.append("[{");
+         sb.append("\"id\":\"1560473134986047488\",\"workOrder\":\"WO166088076219278\",\"materialCode\":\"2010001\",");
+         sb.append("\"feedingTime\":\"2022-07-14 12:12:12,2022-07-14 13:13:13\",");
+         sb.append("\"suctionTime\":\"2022-07-14 14:12:12,2022-07-14 14:13:13\",");
+         sb.append("\"feedingAmount\":\"20\",\"jacketStartTemperature\":\"90\",\"degassingVacuum\":\"120\",");
+         sb.append("\"pasteoutTemperature\":\"50\",\"mfgParameter\":\"30\",\"remark\":\"暂无备注\"");
+         sb.append("}]");
+         
          * */
         //System.out.println(decrypt(encrypt,SECRET_KEY));
     }
