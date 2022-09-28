@@ -155,8 +155,22 @@ public class DesUtil {
 
 
     public static void main(String[] args) {
-        String str = "我都不惜说你了。。。。";
+        StringBuilder sb=new StringBuilder();
+        sb.append("[{");
+        sb.append("\"id\":\"1560473134986047489\",\"workOrder\":\"WO166088076219277\",\"materialCode\":\"2010001\",");
+        sb.append("\"feedingTime\":\"2022-07-14 12:12:12,2022-07-14 13:13:13\",");
+        sb.append("\"suctionTime\":\"2022-07-14 14:12:12,2022-07-14 14:13:13\",");
+        sb.append("\"feedingAmount\":\"20\",\"jacketStartTemperature\":\"90\",\"degassingVacuum\":\"120\",");
+        sb.append("\"pasteoutTemperature\":\"50\",\"mfgParameter\":\"30\",\"remark\":\"暂无备注\"");
+        sb.append("}]");
+        sb.append("");
+        sb.append("");
+        sb.append("");
+        sb.append("");
+        sb.append("");
+        String str = sb.toString();
         String encrypt = encrypt(str,SECRET_KEY);
+        System.out.println("encryptStr===="+encrypt);
     	/*
     	 * 对象格式数据
     	 1.执行配方推送
@@ -198,8 +212,12 @@ public class DesUtil {
          6.物料齐套状态下发
     	 String encrypt = "07BE681B9CA7DEF15C350A9E757CF866A667A4A49A5FA802407E18B7B111B4B024398375C39592F0CABFD0DDAA529B0E030188237403FA631ACD515EAA9FD8647E8B75204FE19ADAF1750D090B9DF50C7D7C86A0BB47802C0E68C4C863B66872DFED318E7B2038D8DD9F3863639ACFC3";
          {"checkOverTime":"2022-8-22 12:14:15","id":"1563722035133255681","status":"1","workOrder":"WO166165536038372"}
+         
+         工单状态变更
+         sb.append("[{\"id\":\"1560473134986047489\",\"workOrder\":\"WO166088076219277\",\"orderExecuteStatus\":\"CLOSE\",\"updateTime\":\"2022-1-13 12:14:13\"");
+         sb.append("}]");
          * */
-        System.out.println(decrypt(encrypt,SECRET_KEY));
+        //System.out.println(decrypt(encrypt,SECRET_KEY));
     }
 
 }
