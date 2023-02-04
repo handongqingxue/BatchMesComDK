@@ -6,14 +6,38 @@ public class WorkOrder {
 	 * 物料齐套完毕
 	 */
 	public static final int WLQTWB=1;
-	2.参数确认完毕（具备创建BATCH条件）
-	3.BATCH创建完毕（待执行）
-	4.BATCH启动
-	5.BATCH运行
-	6.BATCH取消
-	7.BATCH暂停
-	8.BATCH意外终止
-	0.BATCH结束
+	/**
+	 * 参数确认完毕（具备创建BATCH条件）
+	 */
+	public static final int CSQRWB=2;
+	/**
+	 * BATCH创建完毕（待执行）
+	 */
+	public static final int BCJWB=3;
+	/**
+	 * BATCH启动
+	 */
+	public static final int BQD=4;
+	/**
+	 * BATCH运行
+	 */
+	public static final int BYX=5;
+	/**
+	 * BATCH取消
+	 */
+	public static final int BQX=6;
+	/**
+	 * BATCH暂停
+	 */
+	public static final int BZT=7;
+	/**
+	 * BATCH意外终止
+	 */
+	public static final int BYWZZ=8;
+	/**
+	 * BATCH结束
+	 */
+	public static final int BJS=0;
 
 	private Integer ID;
 	public Integer getID() {
