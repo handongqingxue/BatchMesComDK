@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.batchMesComDK.dao.RecipePMMapper">
+	<insert id="add" parameterType="com.batchMesComDK.entity.RecipePM">
+		insert into RecipePM
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="ID!=null">
+				ID,
+			</if>
+			<if test="PMCode!=null">
+				PMCode,
+			</if>
+			<if test="PMName!=null">
+				PMName,
+			</if>
+			<if test="Lot!=null">
+				Lot,
+			</if>
+			<if test="Dosage!=null">
+				Dosage,
+			</if>
+			<if test="Unit!=null">
+				Unit,
+			</if>
+			<if test="HLimit!=null">
+				HLimit,
+			</if>
+			<if test="LLimit!=null">
+				LLimit,
+			</if>
+			<if test="PMType!=null">
+				PMType,
+			</if>
+			<if test="WorkOrderID!=null">
+				WorkOrderID,
+			</if>
+			<if test="CName!=null">
+				CName,
+			</if>
+		</trim>
+		values
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="ID!=null">
+				#{ID},
+			</if>
+			<if test="PMCode!=null">
+				#{PMCode},
+			</if>
+			<if test="PMName!=null">
+				#{PMName},
+			</if>
+			<if test="Lot!=null">
+				#{Lot},
+			</if>
+			<if test="Dosage!=null">
+				#{Dosage},
+			</if>
+			<if test="HLimit!=null">
+				#{HLimit},
+			</if>
+			<if test="LLimit!=null">
+				#{LLimit},
+			</if>
+			<if test="PMType!=null">
+				#{PMType},
+			</if>
+			<if test="WorkOrderID!=null">
+				#{WorkOrderID},
+			</if>
+			<if test="CName!=null">
+				#{CName},
+			</if>
+		</trim>
+	</insert>
+</mapper>

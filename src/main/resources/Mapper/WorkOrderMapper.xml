@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.batchMesComDK.dao.WorkOrderMapper">
+	<insert id="add" parameterType="com.batchMesComDK.entity.WorkOrder">
+		insert into WorkOrder
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="ID!=null">
+				ID,
+			</if>
+			<if test="WorkOrderID!=null">
+				WorkOrderID,
+			</if>
+			<if test="ProductCode!=null">
+				ProductCode,
+			</if>
+			<if test="ProductName!=null">
+				ProductName,
+			</if>
+			<if test="TotalOutput!=null">
+				TotalOutput,
+			</if>
+			<if test="MfgCode!=null">
+				MfgCode,
+			</if>
+			<if test="MfgVersion!=null">
+				MfgVersion,
+			</if>
+			<if test="RecipeID!=null">
+				RecipeID,
+			</if>
+			<if test="FormulaId!=null">
+				FormulaId,
+			</if>
+			<if test="State!=null">
+				State,
+			</if>
+			<if test="CreateTime!=null">
+				CreateTime,
+			</if>
+			<if test="UnitID!=null">
+				UnitID,
+			</if>
+		</trim>
+		values
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="ID!=null">
+				#{ID},
+			</if>
+			<if test="WorkOrderID!=null">
+				#{WorkOrderID},
+			</if>
+			<if test="ProductCode!=null">
+				#{ProductCode},
+			</if>
+			<if test="ProductName!=null">
+				#{ProductName},
+			</if>
+			<if test="TotalOutput!=null">
+				#{TotalOutput},
+			</if>
+			<if test="MfgCode!=null">
+				#{MfgCode},
+			</if>
+			<if test="MfgVersion!=null">
+				#{MfgVersion},
+			</if>
+			<if test="RecipeID!=null">
+				#{RecipeID},
+			</if>
+			<if test="FormulaId!=null">
+				#{FormulaId},
+			</if>
+			<if test="State!=null">
+				#{State},
+			</if>
+			<if test="CreateTime!=null">
+				#{CreateTime},
+			</if>
+			<if test="UnitID!=null">
+				#{UnitID},
+			</if>
+		</trim>
+	</insert>
+</mapper>

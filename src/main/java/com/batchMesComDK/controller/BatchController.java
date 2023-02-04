@@ -48,6 +48,10 @@ public class BatchController {
 	@Autowired
 	private WorkOrderBodyService workOrderBodyService;
 	@Autowired
+	private WorkOrderService workOrderService;
+	@Autowired
+	private RecipePMService recipePMService;
+	@Autowired
 	private TranslateService translateService;
 	@Autowired
 	private MaterialCheckOverIssusBodyService materialCheckOverIssusBodyService;
@@ -345,6 +349,7 @@ public class BatchController {
 		
 		System.out.println("bodyEnc==="+bodyEnc);
 		String bodyDec = DesUtil.decrypt(bodyEnc,DesUtil.SECRET_KEY);
+		/*
 		List<WorkOrderBody> wobList=new ArrayList<WorkOrderBody>();
 		net.sf.json.JSONArray wobJA = net.sf.json.JSONArray.fromObject(bodyDec);
 		for (int i = 0; i < wobJA.size(); i++) {
@@ -354,7 +359,26 @@ public class BatchController {
 			wobList.add(wob);
 		}
 		int c=workOrderBodyService.add(wobList.get(0));
+		*/
+
+		List<WorkOrder> woList=new ArrayList<WorkOrder>();
+		net.sf.json.JSONArray woJA = net.sf.json.JSONArray.fromObject(bodyDec);
+		for (int i = 0; i < woJA.size(); i++) {
+			net.sf.json.JSONObject woJO = (net.sf.json.JSONObject)woJA.get(i);
+			WorkOrder wo=(WorkOrder)net.sf.json.JSONObject.toBean(woJO, WorkOrder.class);
+			System.out.println("ID==="+wo.getID());
+			woList.add(wo);
+		}
+		WorkOrder wo = woList.get(0);
+		int c=workOrderService.add(wo);
 		if(c>0) {
+			String workOrderID = wo.getWorkOrderID();
+			String recipeID = wo.getRecipeID();
+			c=recipePMService.addFromRMT(workOrderID, recipeID);
+			if(c>0) {
+				
+			}
+			
 			plan.setSuccess(true);
 			plan.setStatus(1);
 			plan.setMsg("成功");
