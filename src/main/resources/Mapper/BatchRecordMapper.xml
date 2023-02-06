@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.batchMesComDK.dao.BatchRecordMapper">
+	<insert id="add" parameterType="com.batchMesComDK.entity.BatchRecord">
+		insert into BatchRecord
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="ID!=null">
+				ID,
+			</if>
+			<if test="WorkOrderID!=null">
+				WorkOrderID,
+			</if>
+			<if test="PMCode!=null">
+				PMCode,
+			</if>
+			<if test="PMName!=null">
+				PMName,
+			</if>
+			<if test="LotNo!=null">
+				LotNo,
+			</if>
+			<if test="RecordEvent!=null">
+				RecordEvent,
+			</if>
+			<if test="RecordContent!=null">
+				RecordContent,
+			</if>
+			<if test="Unit!=null">
+				Unit,
+			</if>
+			<if test="RecordStartTime!=null">
+				RecordStartTime,
+			</if>
+			<if test="RecordEndTime!=null">
+				RecordEndTime,
+			</if>
+			<if test="HLimit!=null">
+				HLimit,
+			</if>
+			<if test="LLimit!=null">
+				LLimit,
+			</if>
+			<if test="DeviationType!=null">
+				DeviationType,
+			</if>
+			<if test="RecordType!=null">
+				RecordType,
+			</if>
+			<if test="EquipmentCode!=null">
+				EquipmentCode,
+			</if>
+			<if test="PMCName!=null">
+				PMCName,
+			</if>
+			<if test="PhaseDisc!=null">
+				PhaseDisc,
+			</if>
+			<if test="PhaseID!=null">
+				PhaseID,
+			</if>
+			<if test="WMark!=null">
+				WMark,
+			</if>
+		</trim>
+		values
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="ID!=null">
+				#{ID},
+			</if>
+			<if test="WorkOrderID!=null">
+				#{WorkOrderID},
+			</if>
+			<if test="PMCode!=null">
+				#{PMCode},
+			</if>
+			<if test="PMName!=null">
+				#{PMName},
+			</if>
+			<if test="LotNo!=null">
+				#{LotNo},
+			</if>
+			<if test="RecordEvent!=null">
+				#{RecordEvent},
+			</if>
+			<if test="RecordContent!=null">
+				#{RecordContent},
+			</if>
+			<if test="Unit!=null">
+				#{Unit},
+			</if>
+			<if test="RecordStartTime!=null">
+				#{RecordStartTime},
+			</if>
+			<if test="RecordEndTime!=null">
+				#{RecordEndTime},
+			</if>
+			<if test="HLimit!=null">
+				#{HLimit},
+			</if>
+			<if test="LLimit!=null">
+				#{LLimit},
+			</if>
+			<if test="DeviationType!=null">
+				#{DeviationType},
+			</if>
+			<if test="RecordType!=null">
+				#{RecordType},
+			</if>
+			<if test="EquipmentCode!=null">
+				#{EquipmentCode},
+			</if>
+			<if test="PMCName!=null">
+				#{PMCName},
+			</if>
+			<if test="PhaseDisc!=null">
+				#{PhaseDisc},
+			</if>
+			<if test="PhaseID!=null">
+				#{PhaseID},
+			</if>
+			<if test="WMark!=null">
+				#{WMark},
+			</if>
+		</trim>
+	</insert>
+</mapper>

@@ -18,4 +18,10 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		// TODO Auto-generated method stub
 		return workOrderDao.add(wo);
 	}
+
+	@Override
+	public int updateStateById(Integer state,Integer id) {
+		// TODO Auto-generated method stub
+		return workOrderDao.updateStateById(state,id);
+	}
 }

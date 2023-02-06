@@ -83,4 +83,7 @@
 			</if>
 		</trim>
 	</insert>
+	<update id="updateStateById">
+		update WorkOrder set State=#{state} where ID=#{id}
+	</update>
 </mapper>

@@ -74,4 +74,7 @@
 			</if>
 		</trim>
 	</insert>
+	<select id="getByRecipeID" resultType="com.batchMesComDK.entity.RecipePM">
+		select * from RecipePM where RecipeID=#{recipeID}
+	</select>
 </mapper>

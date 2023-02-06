@@ -1,6 +1,15 @@
 package com.batchMesComDK.entity;
 
 public class RecipePM {
+	
+	/**
+	 * 物料参数
+	 */
+	public static final int WLCS=1;
+	/**
+	 * 工艺参数
+	 */
+	public static final int GYCS=2;
 
     private Integer ID;
   	public Integer getID() {

@@ -376,7 +376,8 @@ public class BatchController {
 			String recipeID = wo.getRecipeID();
 			c=recipePMService.addFromRMT(workOrderID, recipeID);
 			if(c>0) {
-				
+				Integer id = wo.getID();
+				c=workOrderService.updateStateById(WorkOrder.WLQTWB,id);
 			}
 			
 			plan.setSuccess(true);
