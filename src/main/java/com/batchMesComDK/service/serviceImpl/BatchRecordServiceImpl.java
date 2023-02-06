@@ -29,18 +29,24 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 		//br.setRecordEvent(recordEvent);
 		//br.setRecordContent(recordContent);
 		br.setUnit(rPM.getUnit());
+		Integer recordTypeInt=null;
+		String pMType=rPM.getPMType();
+		Integer pMTypeInt = Integer.valueOf(pMType);
+		switch (pMTypeInt) {
+		case RecipePM.WLCS:
+			recordTypeInt=BatchRecord.WLCSJL;
+			break;
+		case RecipePM.GYCS:
+			recordTypeInt=BatchRecord.GCCSJL;
+			break;
+		}
+		br.setRecordType(recordTypeInt+"");
+		//br.setEquipmentCode(equipmentCode);
+		br.setPMCName(rPM.getCName());
+		//br.setPhaseDisc(phaseDisc);
+		//br.setPhaseID(phaseID);
+		//br.setWMark(wMark);
 		
-		rPM.setPMType(rPMRmt.getPMType());
-		rPM.setCName(rPMRmt.getCName());
-		
-		private String DeviationType;
-		private String RecordType;
-		private String EquipmentCode;
-		private String PMCName;
-		private String PhaseDisc;
-		private String PhaseID;
-		private String WMark;
-		
-		return 0;
+		return batchRecordDao.add(br);
 	}
 }
