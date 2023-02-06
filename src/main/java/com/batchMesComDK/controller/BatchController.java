@@ -22,6 +22,7 @@ import com.batchMesComDK.entity.*;
 import com.batchMesComDK.service.*;
 import com.batchMesComDK.util.APIUtil;
 import com.batchMesComDK.util.ActiveXTest;
+import com.batchMesComDK.util.Constant;
 import com.batchMesComDK.util.DesUtil;
 import com.batchMesComDK.util.JsonUtil;
 import com.batchMesComDK.util.PinyinUtil;
@@ -73,6 +74,43 @@ public class BatchController {
 		return MODULE_NAME+"/test";
 	}
 
+	@RequestMapping(value="/keepWatchOnWorkOrder")
+	public void keepWatchOnWorkOrder() {
+		
+		List<WorkOrder> woList=workOrderService.getKeepWatchList();
+		for (int i = 0; i < woList.size(); i++) {
+			WorkOrder wo = woList.get(i);
+			Integer state = wo.getState();
+			switch (state) {
+			case WorkOrder.CSQRWB:
+				//调用创建batch接口创建batch
+				String recipeID = wo.getRecipeID();
+				createBatch(recipeID);
+				break;
+			case WorkOrder.BQD:
+				//启动执行配方
+				break;
+			case WorkOrder.BQX:
+			case WorkOrder.BZT:
+				//调用batch command接口
+				break;
+			}
+		}
+	}
+	
+	private void createBatch(String recipeID) {
+		StringBuilder commandSB=new StringBuilder();
+		commandSB.append("[BATCH(Item,");
+		commandSB.append(Constant.USERID);
+		commandSB.append(",CLS_FRENCHVANILLA.BPC,BATCH_ID,100,FRENCHVANILLA PREMIUM -CLASSBASED,FREEZER,4,MIXER,2,PARMS,");
+		
+		//recipePMService.
+		
+		commandSB.append("");
+		commandSB.append("");
+		commandSB.append("");
+		execute("CREAM_AMOUNT,2001,EGG_AMOUNT,200,FLAVOR_AMOUNT,50,MILK_AMOUNT,1999,SUGAR_AMOUNT, 750)]");
+	}
 	
 	@RequestMapping(value="/addDataToDB")
 	@ResponseBody
