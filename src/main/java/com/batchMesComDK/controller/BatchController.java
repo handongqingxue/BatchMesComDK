@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,34 +78,63 @@ public class BatchController {
 	@RequestMapping(value="/keepWatchOnWorkOrder")
 	public void keepWatchOnWorkOrder() {
 		
-		List<WorkOrder> woList=workOrderService.getKeepWatchList();
-		for (int i = 0; i < woList.size(); i++) {
-			WorkOrder wo = woList.get(i);
-			Integer state = wo.getState();
-			switch (state) {
-			case WorkOrder.CSQRWB:
-				//调用创建batch接口创建batch
-				String recipeID = wo.getRecipeID();
-				createBatch(recipeID);
-				break;
-			case WorkOrder.BQD:
-				//启动执行配方
-				StringBuilder commandBQDSB=new StringBuilder();
-				commandBQDSB.append("[BATCH(Item,");
-				commandBQDSB.append(Constant.USERID);
-				commandBQDSB.append(",36,START");
-				execute(commandBQDSB.toString());
-				break;
-			case WorkOrder.BQX:
-			case WorkOrder.BZT:
-				//调用batch command接口
-				StringBuilder commandQXZTSB=new StringBuilder();
-				commandQXZTSB.append("[BATCH(Item,");
-				commandQXZTSB.append(Constant.USERID);
-				commandQXZTSB.append(",36,STOP");
-				execute(commandQXZTSB.toString());
-				break;
+		try {
+			List<WorkOrder> woList=workOrderService.getKeepWatchList();
+			for (int i = 0; i < woList.size(); i++) {
+				WorkOrder wo = woList.get(i);
+				Integer state = wo.getState();
+				switch (state) {
+				case WorkOrder.CSQRWB:
+					//调用创建batch接口创建batch
+					String recipeID = wo.getRecipeID();
+					createBatch(recipeID);
+					break;
+				case WorkOrder.BQD:
+					//启动执行配方
+					StringBuilder commandBQDSB=new StringBuilder();
+					commandBQDSB.append("[BATCH(Item,");
+					commandBQDSB.append(Constant.USERID);
+					commandBQDSB.append(",36,START");
+					execute(commandBQDSB.toString());
+					break;
+				case WorkOrder.BQX:
+				case WorkOrder.BZT:
+					//调用batch command接口
+					StringBuilder commandQXZTSB=new StringBuilder();
+					commandQXZTSB.append("[BATCH(Item,");
+					commandQXZTSB.append(Constant.USERID);
+					commandQXZTSB.append(",36,STOP");
+					execute(commandQXZTSB.toString());
+					
+					workOrderService.updateStateById(WorkOrder.BYWZZ, wo.getID());
+					break;
+				}
+				
+				if(state>5) {
+					//把状态大于5的工单id拼接起来
+				}
 			}
+			
+			String resultJOStr = getItem("Batchlist");
+			JSONObject resultJO = new JSONObject(resultJOStr);
+			JSONArray dataJA = resultJO.getJSONArray("data");
+			String dataJAStr = dataJA.toString();
+			System.out.println("dataJAStr==="+dataJAStr);
+			String[] batchStrArr = dataJAStr.split("\\r\\n");
+			for (int i = 0; i < batchStrArr.length; i++) {
+				String batchStr = batchStrArr[i];
+				String[] valueArr = batchStr.split("\\t");
+				System.out.println("State==="+valueArr[5]);
+				if("COMPLATE".equals(valueArr[5])) {
+					//workOrderService.updateStateById(WorkOrder.BJS, id);
+				}
+				else if("STOP".equals(valueArr[5])) {
+					//workOrderService.updateStateById(WorkOrder.BYWZZ, id);
+				}
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
