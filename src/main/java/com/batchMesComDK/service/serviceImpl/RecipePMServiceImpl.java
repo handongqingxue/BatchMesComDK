@@ -1,5 +1,7 @@
 package com.batchMesComDK.service.serviceImpl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,5 +36,11 @@ public class RecipePMServiceImpl implements RecipePMService {
 		rPM.setCName(rPMRmt.getCName());
 		
 		return recipePMDao.add(rPM);
+	}
+
+	@Override
+	public List<RecipePM> getListByWorkOrderID(String workOrderID) {
+		// TODO Auto-generated method stub
+		return recipePMDao.getListByWorkOrderID(workOrderID);
 	}
 }

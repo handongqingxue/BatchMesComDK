@@ -125,4 +125,7 @@
 			</if>
 		</trim>
 	</insert>
+	<select id="getListByWorkOrderID" resultType="com.batchMesComDK.entity.BatchRecord">
+		select * from BatchRecord where WorkOrderID=#{workOrderID}
+	</select>
 </mapper>

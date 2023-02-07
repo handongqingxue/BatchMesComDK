@@ -89,10 +89,20 @@ public class BatchController {
 				break;
 			case WorkOrder.BQD:
 				//启动执行配方
+				StringBuilder commandBQDSB=new StringBuilder();
+				commandBQDSB.append("[BATCH(Item,");
+				commandBQDSB.append(Constant.USERID);
+				commandBQDSB.append(",36,START");
+				execute(commandBQDSB.toString());
 				break;
 			case WorkOrder.BQX:
 			case WorkOrder.BZT:
 				//调用batch command接口
+				StringBuilder commandQXZTSB=new StringBuilder();
+				commandQXZTSB.append("[BATCH(Item,");
+				commandQXZTSB.append(Constant.USERID);
+				commandQXZTSB.append(",36,STOP");
+				execute(commandQXZTSB.toString());
 				break;
 			}
 		}
@@ -103,13 +113,21 @@ public class BatchController {
 		commandSB.append("[BATCH(Item,");
 		commandSB.append(Constant.USERID);
 		commandSB.append(",CLS_FRENCHVANILLA.BPC,BATCH_ID,100,FRENCHVANILLA PREMIUM -CLASSBASED,FREEZER,4,MIXER,2,PARMS,");
+		//commandSB.append("CREAM_AMOUNT,2001,EGG_AMOUNT,200,FLAVOR_AMOUNT,50,MILK_AMOUNT,1999,SUGAR_AMOUNT, 750");
 		
-		//recipePMService.
+		List<RecipePM> rPMList=recipePMService.getListByWorkOrderID(recipeID);
+		for (int i = 0; i < rPMList.size(); i++) {
+			RecipePM rPM = rPMList.get(i);
+			String pMName = rPM.getPMName();
+			String dosage = rPM.getDosage();
+			commandSB.append(pMName);
+			commandSB.append(",");
+			commandSB.append(dosage);
+		}
 		
 		commandSB.append("");
-		commandSB.append("");
-		commandSB.append("");
-		execute("CREAM_AMOUNT,2001,EGG_AMOUNT,200,FLAVOR_AMOUNT,50,MILK_AMOUNT,1999,SUGAR_AMOUNT, 750)]");
+		commandSB.append(")]");
+		execute(commandSB.toString());
 	}
 	
 	@RequestMapping(value="/addDataToDB")
