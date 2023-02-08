@@ -16,14 +16,13 @@ var path='<%=basePath %>';
 $(function(){
 	//addDataToDB();
 	//getFormulaCodeMaterialDosage();
+	keepWatchOnWorkOrder();
 });
 
-function createBatch(){
-	var parms=$("#batch_parms").val();
-	$.post("http://10.0.3.150:8080/BatchMesComDK/batch/create",
-		{parms:parms},
+function keepWatchOnWorkOrder(){
+	$.post(path+"batch/keepWatchOnWorkOrder",
 		function(data){
-			alert(data);
+			
 		}
 	,"json");
 }
@@ -37,6 +36,32 @@ function getFormulaCodeMaterialDosage(){
 					var codeDosage=codeDosageList[i];
 					console.log("code==="+codeDosage.code+",dosage==="+codeDosage.dosage);
 				}
+			}
+		}
+	,"json");
+}
+
+function addWorkOrder(){
+	var workOrderID=$("#addWorkOrder_div #workOrderID").val();
+	var productCode=$("#addWorkOrder_div #productCode").val();
+	var productName=$("#addWorkOrder_div #productName").val();
+	var totalOutput=$("#addWorkOrder_div #totalOutput").val();
+	var mfgCode=$("#addWorkOrder_div #mfgCode").val();
+	var mfgVersion=$("#addWorkOrder_div #mfgVersion").val();
+	var recipeID=$("#addWorkOrder_div #recipeID").val();
+	var formulaId=$("#addWorkOrder_div #formulaId").val();
+	var state=$("#addWorkOrder_div #state").val();
+	var createTime=$("#addWorkOrder_div #createTime").val();
+	var unitID=$("#addWorkOrder_div #unitID").val();
+	
+	$.post(path+"batch/addWorkOrder",
+		{workOrderID:workOrderID,productCode:productCode,productName:productName,totalOutput:totalOutput,mfgCode:mfgCode,
+		mfgVersion:mfgVersion,recipeID:recipeID,formulaId:formulaId,state:state,createTime:createTime,unitID:unitID},
+		function(data){
+			if(data.message=="ok")
+				alert(data.info);
+			else{
+				alert(data.info);
 			}
 		}
 	,"json");
@@ -773,10 +798,43 @@ function splitUnitTagData(data){
 	</select>
 	<input type="button" value="send" onclick="execute()"/>
 </div>
-<div>
-mes端发送给java端的数据:
-<input type="text" size="50" id="batch_parms"/>
-	<input type="button" value="send" onclick="createBatch()"/>
+
+<div id="addWorkOrder_div">
+	添加工单数据:
+	<div>
+		WorkOrderID:<input type="text" size="50" id="workOrderID" value="20230208"/>
+	</div>
+	<div>
+		ProductCode:<input type="text" size="50" id="productCode"/>
+	</div>
+	<div>
+		ProductName:<input type="text" size="50" id="productName"/>
+	</div>
+	<div>
+		TotalOutput:<input type="text" size="50" id="totalOutput"/>
+	</div>
+	<div>
+		MfgCode:<input type="text" size="50" id="mfgCode"/>
+	</div>
+	<div>
+		MfgVersion:<input type="text" size="50" id="mfgVersion"/>
+	</div>
+	<div>
+		RecipeID:<input type="text" size="50" id="recipeID" value="CLS_FRENCHVANILLA.BPC"/>
+	</div>
+	<div>
+		FormulaId:<input type="text" size="50" id="formulaId"/>
+	</div>
+	<div>
+		State:<input type="text" size="50" id="state" value="1"/>
+	</div>
+	<div>
+		CreateTime:<input type="text" size="50" id="createTime" value="2023-02-08"/>
+	</div>
+	<div>
+		UnitID:<input type="text" size="50" id="unitID"/>
+	</div>
+	<input type="button" value="发送" onclick="addWorkOrder()"/>
 </div>
 </body>
 </html>

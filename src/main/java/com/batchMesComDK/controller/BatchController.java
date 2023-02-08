@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -60,6 +61,7 @@ public class BatchController {
 	public static final String MODULE_NAME="batch";
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
+	//http://localhost:8080/BatchMesComDK/batch/test
 	@RequestMapping(value="/test")
 	public String goTest(HttpServletRequest request) {
 		
@@ -78,63 +80,113 @@ public class BatchController {
 	@RequestMapping(value="/keepWatchOnWorkOrder")
 	public void keepWatchOnWorkOrder() {
 		
-		try {
-			List<WorkOrder> woList=workOrderService.getKeepWatchList();
-			for (int i = 0; i < woList.size(); i++) {
-				WorkOrder wo = woList.get(i);
-				Integer state = wo.getState();
-				switch (state) {
-				case WorkOrder.CSQRWB:
-					//调用创建batch接口创建batch
-					String recipeID = wo.getRecipeID();
-					createBatch(recipeID);
-					break;
-				case WorkOrder.BQD:
-					//启动执行配方
-					StringBuilder commandBQDSB=new StringBuilder();
-					commandBQDSB.append("[BATCH(Item,");
-					commandBQDSB.append(Constant.USERID);
-					commandBQDSB.append(",36,START");
-					execute(commandBQDSB.toString());
-					break;
-				case WorkOrder.BQX:
-				case WorkOrder.BZT:
-					//调用batch command接口
-					StringBuilder commandQXZTSB=new StringBuilder();
-					commandQXZTSB.append("[BATCH(Item,");
-					commandQXZTSB.append(Constant.USERID);
-					commandQXZTSB.append(",36,STOP");
-					execute(commandQXZTSB.toString());
-					
-					workOrderService.updateStateById(WorkOrder.BYWZZ, wo.getID());
-					break;
-				}
+		List<WorkOrder> woList=workOrderService.getKeepWatchList();
+		String batchIDs="";
+		for (int i = 0; i < woList.size(); i++) {
+			WorkOrder wo = woList.get(i);
+			Integer state = wo.getState();
+			switch (state) {
+			case WorkOrder.CSQRWB:
+				//调用创建batch接口创建batch
+				String recipeID = wo.getRecipeID();
+				createBatch(recipeID);
+				break;
+			case WorkOrder.BQD:
+				//启动执行配方
+				StringBuilder commandBQDSB=new StringBuilder();
+				commandBQDSB.append("[BATCH(Item,");
+				commandBQDSB.append(Constant.USERID);
+				commandBQDSB.append(",36,START");
+				execute(commandBQDSB.toString());
+				break;
+			case WorkOrder.BQX:
+			case WorkOrder.BZT:
+				//调用batch command接口
+				StringBuilder commandQXZTSB=new StringBuilder();
+				commandQXZTSB.append("[BATCH(Item,");
+				commandQXZTSB.append(Constant.USERID);
+				commandQXZTSB.append(",36,STOP");
+				execute(commandQXZTSB.toString());
 				
-				if(state>5) {
-					//把状态大于5的工单id拼接起来
-				}
+				workOrderService.updateStateById(WorkOrder.BYWZZ, wo.getID());
+				break;
 			}
 			
+			if(state>5) {
+				//把状态大于5的工单id拼接起来
+				batchIDs+=","+wo.getWorkOrderID();
+			}
+		}
+
+		if(StringUtils.isEmpty(batchIDs)) {
+			String[] batchIDArr = batchIDs.split(",");
+			int batchCount = Integer.valueOf(getItem("BatchListCt"));
+			for (int i = 0; i < batchIDArr.length; i++) {
+				String batchID = batchIDArr[i];
+				for (int j = 1; j <= batchCount; j++) {
+					String batchIDVal = BLKey_x("BatchID",j);
+					if(batchID.equals(batchIDVal)) {
+						String stateVal = BLKey_x("State",j);
+						if("COMPLATE".equals(stateVal)) {
+							//workOrderService.updateStateById(WorkOrder.BJS, id);
+						}
+						else if("STOPPED".equals(stateVal)) {
+							//workOrderService.updateStateById(WorkOrder.BYWZZ, id);
+						}
+					}
+				}
+			}
+		}
+		
+	}
+	
+	private String BLKey_x(String key, int rowNumber) {
+		String value=null;
+		try {
 			String resultJOStr = getItem("Batchlist");
 			JSONObject resultJO = new JSONObject(resultJOStr);
-			JSONArray dataJA = resultJO.getJSONArray("data");
-			String dataJAStr = dataJA.toString();
+			String dataJAStr = resultJO.getString("data");
 			System.out.println("dataJAStr==="+dataJAStr);
 			String[] batchStrArr = dataJAStr.split("\\r\\n");
 			for (int i = 0; i < batchStrArr.length; i++) {
 				String batchStr = batchStrArr[i];
 				String[] valueArr = batchStr.split("\\t");
-				System.out.println("State==="+valueArr[5]);
-				if("COMPLATE".equals(valueArr[5])) {
-					//workOrderService.updateStateById(WorkOrder.BJS, id);
-				}
-				else if("STOP".equals(valueArr[5])) {
-					//workOrderService.updateStateById(WorkOrder.BYWZZ, id);
+				int valueLoc=-1;
+				if("BatchID".equals(key))
+					valueLoc=0;
+				else if("RecipeName".equals(key))
+					valueLoc=1;
+				else if("BatchDesc".equals(key))
+					valueLoc=2;
+				else if("StartTime".equals(key))
+					valueLoc=3;
+				else if("ElapsedTime".equals(key))
+					valueLoc=4;
+				else if("State".equals(key))
+					valueLoc=5;
+				else if("Mode".equals(key))
+					valueLoc=6;
+				else if("Failures".equals(key))
+					valueLoc=7;
+				else if("CreateID".equals(key))
+					valueLoc=8;
+				else if("CmdMask".equals(key))
+					valueLoc=9;
+				else if("BatchType".equals(key))
+					valueLoc=10;
+				
+				if(valueLoc!=-1) {
+					value=valueArr[valueLoc];
+					break;
 				}
 			}
+			System.out.println("value==="+value);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+		finally {
+			return value;
 		}
 	}
 	
@@ -158,6 +210,31 @@ public class BatchController {
 		commandSB.append("");
 		commandSB.append(")]");
 		execute(commandSB.toString());
+	}
+
+	@RequestMapping(value="/addWorkOrder")
+	@ResponseBody
+	public Map<String, Object> addWorkOrder(WorkOrder wo) {
+
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
+		
+		try {
+			int count=workOrderService.add(wo);
+			if(count>0) {
+				jsonMap.put("message", "ok");
+				jsonMap.put("info", "添加工单成功");
+			}
+			else {
+				jsonMap.put("message", "no");
+				jsonMap.put("info", "添加工单失败");
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally {
+			return jsonMap;
+		}
 	}
 	
 	@RequestMapping(value="/addDataToDB")
@@ -354,19 +431,6 @@ public class BatchController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return json;
-	}
-
-	@RequestMapping(value="/create",produces="application/json;charset=utf-8")
-	@ResponseBody
-	public String create(String parms) {
-		// TODO Auto-generated method stub
-		StringBuilder sb=new StringBuilder();
-		sb.append("[BATCH(Item,batchsvr1/ADMINISTRATOR,CLS_FRENCHVANILLA.BPC,BATCH_ID,100,FRENCHVANILLA PREMIUM -CLASSBASED,FREEZER,4,MIXER,2,PARMS,");
-		sb.append(parms);
-		sb.append(")]");
-		String json=execute(sb.toString());
-		//"CREAM_AMOUNT,2001,EGG_AMOUNT,200,FLAVOR_AMOUNT,50,MILK_AMOUNT,1999,SUGAR_AMOUNT, 750"
 		return json;
 	}
 
