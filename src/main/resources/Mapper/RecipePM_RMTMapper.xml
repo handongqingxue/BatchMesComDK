@@ -6,4 +6,75 @@
 	<select id="getByRecipeID" resultType="com.batchMesComDK.entity.RecipePM_RMT">
 		select * from RecipePM_RMT where RecipeID=#{recipeID}
 	</select>
+	<insert id="add" parameterType="com.batchMesComDK.entity.RecipePM_RMT">
+		insert into RecipePM_RMT
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="ID!=null">
+				ID,
+			</if>
+			<if test="PMCode!=null">
+				PMCode,
+			</if>
+			<if test="PMName!=null">
+				PMName,
+			</if>
+			<if test="Lot!=null">
+				Lot,
+			</if>
+			<if test="Dosage!=null">
+				Dosage,
+			</if>
+			<if test="Unit!=null">
+				Unit,
+			</if>
+			<if test="HLimit!=null">
+				HLimit,
+			</if>
+			<if test="LLimit!=null">
+				LLimit,
+			</if>
+			<if test="PMType!=null">
+				PMType,
+			</if>
+			<if test="RecipeID!=null">
+				RecipeID,
+			</if>
+			<if test="CName!=null">
+				CName,
+			</if>
+		</trim>
+		values
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="ID!=null">
+				#{ID},
+			</if>
+			<if test="PMCode!=null">
+				#{PMCode},
+			</if>
+			<if test="PMName!=null">
+				#{PMName},
+			</if>
+			<if test="Lot!=null">
+				#{Lot},
+			</if>
+			<if test="Dosage!=null">
+				#{Dosage},
+			</if>
+			<if test="HLimit!=null">
+				#{HLimit},
+			</if>
+			<if test="LLimit!=null">
+				#{LLimit},
+			</if>
+			<if test="PMType!=null">
+				#{PMType},
+			</if>
+			<if test="RecipeID!=null">
+				#{RecipeID},
+			</if>
+			<if test="CName!=null">
+				#{CName},
+			</if>
+		</trim>
+	</insert>
 </mapper>

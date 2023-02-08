@@ -55,6 +55,8 @@ public class BatchController {
 	@Autowired
 	private RecipePMService recipePMService;
 	@Autowired
+	private RecipePM_RMTService recipePM_RMTService;
+	@Autowired
 	private TranslateService translateService;
 	@Autowired
 	private MaterialCheckOverIssusBodyService materialCheckOverIssusBodyService;
@@ -220,6 +222,31 @@ public class BatchController {
 		
 		try {
 			int count=workOrderService.add(wo);
+			if(count>0) {
+				jsonMap.put("message", "ok");
+				jsonMap.put("info", "添加工单成功");
+			}
+			else {
+				jsonMap.put("message", "no");
+				jsonMap.put("info", "添加工单失败");
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally {
+			return jsonMap;
+		}
+	}
+
+	@RequestMapping(value="/addRecipePM_RMT")
+	@ResponseBody
+	public Map<String, Object> addRecipePM_RMT(RecipePM_RMT rPM_RMT) {
+
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
+		
+		try {
+			int count=recipePM_RMTService.add(rPM_RMT);
 			if(count>0) {
 				jsonMap.put("message", "ok");
 				jsonMap.put("info", "添加工单成功");

@@ -16,7 +16,7 @@ var path='<%=basePath %>';
 $(function(){
 	//addDataToDB();
 	//getFormulaCodeMaterialDosage();
-	keepWatchOnWorkOrder();
+	//keepWatchOnWorkOrder();
 });
 
 function keepWatchOnWorkOrder(){
@@ -65,6 +65,20 @@ function addWorkOrder(){
 			}
 		}
 	,"json");
+}
+
+function addRecipePM_RMT(){
+	var pMCode=$("#addRecipePM_RMT_div #pMCode").val();
+	var pMName=$("#addRecipePM_RMT_div #pMName").val();
+	var lot=$("#addRecipePM_RMT_div #lot").val();
+	var dosage=$("#addRecipePM_RMT_div #dosage").val();
+	var unit=$("#addRecipePM_RMT_div #unit").val();
+	var hLimit=$("#addRecipePM_RMT_div #hLimit").val();
+	var lLimit=$("#addRecipePM_RMT_div #lLimit").val();
+	var pMType=$("#addRecipePM_RMT_div #pMType").val();
+	var recipeID=$("#addRecipePM_RMT_div #recipeID").val();
+	var cName=$("#addRecipePM_RMT_div #cName").val();
+	
 }
 
 function addDataToDB(){
@@ -799,7 +813,7 @@ function splitUnitTagData(data){
 	<input type="button" value="send" onclick="execute()"/>
 </div>
 
-<div id="addWorkOrder_div">
+<div id="addWorkOrder_div" style="margin-top: 10px;">
 	添加工单数据:
 	<div>
 		WorkOrderID:<input type="text" size="50" id="workOrderID" value="20230208"/>
@@ -835,6 +849,40 @@ function splitUnitTagData(data){
 		UnitID:<input type="text" size="50" id="unitID"/>
 	</div>
 	<input type="button" value="发送" onclick="addWorkOrder()"/>
+</div>
+<div id="addRecipePM_RMT_div" style="margin-top: 10px;">
+	添加远程参数数据:
+	<div>
+		PMCode:<input type="text" size="50" id="pMCode"/>
+	</div>
+	<div>
+		PMName:<input type="text" size="50" id="pMName"/>
+	</div>
+	<div>
+		Lot:<input type="text" size="50" id="lot"/>
+	</div>
+	<div>
+		Dosage:<input type="text" size="50" id="dosage"/>
+	</div>
+	<div>
+		Unit:<input type="text" size="50" id="unit"/>
+	</div>
+	<div>
+		HLimit:<input type="text" size="50" id="hLimit"/>
+	</div>
+	<div>
+		LLimit:<input type="text" size="50" id="lLimit"/>
+	</div>
+	<div>
+		PMType:<input type="text" size="50" id="pMType"/>
+	</div>
+	<div>
+		RecipeID:<input type="text" size="50" id="recipeID"/>
+	</div>
+	<div>
+		CName:<input type="text" size="50" id="cName"/>
+	</div>
+	<input type="button" value="发送" onclick="addRecipePM_RMT()"/>
 </div>
 </body>
 </html>

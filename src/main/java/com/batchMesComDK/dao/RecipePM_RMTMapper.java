@@ -7,4 +7,6 @@ import com.batchMesComDK.entity.*;
 public interface RecipePM_RMTMapper {
 
 	RecipePM_RMT getByRecipeID(@Param("recipeID") String recipeID);
+
+	int add(RecipePM_RMT rPM_RMT);
 }

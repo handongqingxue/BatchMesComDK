@@ -36,12 +36,6 @@
 			<if test="State!=null">
 				State,
 			</if>
-			<if test="CreateTime!=null">
-				CreateTime,
-			</if>
-			<if test="UnitID!=null">
-				UnitID,
-			</if>
 		</trim>
 		values
 		<trim prefix="(" suffix=")" suffixOverrides=",">
@@ -74,12 +68,6 @@
 			</if>
 			<if test="State!=null">
 				#{State},
-			</if>
-			<if test="CreateTime!=null">
-				#{CreateTime},
-			</if>
-			<if test="UnitID!=null">
-				#{UnitID},
 			</if>
 		</trim>
 	</insert>
