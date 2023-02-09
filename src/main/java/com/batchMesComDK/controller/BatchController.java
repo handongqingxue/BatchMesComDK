@@ -57,6 +57,8 @@ public class BatchController {
 	@Autowired
 	private RecipePM_RMTService recipePM_RMTService;
 	@Autowired
+	private BatchRecordService batchRecordService;
+	@Autowired
 	private TranslateService translateService;
 	@Autowired
 	private MaterialCheckOverIssusBodyService materialCheckOverIssusBodyService;
@@ -75,6 +77,7 @@ public class BatchController {
 		
 		//List<BHBatch> bhbList=bHBatchService.getList();
 		//System.out.println("size==="+bhbList.size());
+		Constant.setWorkOrderStateInRequest(request);
 		
 		return MODULE_NAME+"/test";
 	}
@@ -249,11 +252,63 @@ public class BatchController {
 			int count=recipePM_RMTService.add(rPM_RMT);
 			if(count>0) {
 				jsonMap.put("message", "ok");
-				jsonMap.put("info", "添加工单成功");
+				jsonMap.put("info", "添加远程配方参数成功");
 			}
 			else {
 				jsonMap.put("message", "no");
-				jsonMap.put("info", "添加工单失败");
+				jsonMap.put("info", "添加远程配方参数失败");
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally {
+			return jsonMap;
+		}
+	}
+
+	@RequestMapping(value="/addBatchRecordFromRecordPM")
+	@ResponseBody
+	public Map<String, Object> addBatchRecordFromRecordPM(String recipeID) {
+
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
+		
+		try {
+			int count=batchRecordService.addFromRecordPM(recipeID);
+			if(count>0) {
+				jsonMap.put("message", "ok");
+				jsonMap.put("info", "添加批记录成功");
+			}
+			else {
+				jsonMap.put("message", "no");
+				jsonMap.put("info", "添加批记录失败");
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally {
+			return jsonMap;
+		}
+	}
+
+	@RequestMapping(value="/updateWorkOrderStateById")
+	@ResponseBody
+	public Map<String, Object> updateWorkOrderStateById(Integer state, Integer id) {
+		
+		System.out.println("state==="+state);
+		System.out.println("id==="+id);
+		
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
+		try {
+			int count=workOrderService.updateStateById(state,id);
+			if(count>0) {
+				jsonMap.put("message", "ok");
+				jsonMap.put("info", "修改工单状态成功");
+			}
+			else {
+				jsonMap.put("message", "no");
+				jsonMap.put("info", "修改工单状态失败");
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

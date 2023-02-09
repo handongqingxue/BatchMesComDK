@@ -17,6 +17,7 @@ $(function(){
 	//addDataToDB();
 	//getFormulaCodeMaterialDosage();
 	//keepWatchOnWorkOrder();
+	initUwosStateSel();
 });
 
 function keepWatchOnWorkOrder(){
@@ -78,7 +79,85 @@ function addRecipePM_RMT(){
 	var pMType=$("#addRecipePM_RMT_div #pMType").val();
 	var recipeID=$("#addRecipePM_RMT_div #recipeID").val();
 	var cName=$("#addRecipePM_RMT_div #cName").val();
+
+	$.post(path+"batch/addRecipePM_RMT",
+		{pMCode:pMCode,pMName:pMName,lot:lot,dosage:dosage,unit:unit,hLimit:hLimit,lLimit:lLimit,pMType:pMType,recipeID:recipeID,cName:cName},
+		function(data){
+			if(data.message=="ok")
+				alert(data.info);
+			else{
+				alert(data.info);
+			}
+		}
+	,"json");
+}
+
+function addBatchRecordFromRecordPM(){
+	var recipeID=$("#abrfrp_div #recipeID").val();
 	
+	$.post(path+"batch/addBatchRecordFromRecordPM",
+		{recipeID:recipeID},
+		function(data){
+			if(data.message=="ok")
+				alert(data.info);
+			else{
+				alert(data.info);
+			}
+		}
+	,"json");
+}
+
+function updateWorkOrderStateById(){
+	var state=$("#uwos_div #state_sel").val();
+	if(state=="")
+		alert("请选择状态")
+	else{
+		var id=$("#uwos_div #id").val();
+		$.post(path+"batch/updateWorkOrderStateById",
+			{state:state,id:id},
+			function(data){
+				if(data.message=="ok")
+					alert(data.info);
+				else{
+					alert(data.info);
+				}
+			}
+		,"json");
+	}
+}
+
+function initUwosStateSel(){
+	var wlqtwbState=parseInt('${requestScope.wlqtwbState}');
+	var csqrwbState=parseInt('${requestScope.csqrwbState}');
+	var bcjwbState=parseInt('${requestScope.bcjwbState}');
+	var bqdState=parseInt('${requestScope.bqdState}');
+	var byxState=parseInt('${requestScope.byxState}');
+	var bqxState=parseInt('${requestScope.bqxState}');
+	var bztState=parseInt('${requestScope.bztState}');
+	var bywzzState=parseInt('${requestScope.bywzzState}');
+	var bjsState=parseInt('${requestScope.bjsState}');
+
+	var wlqtwbStateMc='${requestScope.wlqtwbStateMc}';
+	var csqrwbStateMc='${requestScope.csqrwbStateMc}';
+	var bcjwbStateMc='${requestScope.bcjwbStateMc}';
+	var bqdStateMc='${requestScope.bqdStateMc}';
+	var byxStateMc='${requestScope.byxStateMc}';
+	var bqxStateMc='${requestScope.bqxStateMc}';
+	var bztStateMc='${requestScope.bztStateMc}';
+	var bywzzStateMc='${requestScope.bywzzStateMc}';
+	var bjsStateMc='${requestScope.bjsStateMc}';
+	
+	var stateSel=$("#uwos_div #state_sel");
+	stateSel.append("<option value=\"\">请选择</option>");
+	stateSel.append("<option value=\""+wlqtwbState+"\">"+wlqtwbStateMc+"</option>");
+	stateSel.append("<option value=\""+csqrwbState+"\">"+csqrwbStateMc+"</option>");
+	stateSel.append("<option value=\""+bcjwbState+"\">"+bcjwbStateMc+"</option>");
+	stateSel.append("<option value=\""+bqdState+"\">"+bqdStateMc+"</option>");
+	stateSel.append("<option value=\""+byxState+"\">"+byxStateMc+"</option>");
+	stateSel.append("<option value=\""+bqxState+"\">"+bqxStateMc+"</option>");
+	stateSel.append("<option value=\""+bztState+"\">"+bztStateMc+"</option>");
+	stateSel.append("<option value=\""+bywzzState+"\">"+bywzzStateMc+"</option>");
+	stateSel.append("<option value=\""+bjsState+"\">"+bjsStateMc+"</option>");
 }
 
 function addDataToDB(){
@@ -850,8 +929,9 @@ function splitUnitTagData(data){
 	</div>
 	<input type="button" value="发送" onclick="addWorkOrder()"/>
 </div>
+
 <div id="addRecipePM_RMT_div" style="margin-top: 10px;">
-	添加远程参数数据:
+	添加远程配方参数数据:
 	<div>
 		PMCode:<input type="text" size="50" id="pMCode"/>
 	</div>
@@ -883,6 +963,26 @@ function splitUnitTagData(data){
 		CName:<input type="text" size="50" id="cName"/>
 	</div>
 	<input type="button" value="发送" onclick="addRecipePM_RMT()"/>
+</div>
+
+<div id="abrfrp_div" style="margin-top: 10px;">
+	从配方参数表添加批记录数据:
+	<div>
+		RecipeID:<input type="text" size="50" id="recipeID"/>
+	</div>
+	<input type="button" value="发送" onclick="addBatchRecordFromRecordPM()"/>
+</div>
+
+<div id="uwos_div" style="margin-top: 10px;">
+	更新工单状态:
+	<div>
+		状态:
+		<select id="state_sel"></select>
+	</div>
+	<div>
+		ID:<input type="text" size="50" id="id"/>
+	</div>
+	<input type="button" value="发送" onclick="updateWorkOrderStateById()"/>
 </div>
 </body>
 </html>
