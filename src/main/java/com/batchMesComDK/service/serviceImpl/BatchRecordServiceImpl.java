@@ -1,5 +1,7 @@
 package com.batchMesComDK.service.serviceImpl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,37 +18,43 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 	RecipePMMapper recipePMDao;
 
 	@Override
-	public int addFromRecordPM(String recipeID) {
+	public int addFromRecordPM(String workOrderID) {
 		// TODO Auto-generated method stub
-		RecipePM rPM=recipePMDao.getByRecipeID(recipeID);
+		int count=0;
+		List<RecipePM> rPMList=recipePMDao.getListByWorkOrderID(workOrderID);
 		
-		BatchRecord br=new BatchRecord();
-		br.setID(rPM.getID());
-		br.setWorkOrderID(rPM.getWorkOrderID());
-		br.setPMCode(rPM.getPMCode());
-		br.setPMName(rPM.getPMName());
-		br.setLotNo(rPM.getLot());
-		//br.setRecordEvent(recordEvent);
-		//br.setRecordContent(recordContent);
-		br.setUnit(rPM.getUnit());
-		Integer recordTypeInt=null;
-		String pMType=rPM.getPMType();
-		Integer pMTypeInt = Integer.valueOf(pMType);
-		switch (pMTypeInt) {
-		case RecipePM.WLCS:
-			recordTypeInt=BatchRecord.WLCSJL;
-			break;
-		case RecipePM.GYCS:
-			recordTypeInt=BatchRecord.GCCSJL;
-			break;
+		BatchRecord br=null;
+		for (int i = 0; i < rPMList.size(); i++) {
+			RecipePM rPM=rPMList.get(i);
+			br=new BatchRecord();
+			br.setWorkOrderID(workOrderID);
+			br.setPMCode(rPM.getPMCode());
+			br.setPMName(rPM.getPMName());
+			br.setLotNo(rPM.getLot());
+			//br.setRecordEvent(recordEvent);
+			//br.setRecordContent(recordContent);
+			br.setUnit(rPM.getUnit());
+			Integer recordTypeInt=null;
+			String pMType=rPM.getPMType();
+			Integer pMTypeInt = Integer.valueOf(pMType);
+			switch (pMTypeInt) {
+			case RecipePM.WLCS:
+				recordTypeInt=BatchRecord.WLCSJL;
+				break;
+			case RecipePM.GYCS:
+				recordTypeInt=BatchRecord.GCCSJL;
+				break;
+			}
+			br.setRecordType(recordTypeInt+"");
+			//br.setEquipmentCode(equipmentCode);
+			br.setPMCName(rPM.getCName());
+			//br.setPhaseDisc(phaseDisc);
+			//br.setPhaseID(phaseID);
+			//br.setWMark(wMark);
+			
+			count+=batchRecordDao.add(br);
 		}
-		br.setRecordType(recordTypeInt+"");
-		//br.setEquipmentCode(equipmentCode);
-		br.setPMCName(rPM.getCName());
-		//br.setPhaseDisc(phaseDisc);
-		//br.setPhaseID(phaseID);
-		//br.setWMark(wMark);
 		
-		return batchRecordDao.add(br);
+		return count;
 	}
 }

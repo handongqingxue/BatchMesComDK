@@ -6,9 +6,6 @@
 	<insert id="add" parameterType="com.batchMesComDK.entity.RecipePM">
 		insert into RecipePM
 		<trim prefix="(" suffix=")" suffixOverrides=",">
-			<if test="ID!=null">
-				ID,
-			</if>
 			<if test="PMCode!=null">
 				PMCode,
 			</if>
@@ -42,9 +39,6 @@
 		</trim>
 		values
 		<trim prefix="(" suffix=")" suffixOverrides=",">
-			<if test="ID!=null">
-				#{ID},
-			</if>
 			<if test="PMCode!=null">
 				#{PMCode},
 			</if>
@@ -56,6 +50,9 @@
 			</if>
 			<if test="Dosage!=null">
 				#{Dosage},
+			</if>
+			<if test="Unit!=null">
+				#{Unit},
 			</if>
 			<if test="HLimit!=null">
 				#{HLimit},
@@ -74,9 +71,6 @@
 			</if>
 		</trim>
 	</insert>
-	<select id="getByRecipeID" resultType="com.batchMesComDK.entity.RecipePM">
-		select * from RecipePM where RecipeID=#{recipeID}
-	</select>
 	<select id="getListByWorkOrderID" resultType="com.batchMesComDK.entity.RecipePM">
 		select * from RecipePM where WorkOrderID=#{workOrderID}
 	</select>

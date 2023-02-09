@@ -60,6 +60,9 @@
 			<if test="Dosage!=null">
 				#{Dosage},
 			</if>
+			<if test="Unit!=null">
+				#{Unit},
+			</if>
 			<if test="HLimit!=null">
 				#{HLimit},
 			</if>

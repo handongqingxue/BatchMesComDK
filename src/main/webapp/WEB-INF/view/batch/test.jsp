@@ -92,11 +92,27 @@ function addRecipePM_RMT(){
 	,"json");
 }
 
+function addRecipePMFromRMT(){
+	var workOrderID=$("#arpmfrmt_div #workOrderID").val();
+	var recipeID=$("#arpmfrmt_div #recipeID").val();
+	
+	$.post(path+"batch/addRecipePMFromRMT",
+		{workOrderID:workOrderID,recipeID:recipeID},
+		function(data){
+			if(data.message=="ok")
+				alert(data.info);
+			else{
+				alert(data.info);
+			}
+		}
+	,"json");
+}
+
 function addBatchRecordFromRecordPM(){
-	var recipeID=$("#abrfrp_div #recipeID").val();
+	var workOrderID=$("#abrfrp_div #workOrderID").val();
 	
 	$.post(path+"batch/addBatchRecordFromRecordPM",
-		{recipeID:recipeID},
+		{workOrderID:workOrderID},
 		function(data){
 			if(data.message=="ok")
 				alert(data.info);
@@ -965,10 +981,21 @@ function splitUnitTagData(data){
 	<input type="button" value="发送" onclick="addRecipePM_RMT()"/>
 </div>
 
+<div id="arpmfrmt_div" style="margin-top: 10px;">
+	从远程配方参数表添加配方参数:
+	<div>
+		WorkOrderID:<input type="text" size="50" id="workOrderID" value="20230209"/>
+	</div>
+	<div>
+		RecipeID:<input type="text" size="50" id="recipeID"/>
+	</div>
+	<input type="button" value="发送" onclick="addRecipePMFromRMT()"/>
+</div>
+
 <div id="abrfrp_div" style="margin-top: 10px;">
 	从配方参数表添加批记录数据:
 	<div>
-		RecipeID:<input type="text" size="50" id="recipeID"/>
+		WorkOrderID:<input type="text" size="50" id="workOrderID"/>
 	</div>
 	<input type="button" value="发送" onclick="addBatchRecordFromRecordPM()"/>
 </div>

@@ -10,7 +10,5 @@ public interface RecipePMMapper {
 
 	int add(RecipePM rpm);
 	
-	RecipePM getByRecipeID(@Param("recipeID") String recipeID);
-
 	List<RecipePM> getListByWorkOrderID(@Param("workOrderID") String workOrderID);
 }

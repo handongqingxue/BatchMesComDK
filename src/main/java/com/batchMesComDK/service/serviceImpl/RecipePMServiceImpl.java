@@ -23,7 +23,6 @@ public class RecipePMServiceImpl implements RecipePMService {
 		RecipePM_RMT rPMRmt=recipePM_RMTDao.getByRecipeID(recipeID);
 		
 		RecipePM rPM=new RecipePM();
-		rPM.setID(rPMRmt.getID());
 		rPM.setPMCode(rPMRmt.getPMCode());
 		rPM.setPMName(rPMRmt.getPMName());
 		rPM.setLot(rPMRmt.getLot());

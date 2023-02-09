@@ -267,14 +267,39 @@ public class BatchController {
 		}
 	}
 
-	@RequestMapping(value="/addBatchRecordFromRecordPM")
+	@RequestMapping(value="/addRecipePMFromRMT")
 	@ResponseBody
-	public Map<String, Object> addBatchRecordFromRecordPM(String recipeID) {
+	public Map<String, Object> addRecipePMFromRMT(String workOrderID, String recipeID) {
 
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		
 		try {
-			int count=batchRecordService.addFromRecordPM(recipeID);
+			int count=recipePMService.addFromRMT(workOrderID, recipeID);
+			if(count>0) {
+				jsonMap.put("message", "ok");
+				jsonMap.put("info", "添加配方参数成功");
+			}
+			else {
+				jsonMap.put("message", "no");
+				jsonMap.put("info", "添加配方参数失败");
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally {
+			return jsonMap;
+		}
+	}
+
+	@RequestMapping(value="/addBatchRecordFromRecordPM")
+	@ResponseBody
+	public Map<String, Object> addBatchRecordFromRecordPM(String workOrderID) {
+
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
+		
+		try {
+			int count=batchRecordService.addFromRecordPM(workOrderID);
 			if(count>0) {
 				jsonMap.put("message", "ok");
 				jsonMap.put("info", "添加批记录成功");

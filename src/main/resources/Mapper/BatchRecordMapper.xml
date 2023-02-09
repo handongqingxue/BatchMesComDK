@@ -6,9 +6,6 @@
 	<insert id="add" parameterType="com.batchMesComDK.entity.BatchRecord">
 		insert into BatchRecord
 		<trim prefix="(" suffix=")" suffixOverrides=",">
-			<if test="ID!=null">
-				ID,
-			</if>
 			<if test="WorkOrderID!=null">
 				WorkOrderID,
 			</if>
@@ -66,9 +63,6 @@
 		</trim>
 		values
 		<trim prefix="(" suffix=")" suffixOverrides=",">
-			<if test="ID!=null">
-				#{ID},
-			</if>
 			<if test="WorkOrderID!=null">
 				#{WorkOrderID},
 			</if>
