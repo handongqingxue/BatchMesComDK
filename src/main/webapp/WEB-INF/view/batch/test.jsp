@@ -1011,5 +1011,9 @@ function splitUnitTagData(data){
 	</div>
 	<input type="button" value="发送" onclick="updateWorkOrderStateById()"/>
 </div>
+
+<div style="margin-top: 10px;">
+	<input type="button" value="巡回监视" onclick="keepWatchOnWorkOrder()"/>
+</div>
 </body>
 </html>

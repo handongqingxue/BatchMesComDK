@@ -85,62 +85,88 @@ public class BatchController {
 	@RequestMapping(value="/keepWatchOnWorkOrder")
 	public void keepWatchOnWorkOrder() {
 		
-		List<WorkOrder> woList=workOrderService.getKeepWatchList();
-		String batchIDs="";
-		for (int i = 0; i < woList.size(); i++) {
-			WorkOrder wo = woList.get(i);
-			Integer state = wo.getState();
-			switch (state) {
-			case WorkOrder.CSQRWB:
-				//调用创建batch接口创建batch
-				String recipeID = wo.getRecipeID();
-				createBatch(recipeID);
-				break;
-			case WorkOrder.BQD:
-				//启动执行配方
-				StringBuilder commandBQDSB=new StringBuilder();
-				commandBQDSB.append("[BATCH(Item,");
-				commandBQDSB.append(Constant.USERID);
-				commandBQDSB.append(",36,START");
-				execute(commandBQDSB.toString());
-				break;
-			case WorkOrder.BQX:
-			case WorkOrder.BZT:
-				//调用batch command接口
-				StringBuilder commandQXZTSB=new StringBuilder();
-				commandQXZTSB.append("[BATCH(Item,");
-				commandQXZTSB.append(Constant.USERID);
-				commandQXZTSB.append(",36,STOP");
-				execute(commandQXZTSB.toString());
-				
-				workOrderService.updateStateById(WorkOrder.BYWZZ, wo.getID());
-				break;
-			}
-			
-			if(state>5) {
-				//把状态大于5的工单id拼接起来
-				batchIDs+=","+wo.getWorkOrderID();
-			}
-		}
-
-		if(StringUtils.isEmpty(batchIDs)) {
-			String[] batchIDArr = batchIDs.split(",");
-			int batchCount = Integer.valueOf(getItem("BatchListCt"));
-			for (int i = 0; i < batchIDArr.length; i++) {
-				String batchID = batchIDArr[i];
-				for (int j = 1; j <= batchCount; j++) {
-					String batchIDVal = BLKey_x("BatchID",j);
-					if(batchID.equals(batchIDVal)) {
-						String stateVal = BLKey_x("State",j);
-						if("COMPLATE".equals(stateVal)) {
-							//workOrderService.updateStateById(WorkOrder.BJS, id);
+		try {
+			List<WorkOrder> woList=workOrderService.getKeepWatchList();
+			System.out.println("woListSize==="+woList.size());
+			String batchIDs="";
+			String batchCountResultStr = getItem("BatchListCt");
+			System.out.println("batchCountResultStr==="+batchCountResultStr);
+			//JSONObject batchCountResultJO = new JSONObject(batchCountResultStr);
+			int batchCount =  0;//Integer.valueOf(batchCountResultJO.getString("data"));
+			for (int i = 0; i < woList.size(); i++) {
+				WorkOrder wo = woList.get(i);
+				Integer state = wo.getState();
+				System.out.println("state==="+state);
+				switch (state) {
+				case WorkOrder.CSQRWB:
+					//调用创建batch接口创建batch
+					Integer id = wo.getID();
+					String recipeID = wo.getRecipeID();
+					createBatch(id,recipeID);
+					break;
+				case WorkOrder.BQD:
+					//启动执行配方
+					/*
+					for (int j = 1; j <= batchCount; j++) {
+						String batchIDVal = BLKey_x("BatchID",j);
+						if(batchID.equals(batchIDVal)) {
+							String stateVal = BLKey_x("State",j);
+							if("COMPLATE".equals(stateVal)) {
+								//workOrderService.updateStateById(WorkOrder.BJS, id);
+							}
+							else if("STOPPED".equals(stateVal)) {
+								//workOrderService.updateStateById(WorkOrder.BYWZZ, id);
+							}
 						}
-						else if("STOPPED".equals(stateVal)) {
-							//workOrderService.updateStateById(WorkOrder.BYWZZ, id);
+					}
+					*/
+					
+					StringBuilder commandBQDSB=new StringBuilder();
+					commandBQDSB.append("[BATCH(Item,");
+					commandBQDSB.append(Constant.USERID);
+					commandBQDSB.append(",36,START");
+					execute(commandBQDSB.toString());
+					break;
+				case WorkOrder.BQX:
+				case WorkOrder.BZT:
+					//调用batch command接口
+					StringBuilder commandQXZTSB=new StringBuilder();
+					commandQXZTSB.append("[BATCH(Item,");
+					commandQXZTSB.append(Constant.USERID);
+					commandQXZTSB.append(",36,STOP");
+					execute(commandQXZTSB.toString());
+					
+					workOrderService.updateStateById(WorkOrder.BYWZZ, wo.getID());
+					break;
+				}
+				
+				if(state>5) {
+					//把状态大于5的工单id拼接起来
+					batchIDs+=","+wo.getWorkOrderID();
+				}
+			}
+
+			if(StringUtils.isEmpty(batchIDs)) {
+				String[] batchIDArr = batchIDs.split(",");
+				for (int i = 0; i < batchIDArr.length; i++) {
+					String batchID = batchIDArr[i];
+					for (int j = 1; j <= batchCount; j++) {
+						String batchIDVal = BLKey_x("BatchID",j);
+						if(batchID.equals(batchIDVal)) {
+							String stateVal = BLKey_x("State",j);
+							if("COMPLATE".equals(stateVal)) {
+								//workOrderService.updateStateById(WorkOrder.BJS, id);
+							}
+							else if("STOPPED".equals(stateVal)) {
+								//workOrderService.updateStateById(WorkOrder.BYWZZ, id);
+							}
 						}
 					}
 				}
 			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 	}
@@ -195,11 +221,16 @@ public class BatchController {
 		}
 	}
 	
-	private void createBatch(String recipeID) {
+	private void createBatch(Integer id, String recipeID) {
 		StringBuilder commandSB=new StringBuilder();
 		commandSB.append("[BATCH(Item,");
 		commandSB.append(Constant.USERID);
-		commandSB.append(",CLS_FRENCHVANILLA.BPC,BATCH_ID,100,FRENCHVANILLA PREMIUM -CLASSBASED,FREEZER,4,MIXER,2,PARMS,");
+		commandSB.append(",");
+		commandSB.append(recipeID);
+		commandSB.append(".BPC,");
+		commandSB.append(id);//BatchID
+		commandSB.append("");
+		commandSB.append(",100,FRENCHVANILLA PREMIUM -CLASSBASED,FREEZER,4,MIXER,2,PARMS,");
 		//commandSB.append("CREAM_AMOUNT,2001,EGG_AMOUNT,200,FLAVOR_AMOUNT,50,MILK_AMOUNT,1999,SUGAR_AMOUNT, 750");
 		
 		List<RecipePM> rPMList=recipePMService.getListByWorkOrderID(recipeID);
@@ -214,7 +245,9 @@ public class BatchController {
 		
 		commandSB.append("");
 		commandSB.append(")]");
-		execute(commandSB.toString());
+		String commandSBStr=commandSB.toString();
+		System.out.println("commandSBStr==="+commandSBStr);
+		execute(commandSBStr);
 	}
 
 	@RequestMapping(value="/addWorkOrder")
