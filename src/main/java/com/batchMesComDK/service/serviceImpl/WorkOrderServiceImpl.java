@@ -36,4 +36,16 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		List<String> stateList = Arrays.asList(stateArr);
 		return workOrderDao.getListByStateList(stateList);
 	}
+
+	@Override
+	public int edit(WorkOrder wo) {
+		// TODO Auto-generated method stub
+		return workOrderDao.edit(wo);
+	}
+
+	@Override
+	public WorkOrder getById(Integer id) {
+		// TODO Auto-generated method stub
+		return workOrderDao.getById(id);
+	}
 }

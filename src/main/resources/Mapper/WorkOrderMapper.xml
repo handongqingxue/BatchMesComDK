@@ -80,4 +80,43 @@
 		#{state}
 		</foreach>
 	</select>
+	<update id="edit" parameterType="com.batchMesComDK.entity.WorkOrder">
+		update WorkOrder set 
+		<trim suffixOverrides=",">
+			<if test="workOrderID!=null">
+				workOrderID=#{workOrderID},
+			</if>
+			<if test="productCode!=null">
+				productCode=#{productCode},
+			</if>
+			<if test="productName!=null">
+				productName=#{productName},
+			</if>
+			<if test="totalOutput!=null">
+				totalOutput=#{totalOutput},
+			</if>
+			<if test="mfgCode!=null">
+				mfgCode=#{mfgCode},
+			</if>
+			<if test="mfgVersion!=null">
+				mfgVersion=#{mfgVersion},
+			</if>
+			<if test="recipeID!=null">
+				recipeID=#{recipeID},
+			</if>
+			<if test="formulaId!=null">
+				formulaId=#{formulaId},
+			</if>
+			<if test="state!=null">
+				state=#{state},
+			</if>
+			<if test="unitID!=null">
+				unitID=#{unitID},
+			</if>
+		</trim>
+		 where id=#{id}
+	</update>
+	<select id="getById" resultType="com.batchMesComDK.entity.WorkOrder">
+		select * from WorkOrder where id=#{id}
+	</select>
 </mapper>

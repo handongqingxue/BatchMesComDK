@@ -300,6 +300,61 @@ public class BatchController {
 		}
 	}
 
+	@RequestMapping(value="/editWorkOrder")
+	@ResponseBody
+	public Map<String, Object> editWorkOrder(WorkOrder wo) {
+		
+		System.out.println("id==="+wo.getID());
+
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
+		
+		try {
+			int count=workOrderService.edit(wo);
+			if(count>0) {
+				jsonMap.put("message", "ok");
+				jsonMap.put("info", "修改工单成功");
+			}
+			else {
+				jsonMap.put("message", "no");
+				jsonMap.put("info", "修改工单失败");
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally {
+			return jsonMap;
+		}
+	}
+
+	@RequestMapping(value="/getWorkOrder")
+	@ResponseBody
+	public Map<String, Object> getWorkOrder(Integer id) {
+		
+		System.out.println("id==="+id);
+
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
+		
+		try {
+			WorkOrder wo=workOrderService.getById(id);
+			if(wo==null) {
+				jsonMap.put("message", "no");
+				jsonMap.put("info", "查询工单失败");
+			}
+			else {
+				jsonMap.put("message", "ok");
+				jsonMap.put("workOrder", wo);
+				jsonMap.put("info", "查询工单成功");
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally {
+			return jsonMap;
+		}
+	}
+
 	@RequestMapping(value="/addRecipePM_RMT")
 	@ResponseBody
 	public Map<String, Object> addRecipePM_RMT(RecipePM_RMT rPM_RMT) {

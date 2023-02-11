@@ -11,4 +11,8 @@ public interface WorkOrderService {
 	int updateStateById(Integer state, Integer id);
 
 	List<WorkOrder> getKeepWatchList();
+
+	int edit(WorkOrder wo);
+
+	WorkOrder getById(Integer id);
 }

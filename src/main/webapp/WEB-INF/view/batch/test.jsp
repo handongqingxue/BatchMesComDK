@@ -68,6 +68,79 @@ function addWorkOrder(){
 	,"json");
 }
 
+function editWorkOrder(){
+	var id=$("#editWorkOrder_div #id").val();
+	var workOrderID=$("#editWorkOrder_div #workOrderID").val();
+	var productCode=$("#editWorkOrder_div #productCode").val();
+	var productName=$("#editWorkOrder_div #productName").val();
+	var totalOutput=$("#editWorkOrder_div #totalOutput").val();
+	var mfgCode=$("#editWorkOrder_div #mfgCode").val();
+	var mfgVersion=$("#editWorkOrder_div #mfgVersion").val();
+	var recipeID=$("#editWorkOrder_div #recipeID").val();
+	var formulaId=$("#editWorkOrder_div #formulaId").val();
+	var state=$("#editWorkOrder_div #state").val();
+	var unitID=$("#editWorkOrder_div #unitID").val();
+	
+	$.post(path+"batch/editWorkOrder",
+		{id:id,workOrderID:workOrderID,productCode:productCode,productName:productName,totalOutput:totalOutput,mfgCode:mfgCode,
+		mfgVersion:mfgVersion,recipeID:recipeID,formulaId:formulaId,state:state,unitID:unitID},
+		function(data){
+			if(data.message=="ok")
+				alert(data.info);
+			else{
+				alert(data.info);
+			}
+		}
+	,"json");
+}
+
+function getWorkOrder(){
+	var id=$("#editWorkOrder_div #id").val();
+
+	$.post(path+"batch/getWorkOrder",
+		{id:id},
+		function(data){
+			if(data.message=="ok"){
+				var workOrder=data.workOrder;
+				var workOrderID=workOrder.workOrderID;
+				var productCode=workOrder.productCode;
+				var productName=workOrder.productName;
+				var totalOutput=workOrder.totalOutput;
+				var mfgCode=workOrder.mfgCode;
+				var mfgVersion=workOrder.mfgVersion;
+				var recipeID=workOrder.recipeID;
+				var formulaId=workOrder.formulaId;
+				var state=workOrder.state;
+				var unitID=workOrder.unitID;
+				
+				$("#editWorkOrder_div #workOrderID").val(workOrderID);
+				$("#editWorkOrder_div #productCode").val(productCode);
+				$("#editWorkOrder_div #productName").val(productName);
+				$("#editWorkOrder_div #totalOutput").val(totalOutput);
+				$("#editWorkOrder_div #mfgCode").val(mfgCode);
+				$("#editWorkOrder_div #mfgVersion").val(mfgVersion);
+				$("#editWorkOrder_div #recipeID").val(recipeID);
+				$("#editWorkOrder_div #formulaId").val(formulaId);
+				$("#editWorkOrder_div #state").val(state);
+				$("#editWorkOrder_div #unitID").val(unitID);
+			}
+			else{
+				$("#editWorkOrder_div #workOrderID").val("");
+				$("#editWorkOrder_div #productCode").val("");
+				$("#editWorkOrder_div #productName").val("");
+				$("#editWorkOrder_div #totalOutput").val("");
+				$("#editWorkOrder_div #mfgCode").val("");
+				$("#editWorkOrder_div #mfgVersion").val("");
+				$("#editWorkOrder_div #recipeID").val("");
+				$("#editWorkOrder_div #formulaId").val("");
+				$("#editWorkOrder_div #state").val("");
+				$("#editWorkOrder_div #unitID").val("");
+				alert(data.info);
+			}
+		}
+	,"json");
+}
+
 function addRecipePM_RMT(){
 	var pMCode=$("#addRecipePM_RMT_div #pMCode").val();
 	var pMName=$("#addRecipePM_RMT_div #pMName").val();
@@ -944,6 +1017,48 @@ function splitUnitTagData(data){
 		UnitID:<input type="text" size="50" id="unitID"/>
 	</div>
 	<input type="button" value="发送" onclick="addWorkOrder()"/>
+</div>
+
+<div id="editWorkOrder_div" style="margin-top: 10px;">
+	修改工单数据:
+	<div>
+		ID:<input type="text" size="50" id="id"/>
+		<input type="button" value="查询" onclick="getWorkOrder()"/>
+	</div>
+	<div>
+		WorkOrderID:<input type="text" size="50" id="workOrderID"/>
+	</div>
+	<div>
+		ProductCode:<input type="text" size="50" id="productCode"/>
+	</div>
+	<div>
+		ProductName:<input type="text" size="50" id="productName"/>
+	</div>
+	<div>
+		TotalOutput:<input type="text" size="50" id="totalOutput"/>
+	</div>
+	<div>
+		MfgCode:<input type="text" size="50" id="mfgCode"/>
+	</div>
+	<div>
+		MfgVersion:<input type="text" size="50" id="mfgVersion"/>
+	</div>
+	<div>
+		RecipeID:<input type="text" size="50" id="recipeID"/>
+	</div>
+	<div>
+		FormulaId:<input type="text" size="50" id="formulaId"/>
+	</div>
+	<div>
+		State:<input type="text" size="50" id="state" value="1"/>
+	</div>
+	<div>
+		CreateTime:<input type="text" size="50" id="createTime"/>
+	</div>
+	<div>
+		UnitID:<input type="text" size="50" id="unitID"/>
+	</div>
+	<input type="button" value="提交" onclick="editWorkOrder()"/>
 </div>
 
 <div id="addRecipePM_RMT_div" style="margin-top: 10px;">
