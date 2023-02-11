@@ -80,4 +80,43 @@
 			</if>
 		</trim>
 	</insert>
+	<update id="edit" parameterType="com.batchMesComDK.entity.RecipePM_RMT">
+		update RecipePM_RMT set 
+		<trim suffixOverrides=",">
+			<if test="PMCode!=null">
+				PMCode=#{PMCode},
+			</if>
+			<if test="PMName!=null">
+				PMName=#{PMName},
+			</if>
+			<if test="lot!=null">
+				lot=#{lot},
+			</if>
+			<if test="dosage!=null">
+				dosage=#{dosage},
+			</if>
+			<if test="unit!=null">
+				unit=#{unit},
+			</if>
+			<if test="HLimit!=null">
+				HLimit=#{HLimit},
+			</if>
+			<if test="LLimit!=null">
+				LLimit=#{LLimit},
+			</if>
+			<if test="PMType!=null">
+				PMType=#{PMType},
+			</if>
+			<if test="recipeID!=null">
+				recipeID=#{recipeID},
+			</if>
+			<if test="CName!=null">
+				CName=#{CName},
+			</if>
+		</trim>
+		 where ID=#{ID}
+	</update>
+	<select id="getById" resultType="com.batchMesComDK.entity.RecipePM_RMT">
+		select * from RecipePM_RMT where id=#{id}
+	</select>
 </mapper>

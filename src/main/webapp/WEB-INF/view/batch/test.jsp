@@ -165,6 +165,80 @@ function addRecipePM_RMT(){
 	,"json");
 }
 
+function editRecipePM_RMT(){
+	var id=$("#editRecipePM_RMT_div #id").val();
+	var pMCode=$("#editRecipePM_RMT_div #pMCode").val();
+	var pMName=$("#editRecipePM_RMT_div #pMName").val();
+	var lot=$("#editRecipePM_RMT_div #lot").val();
+	var dosage=$("#editRecipePM_RMT_div #dosage").val();
+	var unit=$("#editRecipePM_RMT_div #unit").val();
+	var hLimit=$("#editRecipePM_RMT_div #hLimit").val();
+	var lLimit=$("#editRecipePM_RMT_div #lLimit").val();
+	var pMType=$("#editRecipePM_RMT_div #pMType").val();
+	var recipeID=$("#editRecipePM_RMT_div #recipeID").val();
+	var cName=$("#editRecipePM_RMT_div #cName").val();
+	
+	$.post(path+"batch/editRecipePM_RMT",
+		{ID:id,pMCode:pMCode,pMName:pMName,lot:lot,dosage:dosage,unit:unit,
+		hLimit:hLimit,lLimit:lLimit,pMType:pMType,recipeID:recipeID,cName:cName},
+		function(data){
+			if(data.message=="ok")
+				alert(data.info);
+			else{
+				alert(data.info);
+			}
+		}
+	,"json");
+}
+
+function getRecipePM_RMT(){
+	var id=$("#editRecipePM_RMT_div #id").val();
+
+	$.post(path+"batch/getRecipePM_RMT",
+		{id:id},
+		function(data){
+			if(data.message=="ok"){
+				var rPM_RMT=data.rPM_RMT;
+				console.log(rPM_RMT)
+				var pMCode=rPM_RMT.pmcode;
+				var pMName=rPM_RMT.pmname;
+				var lot=rPM_RMT.lot;
+				var dosage=rPM_RMT.dosage;
+				var unit=rPM_RMT.unit;
+				var hLimit=rPM_RMT.hlimit;
+				var lLimit=rPM_RMT.llimit;
+				var pMType=rPM_RMT.pmType;
+				var recipeID=rPM_RMT.recipeID;
+				var cName=rPM_RMT.cname;
+				
+				$("#editRecipePM_RMT_div #pMCode").val(pMCode);
+				$("#editRecipePM_RMT_div #pMName").val(pMName);
+				$("#editRecipePM_RMT_div #lot").val(lot);
+				$("#editRecipePM_RMT_div #dosage").val(dosage);
+				$("#editRecipePM_RMT_div #unit").val(unit);
+				$("#editRecipePM_RMT_div #hLimit").val(hLimit);
+				$("#editRecipePM_RMT_div #lLimit").val(lLimit);
+				$("#editRecipePM_RMT_div #pMType").val(pMType);
+				$("#editRecipePM_RMT_div #recipeID").val(recipeID);
+				$("#editRecipePM_RMT_div #cName").val(cName);
+			}
+			else{
+				$("#editRecipePM_RMT_div #pMCode").val("");
+				$("#editRecipePM_RMT_div #pMName").val("");
+				$("#editRecipePM_RMT_div #lot").val("");
+				$("#editRecipePM_RMT_div #dosage").val("");
+				$("#editRecipePM_RMT_div #unit").val("");
+				$("#editRecipePM_RMT_div #hLimit").val("");
+				$("#editRecipePM_RMT_div #lLimit").val("");
+				$("#editRecipePM_RMT_div #pMType").val("");
+				$("#editRecipePM_RMT_div #recipeID").val("");
+				$("#editRecipePM_RMT_div #cName").val("");
+				alert(data.info);
+			}
+		}
+	,"json");
+}
+
 function addRecipePMFromRMT(){
 	var workOrderID=$("#arpmfrmt_div #workOrderID").val();
 	var recipeID=$("#arpmfrmt_div #recipeID").val();
@@ -1094,6 +1168,45 @@ function splitUnitTagData(data){
 		CName:<input type="text" size="50" id="cName"/>
 	</div>
 	<input type="button" value="发送" onclick="addRecipePM_RMT()"/>
+</div>
+
+<div id="editRecipePM_RMT_div" style="margin-top: 10px;">
+	修改远程配方参数数据:
+	<div>
+		ID:<input type="text" size="50" id="id"/>
+		<input type="button" value="查询" onclick="getRecipePM_RMT()"/>
+	</div>
+	<div>
+		PMCode:<input type="text" size="50" id="pMCode"/>
+	</div>
+	<div>
+		PMName:<input type="text" size="50" id="pMName"/>
+	</div>
+	<div>
+		Lot:<input type="text" size="50" id="lot"/>
+	</div>
+	<div>
+		Dosage:<input type="text" size="50" id="dosage"/>
+	</div>
+	<div>
+		Unit:<input type="text" size="50" id="unit"/>
+	</div>
+	<div>
+		HLimit:<input type="text" size="50" id="hLimit"/>
+	</div>
+	<div>
+		LLimit:<input type="text" size="50" id="lLimit"/>
+	</div>
+	<div>
+		PMType:<input type="text" size="50" id="pMType"/>
+	</div>
+	<div>
+		RecipeID:<input type="text" size="50" id="recipeID"/>
+	</div>
+	<div>
+		CName:<input type="text" size="50" id="cName"/>
+	</div>
+	<input type="button" value="提交" onclick="editRecipePM_RMT()"/>
 </div>
 
 <div id="arpmfrmt_div" style="margin-top: 10px;">

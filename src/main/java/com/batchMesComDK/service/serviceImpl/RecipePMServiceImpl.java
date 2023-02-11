@@ -20,21 +20,28 @@ public class RecipePMServiceImpl implements RecipePMService {
 	@Override
 	public int addFromRMT(String workOrderID, String recipeID) {
 		// TODO Auto-generated method stub
-		RecipePM_RMT rPMRmt=recipePM_RMTDao.getByRecipeID(recipeID);
+		int count=0;
+		List<RecipePM_RMT> rPMRmtList=recipePM_RMTDao.getByRecipeID(recipeID);
 		
-		RecipePM rPM=new RecipePM();
-		rPM.setPMCode(rPMRmt.getPMCode());
-		rPM.setPMName(rPMRmt.getPMName());
-		rPM.setLot(rPMRmt.getLot());
-		rPM.setDosage(rPMRmt.getDosage());
-		rPM.setUnit(rPMRmt.getUnit());
-		rPM.setHLimit(rPMRmt.getHLimit());
-		rPM.setLLimit(rPMRmt.getLLimit());
-		rPM.setPMType(rPMRmt.getPMType());
-		rPM.setWorkOrderID(workOrderID);
-		rPM.setCName(rPMRmt.getCName());
+		RecipePM rPM=null;
+		for(int i=0;i<rPMRmtList.size();i++) {
+			RecipePM_RMT rPMRmt = rPMRmtList.get(i);
+			rPM=new RecipePM();
+			rPM.setPMCode(rPMRmt.getPMCode());
+			rPM.setPMName(rPMRmt.getPMName());
+			rPM.setLot(rPMRmt.getLot());
+			rPM.setDosage(rPMRmt.getDosage());
+			rPM.setUnit(rPMRmt.getUnit());
+			rPM.setHLimit(rPMRmt.getHLimit());
+			rPM.setLLimit(rPMRmt.getLLimit());
+			rPM.setPMType(rPMRmt.getPMType());
+			rPM.setWorkOrderID(workOrderID);
+			rPM.setCName(rPMRmt.getCName());
+			
+			count+=recipePMDao.add(rPM);
+		}
 		
-		return recipePMDao.add(rPM);
+		return count;
 	}
 
 	@Override

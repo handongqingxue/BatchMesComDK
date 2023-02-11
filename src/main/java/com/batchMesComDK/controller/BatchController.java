@@ -380,6 +380,73 @@ public class BatchController {
 		}
 	}
 
+	@RequestMapping(value="/editRecipePM_RMT")
+	@ResponseBody
+	public Map<String, Object> editRecipePM_RMT(RecipePM_RMT rPM_RMT) {
+		
+		System.out.println("id==="+rPM_RMT.getID());
+		System.out.println("pMCode==="+rPM_RMT.getPMCode());
+		System.out.println("pMName==="+rPM_RMT.getPMName());
+		System.out.println("lot==="+rPM_RMT.getLot());
+		System.out.println("dosage==="+rPM_RMT.getDosage());
+		System.out.println("unit==="+rPM_RMT.getUnit());
+		System.out.println("hLimit==="+rPM_RMT.getHLimit());
+		System.out.println("lLimit==="+rPM_RMT.getLLimit());
+		System.out.println("pMType==="+rPM_RMT.getPMType());
+		System.out.println("recipeID==="+rPM_RMT.getRecipeID());
+		System.out.println("cName==="+rPM_RMT.getCName());
+		
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
+		
+		try {
+			int count=recipePM_RMTService.edit(rPM_RMT);
+			if(count>0) {
+				jsonMap.put("message", "ok");
+				jsonMap.put("info", "修改远程配方参数成功");
+			}
+			else {
+				jsonMap.put("message", "no");
+				jsonMap.put("info", "修改远程配方参数失败");
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			jsonMap.put("message", "no");
+			jsonMap.put("info", "修改远程配方参数失败");
+		}
+		finally {
+			return jsonMap;
+		}
+	}
+
+	@RequestMapping(value="/getRecipePM_RMT")
+	@ResponseBody
+	public Map<String, Object> getRecipePM_RMT(Integer id) {
+		
+		System.out.println("id==="+id);
+
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
+		
+		try {
+			RecipePM_RMT rPM_RMT=recipePM_RMTService.getById(id);
+			if(rPM_RMT==null) {
+				jsonMap.put("message", "no");
+				jsonMap.put("info", "查询远程配方参数失败");
+			}
+			else {
+				jsonMap.put("message", "ok");
+				jsonMap.put("rPM_RMT", rPM_RMT);
+				jsonMap.put("info", "查询远程配方参数成功");
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally {
+			return jsonMap;
+		}
+	}
+
 	@RequestMapping(value="/addRecipePMFromRMT")
 	@ResponseBody
 	public Map<String, Object> addRecipePMFromRMT(String workOrderID, String recipeID) {
