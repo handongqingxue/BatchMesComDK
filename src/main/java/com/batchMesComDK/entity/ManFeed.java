@@ -57,6 +57,12 @@ public class ManFeed {
 	public void setMarkBit(String markBit) {
 		MarkBit = markBit;
 	}
+	public String getMaterialSV() {
+		return MaterialSV;
+	}
+	public void setMaterialSV(String materialSV) {
+		MaterialSV = materialSV;
+	}
 	private String WorkOrderID;
 	private String MaterialCode;
   	private String MaterialName;
@@ -65,4 +71,5 @@ public class ManFeed {
   	private String FeedTime;
   	private String PhaseID;
   	private String MarkBit;
+  	private String MaterialSV;
 }

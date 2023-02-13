@@ -61,4 +61,28 @@
 				0
 		</trim>
 	</insert>
+	<update id="editByWorkOrderID" parameterType="com.batchMesComDK.entity.ManFeed">
+		update ManFeed set 
+		<trim suffixOverrides=",">
+			<if test="materialCode!=null">
+				materialCode=#{materialCode},
+			</if>
+			<if test="materialName!=null">
+				materialName=#{materialName},
+			</if>
+			<if test="suttle!=null">
+				suttle=#{suttle},
+			</if>
+			<if test="unit!=null">
+				unit=#{unit},
+			</if>
+			<if test="feedTime!=null">
+				feedTime=#{feedTime},
+			</if>
+		</trim>
+		 where WorkOrderID=#{workOrderID}
+	</update>
+	<select id="getByWorkOrderID" resultType="com.batchMesComDK.entity.ManFeed">
+		select * from ManFeed where WorkOrderID=#{workOrderID}
+	</select>
 </mapper>

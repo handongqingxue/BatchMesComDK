@@ -270,6 +270,95 @@ function addBatchRecordFromRecordPM(){
 	,"json");
 }
 
+function addManFeed(){
+	var workOrderID=$("#addManFeed_div #workOrderID").val();
+	var materialCode=$("#addManFeed_div #materialCode").val();
+	var materialName=$("#addManFeed_div #materialName").val();
+	var suttle=$("#addManFeed_div #suttle").val();
+	var unit=$("#addManFeed_div #unit").val();
+	var feedTime=$("#addManFeed_div #feedTime").val();
+	var phaseID=$("#addManFeed_div #phaseID").val();
+	var markBit=$("#addManFeed_div #markBit").val();
+	var materialSV=$("#addManFeed_div #materialSV").val();
+	
+	$.post(path+"batch/addManFeed",
+		{workOrderID:workOrderID,materialCode:materialCode,materialName:materialName,suttle:suttle,
+		unit:unit,feedTime:feedTime,phaseID:phaseID,markBit:markBit,materialSV:materialSV},
+		function(data){
+			if(data.message=="ok")
+				alert(data.info);
+			else{
+				alert(data.info);
+			}
+		}
+	,"json");
+}
+
+function editManFeed(){
+	var workOrderID=$("#editManFeed_div #workOrderID").val();
+	var materialCode=$("#editManFeed_div #materialCode").val();
+	var materialName=$("#editManFeed_div #materialName").val();
+	var suttle=$("#editManFeed_div #suttle").val();
+	var unit=$("#editManFeed_div #unit").val();
+	var feedTime=$("#editManFeed_div #feedTime").val();
+	var phaseID=$("#editManFeed_div #phaseID").val();
+	var markBit=$("#editManFeed_div #markBit").val();
+	var materialSV=$("#editManFeed_div #materialSV").val();
+	
+	$.post(path+"batch/editManFeed",
+		{workOrderID:workOrderID,materialCode:materialCode,materialName:materialName,suttle:suttle,
+		unit:unit,feedTime:feedTime,phaseID:phaseID,markBit:markBit,materialSV:materialSV},
+		function(data){
+			if(data.message=="ok")
+				alert(data.info);
+			else{
+				alert(data.info);
+			}
+		}
+	,"json");
+}
+
+function getManFeed(){
+	var workOrderID=$("#editManFeed_div #workOrderID").val();
+	$.post(path+"batch/getManFeed",
+		{workOrderID:workOrderID},
+		function(data){
+			if(data.message=="ok"){
+				var manFeed=data.manFeed;
+				console.log(manFeed)
+				var materialCode=manFeed.materialCode;
+				var materialName=manFeed.materialName;
+				var suttle=manFeed.suttle;
+				var unit=manFeed.unit;
+				var feedTime=manFeed.feedTime;
+				var phaseID=manFeed.phaseID;
+				var markBit=manFeed.markBit;
+				var materialSV=manFeed.materialSV;
+				
+				$("#editManFeed_div #materialCode").val(materialCode);
+				$("#editManFeed_div #materialName").val(materialName);
+				$("#editManFeed_div #suttle").val(suttle);
+				$("#editManFeed_div #unit").val(unit);
+				$("#editManFeed_div #feedTime").val(feedTime);
+				$("#editManFeed_div #phaseID").val(phaseID);
+				$("#editManFeed_div #markBit").val(markBit);
+				$("#editManFeed_div #materialSV").val(materialSV);
+			}
+			else{
+				$("#editManFeed_div #materialCode").val("");
+				$("#editManFeed_div #materialName").val("");
+				$("#editManFeed_div #suttle").val("");
+				$("#editManFeed_div #unit").val("");
+				$("#editManFeed_div #feedTime").val("");
+				$("#editManFeed_div #phaseID").val("");
+				$("#editManFeed_div #markBit").val("");
+				$("#editManFeed_div #materialSV").val("");
+				alert(data.info);
+			}
+		}
+	,"json");
+}
+
 function updateWorkOrderStateById(){
 	var state=$("#uwos_div #state_sel").val();
 	if(state=="")
@@ -1226,6 +1315,71 @@ function splitUnitTagData(data){
 		WorkOrderID:<input type="text" size="50" id="workOrderID"/>
 	</div>
 	<input type="button" value="发送" onclick="addBatchRecordFromRecordPM()"/>
+</div>
+
+<div id="addManFeed_div" style="margin-top: 10px;">
+	添加人工投料信息:
+	<div>
+		WorkOrderID:<input type="text" size="50" id="workOrderID"/>
+	</div>
+	<div>
+		MaterialCode:<input type="text" size="50" id="materialCode"/>
+	</div>
+	<div>
+		MaterialName:<input type="text" size="50" id="materialName"/>
+	</div>
+	<div>
+		Suttle:<input type="text" size="50" id="suttle"/>
+	</div>
+	<div>
+		Unit:<input type="text" size="50" id="unit"/>
+	</div>
+	<div>
+		FeedTime:<input type="text" size="50" id="feedTime"/>
+	</div>
+	<div>
+		PhaseID:<input type="text" size="50" id="phaseID"/>
+	</div>
+	<div>
+		MarkBit:<input type="text" size="50" id="markBit"/>
+	</div>
+	<div>
+		MaterialSV:<input type="text" size="50" id="materialSV"/>
+	</div>
+	<input type="button" value="发送" onclick="addManFeed()"/>
+</div>
+
+<div id="editManFeed_div" style="margin-top: 10px;">
+	修改人工投料信息:
+	<div>
+		WorkOrderID:<input type="text" size="50" id="workOrderID"/>
+		<input type="button" value="查询" onclick="getManFeed()"/>
+	</div>
+	<div>
+		MaterialCode:<input type="text" size="50" id="materialCode"/>
+	</div>
+	<div>
+		MaterialName:<input type="text" size="50" id="materialName"/>
+	</div>
+	<div>
+		Suttle:<input type="text" size="50" id="suttle"/>
+	</div>
+	<div>
+		Unit:<input type="text" size="50" id="unit"/>
+	</div>
+	<div>
+		FeedTime:<input type="text" size="50" id="feedTime"/>
+	</div>
+	<div>
+		PhaseID:<input type="text" size="50" id="phaseID"/>
+	</div>
+	<div>
+		MarkBit:<input type="text" size="50" id="markBit"/>
+	</div>
+	<div>
+		MaterialSV:<input type="text" size="50" id="materialSV"/>
+	</div>
+	<input type="button" value="提交" onclick="editManFeed()"/>
 </div>
 
 <div id="uwos_div" style="margin-top: 10px;">

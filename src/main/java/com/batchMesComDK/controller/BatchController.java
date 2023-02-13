@@ -57,6 +57,8 @@ public class BatchController {
 	@Autowired
 	private RecipePM_RMTService recipePM_RMTService;
 	@Autowired
+	private ManFeedService manFeedService;
+	@Autowired
 	private BatchRecordService batchRecordService;
 	@Autowired
 	private TranslateService translateService;
@@ -497,6 +499,86 @@ public class BatchController {
 		}
 	}
 
+	@RequestMapping(value="/addManFeed")
+	@ResponseBody
+	public Map<String, Object> addManFeed(ManFeed manFeed) {
+
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
+		
+		try {
+			int count=manFeedService.add(manFeed);
+			if(count>0) {
+				jsonMap.put("message", "ok");
+				jsonMap.put("info", "添加人工投料信息成功");
+			}
+			else {
+				jsonMap.put("message", "no");
+				jsonMap.put("info", "添加人工投料信息失败");
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally {
+			return jsonMap;
+		}
+	}
+
+	@RequestMapping(value="/editManFeed")
+	@ResponseBody
+	public Map<String, Object> editManFeed(ManFeed mf) {
+		
+		System.out.println("workOrderID==="+mf.getWorkOrderID());
+
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
+		
+		try {
+			int count=manFeedService.editByWorkOrderID(mf);
+			if(count>0) {
+				jsonMap.put("message", "ok");
+				jsonMap.put("info", "修改人工投料信息成功");
+			}
+			else {
+				jsonMap.put("message", "no");
+				jsonMap.put("info", "修改人工投料信息失败");
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally {
+			return jsonMap;
+		}
+	}
+
+	@RequestMapping(value="/getManFeed")
+	@ResponseBody
+	public Map<String, Object> getManFeed(String workOrderID) {
+		
+		System.out.println("workOrderID==="+workOrderID);
+
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
+		
+		try {
+			ManFeed mf=manFeedService.getByWorkOrderID(workOrderID);
+			if(mf==null) {
+				jsonMap.put("message", "no");
+				jsonMap.put("info", "查询人工投料信息失败");
+			}
+			else {
+				jsonMap.put("message", "ok");
+				jsonMap.put("manFeed", mf);
+				jsonMap.put("info", "查询人工投料信息成功");
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally {
+			return jsonMap;
+		}
+	}
+
 	@RequestMapping(value="/updateWorkOrderStateById")
 	@ResponseBody
 	public Map<String, Object> updateWorkOrderStateById(Integer state, Integer id) {
@@ -862,8 +944,13 @@ public class BatchController {
 		System.out.println("bodyEnc==="+bodyEnc);
 		String bodyDec = DesUtil.decrypt(bodyEnc,DesUtil.SECRET_KEY);
 		net.sf.json.JSONObject fibJO = net.sf.json.JSONObject.fromObject(bodyDec);
+		/*
 		FeedIssusBody fib=(FeedIssusBody)net.sf.json.JSONObject.toBean(fibJO, FeedIssusBody.class);
 		int c=feedIssusBodyService.add(fib);
+		*/
+
+		ManFeed mf=(ManFeed)net.sf.json.JSONObject.toBean(fibJO, ManFeed.class);
+		int c=manFeedService.editByWorkOrderID(mf);
 		if(c>0) {
 			plan.setSuccess(true);
 			plan.setStatus(1);
