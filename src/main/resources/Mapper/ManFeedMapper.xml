@@ -67,7 +67,7 @@
 		#{id}
 		</foreach>
 	</delete>
-	<update id="editByWorkOrderID" parameterType="com.batchMesComDK.entity.ManFeed">
+	<update id="editByWorkOrderIDPhaseID" parameterType="com.batchMesComDK.entity.ManFeed">
 		update ManFeed set 
 		<trim suffixOverrides=",">
 			<if test="materialCode!=null">
@@ -86,7 +86,7 @@
 				feedTime=#{feedTime},
 			</if>
 		</trim>
-		 where WorkOrderID=#{workOrderID}
+		 where WorkOrderID=#{workOrderID} and PhaseID=#{phaseID}
 	</update>
 	<select id="getByWorkOrderID" resultType="com.batchMesComDK.entity.ManFeed">
 		select * from ManFeed where WorkOrderID=#{workOrderID}

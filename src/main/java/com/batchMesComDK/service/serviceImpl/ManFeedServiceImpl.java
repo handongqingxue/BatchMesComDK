@@ -15,11 +15,37 @@ public class ManFeedServiceImpl implements ManFeedService {
 
 	@Autowired
 	ManFeedMapper manFeedDao;
+	@Autowired
+	RecipePMMapper recipePMDao;
 
 	@Override
 	public int add(ManFeed manFeed) {
 		// TODO Auto-generated method stub
 		return manFeedDao.add(manFeed);
+	}
+
+	@Override
+	public int addFromRecipePM(String workOrderID) {
+		// TODO Auto-generated method stub
+		int count=0;
+		List<RecipePM> rPMList=recipePMDao.getListByWorkOrderID(workOrderID);
+		
+		ManFeed mf=null;
+		for (int i = 0; i < rPMList.size(); i++) {
+			RecipePM rPM=rPMList.get(i);
+			
+			mf=new ManFeed();
+		  	mf.setWorkOrderID(workOrderID);
+		  	mf.setMaterialCode(rPM.getPMCode());
+		  	mf.setMaterialName(rPM.getPMName());
+		  	mf.setPhaseID(rPM.getFeedPort());
+		  	mf.setMarkBit("0");
+		  	mf.setMaterialSV(rPM.getMaterialSV());
+			
+			count+=manFeedDao.add(mf);
+		}
+		
+		return count;
 	}
 
 	@Override
@@ -31,9 +57,9 @@ public class ManFeedServiceImpl implements ManFeedService {
 	}
 	
 	@Override
-	public int editByWorkOrderID(ManFeed mf) {
+	public int editByWorkOrderIDPhaseID(ManFeed mf) {
 		// TODO Auto-generated method stub
-		return manFeedDao.editByWorkOrderID(mf);
+		return manFeedDao.editByWorkOrderIDPhaseID(mf);
 	}
 
 	@Override

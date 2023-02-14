@@ -167,9 +167,10 @@ function addRecipePM_RMT(){
 	var pMType=$("#addRecipePM_RMT_div #pMType").val();
 	var recipeID=$("#addRecipePM_RMT_div #recipeID").val();
 	var cName=$("#addRecipePM_RMT_div #cName").val();
+	var materialSV=$("#addRecipePM_RMT_div #materialSV").val();
 
 	$.post(path+"batch/addRecipePM_RMT",
-		{pMCode:pMCode,pMName:pMName,lot:lot,dosage:dosage,unit:unit,hLimit:hLimit,lLimit:lLimit,pMType:pMType,recipeID:recipeID,cName:cName},
+		{pMCode:pMCode,pMName:pMName,lot:lot,dosage:dosage,unit:unit,hLimit:hLimit,lLimit:lLimit,pMType:pMType,recipeID:recipeID,cName:cName,materialSV:materialSV},
 		function(data){
 			if(data.message=="ok")
 				alert(data.info);
@@ -207,10 +208,11 @@ function editRecipePM_RMT(){
 	var pMType=$("#editRecipePM_RMT_div #pMType").val();
 	var recipeID=$("#editRecipePM_RMT_div #recipeID").val();
 	var cName=$("#editRecipePM_RMT_div #cName").val();
+	var materialSV=$("#editRecipePM_RMT_div #materialSV").val();
 	
 	$.post(path+"batch/editRecipePM_RMT",
 		{ID:id,pMCode:pMCode,pMName:pMName,lot:lot,dosage:dosage,unit:unit,
-		hLimit:hLimit,lLimit:lLimit,pMType:pMType,recipeID:recipeID,cName:cName},
+		hLimit:hLimit,lLimit:lLimit,pMType:pMType,recipeID:recipeID,cName:cName,materialSV:materialSV},
 		function(data){
 			if(data.message=="ok")
 				alert(data.info);
@@ -344,6 +346,21 @@ function addManFeed(){
 	$.post(path+"batch/addManFeed",
 		{workOrderID:workOrderID,materialCode:materialCode,materialName:materialName,suttle:suttle,
 		unit:unit,feedTime:feedTime,phaseID:phaseID,markBit:markBit,materialSV:materialSV},
+		function(data){
+			if(data.message=="ok")
+				alert(data.info);
+			else{
+				alert(data.info);
+			}
+		}
+	,"json");
+}
+
+function addManFeedFromRecipePM(){
+	var workOrderID=$("#amffrp_div #workOrderID").val();
+	
+	$.post(path+"batch/addManFeedFromRecipePM",
+		{workOrderID:workOrderID},
 		function(data){
 			if(data.message=="ok")
 				alert(data.info);
@@ -1339,6 +1356,9 @@ function splitUnitTagData(data){
 	<div>
 		CName:<input type="text" size="50" id="cName"/>
 	</div>
+	<div>
+		MaterialSV:<input type="text" size="50" id="materialSV"/>
+	</div>
 	<input type="button" value="发送" onclick="addRecipePM_RMT()"/>
 </div>
 
@@ -1377,6 +1397,9 @@ function splitUnitTagData(data){
 	</div>
 	<div>
 		CName:<input type="text" size="50" id="cName"/>
+	</div>
+	<div>
+		MaterialSV:<input type="text" size="50" id="materialSV"/>
 	</div>
 	<input type="button" value="提交" onclick="editRecipePM_RMT()"/>
 </div>
@@ -1454,6 +1477,14 @@ function splitUnitTagData(data){
 		MaterialSV:<input type="text" size="50" id="materialSV"/>
 	</div>
 	<input type="button" value="发送" onclick="addManFeed()"/>
+</div>
+
+<div id="amffrp_div" style="margin-top: 10px;">
+	从配方参数表添加人工投料数据:
+	<div>
+		WorkOrderID:<input type="text" size="50" id="workOrderID"/>
+	</div>
+	<input type="button" value="发送" onclick="addManFeedFromRecipePM()"/>
 </div>
 
 <div id="editManFeed_div" style="margin-top: 10px;">

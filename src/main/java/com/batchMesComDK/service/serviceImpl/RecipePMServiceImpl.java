@@ -38,6 +38,8 @@ public class RecipePMServiceImpl implements RecipePMService {
 			rPM.setPMType(rPMRmt.getPMType());
 			rPM.setWorkOrderID(workOrderID);
 			rPM.setCName(rPMRmt.getCName());
+			rPM.setCName(rPMRmt.getCName());
+			rPM.setMaterialSV(rPMRmt.getMaterialSV());
 			
 			count+=recipePMDao.add(rPM);
 		}

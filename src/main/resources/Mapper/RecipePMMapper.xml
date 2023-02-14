@@ -36,6 +36,9 @@
 			<if test="CName!=null">
 				CName,
 			</if>
+			<if test="MaterialSV!=null">
+				MaterialSV,
+			</if>
 		</trim>
 		values
 		<trim prefix="(" suffix=")" suffixOverrides=",">
@@ -68,6 +71,9 @@
 			</if>
 			<if test="CName!=null">
 				#{CName},
+			</if>
+			<if test="MaterialSV!=null">
+				#{MaterialSV},
 			</if>
 		</trim>
 	</insert>

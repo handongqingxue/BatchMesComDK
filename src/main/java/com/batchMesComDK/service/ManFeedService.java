@@ -6,9 +6,11 @@ public interface ManFeedService {
 
 	int add(ManFeed manFeed);
 
+	int addFromRecipePM(String workOrderID);
+
 	int deleteByIds(String ids);
 
-	int editByWorkOrderID(ManFeed mf);
+	int editByWorkOrderIDPhaseID(ManFeed mf);
 
 	ManFeed getByWorkOrderID(String workOrderID);
 

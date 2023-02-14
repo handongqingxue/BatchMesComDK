@@ -111,6 +111,8 @@ public class BatchController {
 					System.out.println("workOrderID==="+workOrderID);
 					System.out.println("recipeID==="+recipeID);
 					createBatch(id,workOrderID,recipeID);
+					
+					addManFeedFromRecipePM(workOrderID);//工单创建时，从配方参数表里取数据，放入人工投料表
 					break;
 				case WorkOrder.BQD:
 					//启动执行配方
@@ -624,6 +626,31 @@ public class BatchController {
 		}
 	}
 
+	@RequestMapping(value="/addManFeedFromRecipePM")
+	@ResponseBody
+	public Map<String, Object> addManFeedFromRecipePM(String workOrderID) {
+
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
+		
+		try {
+			int count=manFeedService.addFromRecipePM(workOrderID);
+			if(count>0) {
+				jsonMap.put("message", "ok");
+				jsonMap.put("info", "添加人工投料信息成功");
+			}
+			else {
+				jsonMap.put("message", "no");
+				jsonMap.put("info", "添加人工投料信息失败");
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally {
+			return jsonMap;
+		}
+	}
+
 	@RequestMapping(value="/deleteManFeedByIds")
 	@ResponseBody
 	public Map<String, Object> deleteManFeedByIds(String ids) {
@@ -1064,6 +1091,13 @@ public class BatchController {
 	@ResponseBody
 	public PlanResult feedIssusDown(@RequestBody String bodyEnc) {
 
+		/*
+		 * 除了ManFeed表里加设定值，RecipePM表里也要加设定值。工单创建时，要从RecipePM表里根据工单id获取相关的配方参数，这些属于物料参数，放入ManFeed表里。
+		 * 放入后在操作员扫码之前这个阶段只有物料名、PhaseID（投料口）、MarkBit（为0）、MaterialSV这些字段有数据，其他字段要在操作员扫码填入数后才能填充进去。
+		           当操作员扫码时，填入数量、单位，根据系统时间作进料时间。mes端调用人工投料接口，把填入的数据根据工单id和PhaseID（投料口）两个字段，从人工投料表里查询出符合条件的数据，
+		           把数量、单位那些之前为空的数据填充进去。填充完毕，markbit置1，wincc端就不再读取了，又将markbit置2，便于继续投料时与新的投料信息区分开。
+		 * */
+		
 		PlanResult plan=new PlanResult();
 
 		System.out.println("bodyEnc==="+bodyEnc);
@@ -1075,7 +1109,7 @@ public class BatchController {
 		*/
 
 		ManFeed mf=(ManFeed)net.sf.json.JSONObject.toBean(fibJO, ManFeed.class);
-		int c=manFeedService.editByWorkOrderID(mf);
+		int c=manFeedService.editByWorkOrderIDPhaseID(mf);
 		if(c>0) {
 			plan.setSuccess(true);
 			plan.setStatus(1);

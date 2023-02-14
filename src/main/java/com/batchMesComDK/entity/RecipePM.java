@@ -78,6 +78,18 @@ public class RecipePM {
 	public void setCName(String cName) {
 		CName = cName;
 	}
+  	public String getFeedPort() {
+		return FeedPort;
+	}
+	public void setFeedPort(String feedPort) {
+		FeedPort = feedPort;
+	}
+	public String getMaterialSV() {
+		return MaterialSV;
+	}
+	public void setMaterialSV(String materialSV) {
+		MaterialSV = materialSV;
+	}
 	private String PMCode;
   	private String PMName;
   	private String Lot;
@@ -88,4 +100,6 @@ public class RecipePM {
   	private String PMType;
   	private String WorkOrderID;
 	private String CName;
+	private String FeedPort;
+	private String MaterialSV;
 }

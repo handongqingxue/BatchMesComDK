@@ -69,6 +69,12 @@ public class RecipePM_RMT {
 	public void setCName(String cName) {
 		CName = cName;
 	}
+	public String getMaterialSV() {
+		return MaterialSV;
+	}
+	public void setMaterialSV(String materialSV) {
+		MaterialSV = materialSV;
+	}
 	private String PMCode;
   	private String PMName;
   	private String Lot;
@@ -79,4 +85,5 @@ public class RecipePM_RMT {
   	private String PMType;
   	private String RecipeID;
   	private String CName;
+  	private String MaterialSV;
 }
