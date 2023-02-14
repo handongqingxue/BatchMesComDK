@@ -15,4 +15,6 @@ public interface WorkOrderService {
 	int edit(WorkOrder wo);
 
 	WorkOrder getById(Integer id);
+
+	int deleteByIds(String ids);
 }

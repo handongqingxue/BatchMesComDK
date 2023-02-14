@@ -48,4 +48,12 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		// TODO Auto-generated method stub
 		return workOrderDao.getById(id);
 	}
+
+	@Override
+	public int deleteByIds(String ids) {
+		// TODO Auto-generated method stub
+		String[] idArr = ids.split(",");
+		List<String> idList = Arrays.asList(idArr);
+		return workOrderDao.deleteByList(idList);
+	}
 }

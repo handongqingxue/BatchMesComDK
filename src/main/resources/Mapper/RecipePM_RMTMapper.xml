@@ -80,6 +80,12 @@
 			</if>
 		</trim>
 	</insert>
+	<delete id="deleteByList">
+		delete from RecipePM_RMT where 1=1
+		<foreach collection="idList" item="id" open=" and cast(id as char) in (" separator="," close=")">
+		#{id}
+		</foreach>
+	</delete>
 	<update id="edit" parameterType="com.batchMesComDK.entity.RecipePM_RMT">
 		update RecipePM_RMT set 
 		<trim suffixOverrides=",">

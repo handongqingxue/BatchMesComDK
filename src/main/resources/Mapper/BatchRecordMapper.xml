@@ -119,6 +119,12 @@
 			</if>
 		</trim>
 	</insert>
+	<delete id="deleteByList">
+		delete from BatchRecord where 1=1
+		<foreach collection="idList" item="id" open=" and cast(id as char) in (" separator="," close=")">
+		#{id}
+		</foreach>
+	</delete>
 	<select id="getListByWorkOrderID" resultType="com.batchMesComDK.entity.BatchRecord">
 		select * from BatchRecord where WorkOrderID=#{workOrderID}
 	</select>

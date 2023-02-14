@@ -8,5 +8,7 @@ public interface RecipePMService {
 
 	int addFromRMT(String workOrderID, String recipeID);
 
+	int deleteByIds(String ids);
+
 	List<RecipePM> getListByWorkOrderID(String workOrderID);
 }

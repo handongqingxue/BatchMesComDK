@@ -68,6 +68,21 @@ function addWorkOrder(){
 	,"json");
 }
 
+function deleteWorkOrder(){
+	var ids=$("#deleteWorkOrder_div #ids").val();
+
+	$.post(path+"batch/deleteWorkOrderByIds",
+		{ids:ids},
+		function(data){
+			if(data.message=="ok")
+				alert(data.info);
+			else{
+				alert(data.info);
+			}
+		}
+	,"json");
+}
+
 function editWorkOrder(){
 	var id=$("#editWorkOrder_div #id").val();
 	var workOrderID=$("#editWorkOrder_div #workOrderID").val();
@@ -155,6 +170,21 @@ function addRecipePM_RMT(){
 
 	$.post(path+"batch/addRecipePM_RMT",
 		{pMCode:pMCode,pMName:pMName,lot:lot,dosage:dosage,unit:unit,hLimit:hLimit,lLimit:lLimit,pMType:pMType,recipeID:recipeID,cName:cName},
+		function(data){
+			if(data.message=="ok")
+				alert(data.info);
+			else{
+				alert(data.info);
+			}
+		}
+	,"json");
+}
+
+function deleteRecipePM_RMT(){
+	var ids=$("#deleteRecipePM_RMT_div #ids").val();
+
+	$.post(path+"batch/deleteRecipePM_RMTByIds",
+		{ids:ids},
 		function(data){
 			if(data.message=="ok")
 				alert(data.info);
@@ -255,11 +285,41 @@ function addRecipePMFromRMT(){
 	,"json");
 }
 
+function deleteRecipePM(){
+	var ids=$("#deleteRecipePM_div #ids").val();
+
+	$.post(path+"batch/deleteRecipePMByIds",
+		{ids:ids},
+		function(data){
+			if(data.message=="ok")
+				alert(data.info);
+			else{
+				alert(data.info);
+			}
+		}
+	,"json");
+}
+
 function addBatchRecordFromRecordPM(){
 	var workOrderID=$("#abrfrp_div #workOrderID").val();
 	
 	$.post(path+"batch/addBatchRecordFromRecordPM",
 		{workOrderID:workOrderID},
+		function(data){
+			if(data.message=="ok")
+				alert(data.info);
+			else{
+				alert(data.info);
+			}
+		}
+	,"json");
+}
+
+function deleteBatchRecord(){
+	var ids=$("#deleteBatchRecord_div #ids").val();
+
+	$.post(path+"batch/deleteBatchRecordByIds",
+		{ids:ids},
 		function(data){
 			if(data.message=="ok")
 				alert(data.info);
@@ -284,6 +344,21 @@ function addManFeed(){
 	$.post(path+"batch/addManFeed",
 		{workOrderID:workOrderID,materialCode:materialCode,materialName:materialName,suttle:suttle,
 		unit:unit,feedTime:feedTime,phaseID:phaseID,markBit:markBit,materialSV:materialSV},
+		function(data){
+			if(data.message=="ok")
+				alert(data.info);
+			else{
+				alert(data.info);
+			}
+		}
+	,"json");
+}
+
+function deleteManFeed(){
+	var ids=$("#deleteManFeed_div #ids").val();
+
+	$.post(path+"batch/deleteManFeedByIds",
+		{ids:ids},
 		function(data){
 			if(data.message=="ok")
 				alert(data.info);
@@ -1224,6 +1299,14 @@ function splitUnitTagData(data){
 	<input type="button" value="提交" onclick="editWorkOrder()"/>
 </div>
 
+<div id="deleteWorkOrder_div" style="margin-top: 10px;">
+	删除工单数据:
+	<div>
+		IDs:<input type="text" size="50" id="ids"/>
+		<input type="button" value="删除" onclick="deleteWorkOrder()"/>
+	</div>
+</div>
+
 <div id="addRecipePM_RMT_div" style="margin-top: 10px;">
 	添加远程配方参数数据:
 	<div>
@@ -1298,6 +1381,14 @@ function splitUnitTagData(data){
 	<input type="button" value="提交" onclick="editRecipePM_RMT()"/>
 </div>
 
+<div id="deleteRecipePM_RMT_div" style="margin-top: 10px;">
+	删除远程配方参数数据:
+	<div>
+		IDs:<input type="text" size="50" id="ids"/>
+		<input type="button" value="删除" onclick="deleteRecipePM_RMT()"/>
+	</div>
+</div>
+
 <div id="arpmfrmt_div" style="margin-top: 10px;">
 	从远程配方参数表添加配方参数:
 	<div>
@@ -1309,12 +1400,28 @@ function splitUnitTagData(data){
 	<input type="button" value="发送" onclick="addRecipePMFromRMT()"/>
 </div>
 
+<div id="deleteRecipePM_div" style="margin-top: 10px;">
+	删除配方参数数据:
+	<div>
+		IDs:<input type="text" size="50" id="ids"/>
+		<input type="button" value="删除" onclick="deleteRecipePM()"/>
+	</div>
+</div>
+
 <div id="abrfrp_div" style="margin-top: 10px;">
 	从配方参数表添加批记录数据:
 	<div>
 		WorkOrderID:<input type="text" size="50" id="workOrderID"/>
 	</div>
 	<input type="button" value="发送" onclick="addBatchRecordFromRecordPM()"/>
+</div>
+
+<div id="deleteBatchRecord_div" style="margin-top: 10px;">
+	删除批记录数据:
+	<div>
+		IDs:<input type="text" size="50" id="ids"/>
+		<input type="button" value="删除" onclick="deleteBatchRecord()"/>
+	</div>
 </div>
 
 <div id="addManFeed_div" style="margin-top: 10px;">
@@ -1380,6 +1487,14 @@ function splitUnitTagData(data){
 		MaterialSV:<input type="text" size="50" id="materialSV"/>
 	</div>
 	<input type="button" value="提交" onclick="editManFeed()"/>
+</div>
+
+<div id="deleteManFeed_div" style="margin-top: 10px;">
+	删除人工投料信息:
+	<div>
+		IDs:<input type="text" size="50" id="ids"/>
+		<input type="button" value="删除" onclick="deleteManFeed()"/>
+	</div>
 </div>
 
 <div id="uwos_div" style="margin-top: 10px;">

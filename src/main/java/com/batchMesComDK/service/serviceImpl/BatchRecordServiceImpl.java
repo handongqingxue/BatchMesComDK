@@ -1,5 +1,6 @@
 package com.batchMesComDK.service.serviceImpl;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,5 +57,13 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 		}
 		
 		return count;
+	}
+
+	@Override
+	public int deleteByIds(String ids) {
+		// TODO Auto-generated method stub
+		String[] idArr = ids.split(",");
+		List<String> idList = Arrays.asList(idArr);
+		return batchRecordDao.deleteByList(idList);
 	}
 }

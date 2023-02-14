@@ -61,6 +61,12 @@
 				0
 		</trim>
 	</insert>
+	<delete id="deleteByList">
+		delete from ManFeed where 1=1
+		<foreach collection="idList" item="id" open=" and cast(id as char) in (" separator="," close=")">
+		#{id}
+		</foreach>
+	</delete>
 	<update id="editByWorkOrderID" parameterType="com.batchMesComDK.entity.ManFeed">
 		update ManFeed set 
 		<trim suffixOverrides=",">

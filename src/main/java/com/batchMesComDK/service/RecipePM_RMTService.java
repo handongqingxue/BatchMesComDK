@@ -6,6 +6,8 @@ public interface RecipePM_RMTService {
 
 	int add(RecipePM_RMT rPM_RMT);
 
+	int deleteByIds(String ids);
+
 	int edit(RecipePM_RMT rPM_RMT);
 
 	RecipePM_RMT getById(Integer id);

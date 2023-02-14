@@ -302,6 +302,31 @@ public class BatchController {
 		}
 	}
 
+	@RequestMapping(value="/deleteWorkOrderByIds")
+	@ResponseBody
+	public Map<String, Object> deleteWorkOrderByIds(String ids) {
+
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
+		
+		try {
+			int count=workOrderService.deleteByIds(ids);
+			if(count>0) {
+				jsonMap.put("message", "ok");
+				jsonMap.put("info", "删除工单成功");
+			}
+			else {
+				jsonMap.put("message", "no");
+				jsonMap.put("info", "删除工单失败");
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally {
+			return jsonMap;
+		}
+	}
+
 	@RequestMapping(value="/editWorkOrder")
 	@ResponseBody
 	public Map<String, Object> editWorkOrder(WorkOrder wo) {
@@ -372,6 +397,31 @@ public class BatchController {
 			else {
 				jsonMap.put("message", "no");
 				jsonMap.put("info", "添加远程配方参数失败");
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally {
+			return jsonMap;
+		}
+	}
+
+	@RequestMapping(value="/deleteRecipePM_RMTByIds")
+	@ResponseBody
+	public Map<String, Object> deleteRecipePM_RMTByIds(String ids) {
+
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
+		
+		try {
+			int count=recipePM_RMTService.deleteByIds(ids);
+			if(count>0) {
+				jsonMap.put("message", "ok");
+				jsonMap.put("info", "删除远程配方参数成功");
+			}
+			else {
+				jsonMap.put("message", "no");
+				jsonMap.put("info", "删除远程配方参数失败");
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -474,6 +524,31 @@ public class BatchController {
 		}
 	}
 
+	@RequestMapping(value="/deleteRecipePMByIds")
+	@ResponseBody
+	public Map<String, Object> deleteRecipePMByIds(String ids) {
+
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
+		
+		try {
+			int count=recipePMService.deleteByIds(ids);
+			if(count>0) {
+				jsonMap.put("message", "ok");
+				jsonMap.put("info", "删除配方参数成功");
+			}
+			else {
+				jsonMap.put("message", "no");
+				jsonMap.put("info", "删除配方参数失败");
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally {
+			return jsonMap;
+		}
+	}
+
 	@RequestMapping(value="/addBatchRecordFromRecordPM")
 	@ResponseBody
 	public Map<String, Object> addBatchRecordFromRecordPM(String workOrderID) {
@@ -499,6 +574,31 @@ public class BatchController {
 		}
 	}
 
+	@RequestMapping(value="/deleteBatchRecordByIds")
+	@ResponseBody
+	public Map<String, Object> deleteBatchRecordByIds(String ids) {
+
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
+		
+		try {
+			int count=batchRecordService.deleteByIds(ids);
+			if(count>0) {
+				jsonMap.put("message", "ok");
+				jsonMap.put("info", "删除批记录成功");
+			}
+			else {
+				jsonMap.put("message", "no");
+				jsonMap.put("info", "删除批记录失败");
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally {
+			return jsonMap;
+		}
+	}
+
 	@RequestMapping(value="/addManFeed")
 	@ResponseBody
 	public Map<String, Object> addManFeed(ManFeed manFeed) {
@@ -514,6 +614,31 @@ public class BatchController {
 			else {
 				jsonMap.put("message", "no");
 				jsonMap.put("info", "添加人工投料信息失败");
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally {
+			return jsonMap;
+		}
+	}
+
+	@RequestMapping(value="/deleteManFeedByIds")
+	@ResponseBody
+	public Map<String, Object> deleteManFeedByIds(String ids) {
+
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
+		
+		try {
+			int count=manFeedService.deleteByIds(ids);
+			if(count>0) {
+				jsonMap.put("message", "ok");
+				jsonMap.put("info", "删除人工投料信息成功");
+			}
+			else {
+				jsonMap.put("message", "no");
+				jsonMap.put("info", "删除人工投料信息失败");
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

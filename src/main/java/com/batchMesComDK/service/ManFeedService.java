@@ -4,9 +4,11 @@ import com.batchMesComDK.entity.*;
 
 public interface ManFeedService {
 
-	int editByWorkOrderID(ManFeed mf);
-
 	int add(ManFeed manFeed);
+
+	int deleteByIds(String ids);
+
+	int editByWorkOrderID(ManFeed mf);
 
 	ManFeed getByWorkOrderID(String workOrderID);
 

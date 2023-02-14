@@ -71,6 +71,12 @@
 			</if>
 		</trim>
 	</insert>
+	<delete id="deleteByList">
+		delete from RecipePM where 1=1
+		<foreach collection="idList" item="id" open=" and cast(id as char) in (" separator="," close=")">
+		#{id}
+		</foreach>
+	</delete>
 	<select id="getListByWorkOrderID" resultType="com.batchMesComDK.entity.RecipePM">
 		select * from RecipePM where WorkOrderID=#{workOrderID}
 	</select>

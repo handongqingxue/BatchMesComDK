@@ -12,6 +12,8 @@ public interface RecipePM_RMTMapper {
 
 	int add(RecipePM_RMT rPM_RMT);
 
+	int deleteByList(@Param("idList") List<String> idList);
+
 	int edit(RecipePM_RMT rPM_RMT);
 
 	RecipePM_RMT getById(@Param("id") Integer id);

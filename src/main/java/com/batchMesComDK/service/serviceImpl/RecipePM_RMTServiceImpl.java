@@ -1,5 +1,8 @@
 package com.batchMesComDK.service.serviceImpl;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +20,14 @@ public class RecipePM_RMTServiceImpl implements RecipePM_RMTService {
 	public int add(RecipePM_RMT rPM_RMT) {
 		// TODO Auto-generated method stub
 		return recipePM_RMTDao.add(rPM_RMT);
+	}
+
+	@Override
+	public int deleteByIds(String ids) {
+		// TODO Auto-generated method stub
+		String[] idArr = ids.split(",");
+		List<String> idList = Arrays.asList(idArr);
+		return recipePM_RMTDao.deleteByList(idList);
 	}
 
 	@Override

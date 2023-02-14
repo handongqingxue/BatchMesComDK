@@ -119,4 +119,10 @@
 	<select id="getById" resultType="com.batchMesComDK.entity.WorkOrder">
 		select * from WorkOrder where id=#{id}
 	</select>
+	<delete id="deleteByList">
+		delete from WorkOrder where 1=1
+		<foreach collection="idList" item="id" open=" and cast(id as char) in (" separator="," close=")">
+		#{id}
+		</foreach>
+	</delete>
 </mapper>
