@@ -14,5 +14,5 @@ public interface ManFeedMapper {
 
 	int editByWorkOrderIDPhaseID(ManFeed mf);
 
-	ManFeed getByWorkOrderID(@Param("workOrderID") String workOrderID);
+	ManFeed getByWorkOrderIDPhaseID(@Param("workOrderID") String workOrderID,@Param("phaseID") String phaseID);
 }

@@ -88,7 +88,7 @@
 		</trim>
 		 where WorkOrderID=#{workOrderID} and PhaseID=#{phaseID}
 	</update>
-	<select id="getByWorkOrderID" resultType="com.batchMesComDK.entity.ManFeed">
-		select * from ManFeed where WorkOrderID=#{workOrderID}
+	<select id="getByWorkOrderIDPhaseID" resultType="com.batchMesComDK.entity.ManFeed">
+		select * from ManFeed where WorkOrderID=#{workOrderID} and PhaseID=#{phaseID}
 	</select>
 </mapper>

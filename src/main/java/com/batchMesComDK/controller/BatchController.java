@@ -685,7 +685,7 @@ public class BatchController {
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		
 		try {
-			int count=manFeedService.editByWorkOrderID(mf);
+			int count=manFeedService.editByWorkOrderIDPhaseID(mf);
 			if(count>0) {
 				jsonMap.put("message", "ok");
 				jsonMap.put("info", "修改人工投料信息成功");
@@ -705,14 +705,15 @@ public class BatchController {
 
 	@RequestMapping(value="/getManFeed")
 	@ResponseBody
-	public Map<String, Object> getManFeed(String workOrderID) {
+	public Map<String, Object> getManFeed(String workOrderID, String phaseID) {
 		
 		System.out.println("workOrderID==="+workOrderID);
+		System.out.println("phaseID==="+phaseID);
 
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		
 		try {
-			ManFeed mf=manFeedService.getByWorkOrderID(workOrderID);
+			ManFeed mf=manFeedService.getByWorkOrderIDPhaseID(workOrderID,phaseID);
 			if(mf==null) {
 				jsonMap.put("message", "no");
 				jsonMap.put("info", "查询人工投料信息失败");

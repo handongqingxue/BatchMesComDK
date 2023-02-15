@@ -393,13 +393,12 @@ function editManFeed(){
 	var suttle=$("#editManFeed_div #suttle").val();
 	var unit=$("#editManFeed_div #unit").val();
 	var feedTime=$("#editManFeed_div #feedTime").val();
-	var phaseID=$("#editManFeed_div #phaseID").val();
 	var markBit=$("#editManFeed_div #markBit").val();
 	var materialSV=$("#editManFeed_div #materialSV").val();
 	
 	$.post(path+"batch/editManFeed",
 		{workOrderID:workOrderID,materialCode:materialCode,materialName:materialName,suttle:suttle,
-		unit:unit,feedTime:feedTime,phaseID:phaseID,markBit:markBit,materialSV:materialSV},
+		unit:unit,feedTime:feedTime,markBit:markBit,materialSV:materialSV},
 		function(data){
 			if(data.message=="ok")
 				alert(data.info);
@@ -412,8 +411,9 @@ function editManFeed(){
 
 function getManFeed(){
 	var workOrderID=$("#editManFeed_div #workOrderID").val();
+	var phaseID=$("#editManFeed_div #phaseID").val();
 	$.post(path+"batch/getManFeed",
-		{workOrderID:workOrderID},
+		{workOrderID:workOrderID,phaseID:phaseID},
 		function(data){
 			if(data.message=="ok"){
 				var manFeed=data.manFeed;
@@ -432,7 +432,6 @@ function getManFeed(){
 				$("#editManFeed_div #suttle").val(suttle);
 				$("#editManFeed_div #unit").val(unit);
 				$("#editManFeed_div #feedTime").val(feedTime);
-				$("#editManFeed_div #phaseID").val(phaseID);
 				$("#editManFeed_div #markBit").val(markBit);
 				$("#editManFeed_div #materialSV").val(materialSV);
 			}
@@ -442,7 +441,6 @@ function getManFeed(){
 				$("#editManFeed_div #suttle").val("");
 				$("#editManFeed_div #unit").val("");
 				$("#editManFeed_div #feedTime").val("");
-				$("#editManFeed_div #phaseID").val("");
 				$("#editManFeed_div #markBit").val("");
 				$("#editManFeed_div #materialSV").val("");
 				alert(data.info);
@@ -1491,6 +1489,7 @@ function splitUnitTagData(data){
 	修改人工投料信息:
 	<div>
 		WorkOrderID:<input type="text" size="50" id="workOrderID"/>
+		PhaseID:<input type="text" size="50" id="phaseID"/>
 		<input type="button" value="查询" onclick="getManFeed()"/>
 	</div>
 	<div>
@@ -1507,9 +1506,6 @@ function splitUnitTagData(data){
 	</div>
 	<div>
 		FeedTime:<input type="text" size="50" id="feedTime"/>
-	</div>
-	<div>
-		PhaseID:<input type="text" size="50" id="phaseID"/>
 	</div>
 	<div>
 		MarkBit:<input type="text" size="50" id="markBit"/>
