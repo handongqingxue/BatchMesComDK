@@ -84,6 +84,9 @@ public class BatchController {
 		return MODULE_NAME+"/test";
 	}
 
+	/**
+	 * 巡回检索工单状态变化
+	 */
 	@RequestMapping(value="/keepWatchOnWorkOrder")
 	public void keepWatchOnWorkOrder() {
 		
@@ -384,6 +387,11 @@ public class BatchController {
 		}
 	}
 
+	/**
+	 * 这个接口仅供测试用，真正添加远程配方参数是在上位机端操作
+	 * @param rPM_RMT
+	 * @return
+	 */
 	@RequestMapping(value="/addRecipePM_RMT")
 	@ResponseBody
 	public Map<String, Object> addRecipePM_RMT(RecipePM_RMT rPM_RMT) {
@@ -1020,7 +1028,8 @@ public class BatchController {
 		PlanResult plan=new PlanResult();
 		
 		System.out.println("bodyEnc==="+bodyEnc);
-		String bodyDec = DesUtil.decrypt(bodyEnc,DesUtil.SECRET_KEY);
+		String bodyDec = bodyEnc;
+		//String bodyDec = DesUtil.decrypt(bodyEnc,DesUtil.SECRET_KEY);
 		/*
 		List<WorkOrderBody> wobList=new ArrayList<WorkOrderBody>();
 		net.sf.json.JSONArray wobJA = net.sf.json.JSONArray.fromObject(bodyDec);
