@@ -56,4 +56,10 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		List<String> idList = Arrays.asList(idArr);
 		return workOrderDao.deleteByList(idList);
 	}
+
+	@Override
+	public int updateCreamCodeByWorkOrder(String creamCode, String workOrder) {
+		// TODO Auto-generated method stub
+		return workOrderDao.updateFormulaIdByWorkOrderID(creamCode,workOrder);
+	}
 }

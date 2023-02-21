@@ -125,4 +125,7 @@
 		#{id}
 		</foreach>
 	</delete>
+	<update id="updateFormulaIdByWorkOrderID">
+		update WorkOrder set FormulaId=#{formulaId} where WorkOrderID=#{workOrderID}
+	</update>
 </mapper>

@@ -19,4 +19,6 @@ public interface WorkOrderMapper {
 	WorkOrder getById(@Param("id") Integer id);
 
 	int deleteByList(@Param("idList") List<String> idList);
+
+	int updateFormulaIdByWorkOrderID(@Param("formulaId") String formulaId, @Param("workOrderID") String workOrderID);
 }

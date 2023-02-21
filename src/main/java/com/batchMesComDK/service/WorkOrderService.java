@@ -17,4 +17,6 @@ public interface WorkOrderService {
 	WorkOrder getById(Integer id);
 
 	int deleteByIds(String ids);
+
+	int updateCreamCodeByWorkOrder(String creamCode, String workOrder);
 }

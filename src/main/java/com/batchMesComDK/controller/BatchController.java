@@ -1154,7 +1154,17 @@ public class BatchController {
 		PlanResult plan=new PlanResult();
 		
 		System.out.println("bodyEnc==="+bodyEnc);
-		String bodyDec = DesUtil.decrypt(bodyEnc,DesUtil.SECRET_KEY);
+		//String bodyDec = DesUtil.decrypt(bodyEnc,DesUtil.SECRET_KEY);
+		net.sf.json.JSONArray wocMesJA = net.sf.json.JSONArray.fromObject(bodyEnc);
+		//WorkOrder wo=(WorkOrder)net.sf.json.JSONObject.toBean(woJO, WorkOrder.class);
+		int wocMesJASize = wocMesJA.size();
+		for(int i=0;i<wocMesJASize;i++) {
+			net.sf.json.JSONObject wocMesJO=(net.sf.json.JSONObject)wocMesJA.get(i);
+			String workOrder = wocMesJO.getString("workOrder");
+			String orderExecuteStatus = wocMesJO.getString("orderExecuteStatus");
+			System.out.println("workOrder==="+workOrder);
+			System.out.println("orderExecuteStatus==="+orderExecuteStatus);
+		}
 		
 		plan.setSuccess(true);
 		plan.setStatus(1);
@@ -1215,6 +1225,7 @@ public class BatchController {
 		PlanResult plan=new PlanResult();
 		
 		System.out.println("bodyEnc==="+bodyEnc);
+		/*
 		String bodyDec = DesUtil.decrypt(bodyEnc,DesUtil.SECRET_KEY);
 		List<PasteWorkingNumBody> pwnbList=new ArrayList<PasteWorkingNumBody>();
 		net.sf.json.JSONArray pwnbJA = net.sf.json.JSONArray.fromObject(bodyDec);
@@ -1225,6 +1236,18 @@ public class BatchController {
 			pwnbList.add(pwnb);
 		}
 		int c=pasteWorkingNumBodyService.add(pwnbList.get(0));
+		*/
+
+		int c=0;
+		net.sf.json.JSONArray pwndJA = net.sf.json.JSONArray.fromObject(bodyEnc);
+		for (int i = 0; i < pwndJA.size(); i++) {
+			net.sf.json.JSONObject pwndJO = (net.sf.json.JSONObject)pwndJA.get(i);
+			String workOrder = pwndJO.getString("workOrder");
+			String creamCode=pwndJO.getString("creamCode");
+			System.out.println("workOrder==="+workOrder);
+			System.out.println("creamCode==="+creamCode);
+			c+=workOrderService.updateCreamCodeByWorkOrder(creamCode, workOrder);
+		}
 		if(c>0) {
 			plan.setSuccess(true);
 			plan.setStatus(1);
