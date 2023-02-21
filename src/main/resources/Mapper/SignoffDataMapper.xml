@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.batchMesComDK.dao.SignoffDataMapper">
+	<insert id="add" parameterType="com.batchMesComDK.entity.SignoffData">
+		insert into SignoffData
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="ID!=null">
+				ID,
+			</if>
+			<if test="SignoffID!=null">
+				SignoffID,
+			</if>
+			<if test="PMValue!=null">
+				PMValue,
+			</if>
+			<if test="Unit!=null">
+				Unit,
+			</if>
+			<if test="H!=null">
+				H,
+			</if>
+			<if test="L!=null">
+				L,
+			</if>
+			<if test="HH!=null">
+				HH,
+			</if>
+			<if test="LL!=null">
+				LL,
+			</if>
+			<if test="DevType!=null">
+				DevType,
+			</if>
+			<if test="WorkOrderID!=null">
+				WorkOrderID,
+			</if>
+			<if test="RecipeName!=null">
+				RecipeName,
+			</if>
+			<if test="SignTime!=null">
+				SignTime,
+			</if>
+			<if test="OprUser!=null">
+				OprUser,
+			</if>
+			<if test="OprSign!=null">
+				OprSign,
+			</if>
+			<if test="OprComment!=null">
+				OprComment,
+			</if>
+			<if test="AppUser!=null">
+				AppUser,
+			</if>
+			<if test="AppSign!=null">
+				AppSign,
+			</if>
+			<if test="AppComment!=null">
+				AppComment,
+			</if>
+		</trim>
+		values
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="ID!=null">
+				#{ID},
+			</if>
+			<if test="SignoffID!=null">
+				#{SignoffID},
+			</if>
+			<if test="PMValue!=null">
+				#{PMValue},
+			</if>
+			<if test="Unit!=null">
+				#{Unit},
+			</if>
+			<if test="H!=null">
+				#{H},
+			</if>
+			<if test="L!=null">
+				#{L},
+			</if>
+			<if test="HH!=null">
+				#{HH},
+			</if>
+			<if test="LL!=null">
+				#{LL},
+			</if>
+			<if test="DevType!=null">
+				#{DevType},
+			</if>
+			<if test="WorkOrderID!=null">
+				#{WorkOrderID},
+			</if>
+			<if test="RecipeName!=null">
+				#{RecipeName},
+			</if>
+			<if test="SignTime!=null">
+				#{SignTime},
+			</if>
+			<if test="OprUser!=null">
+				#{OprUser},
+			</if>
+			<if test="OprSign!=null">
+				#{OprSign},
+			</if>
+			<if test="OprComment!=null">
+				#{OprComment},
+			</if>
+			<if test="AppUser!=null">
+				#{AppUser},
+			</if>
+			<if test="AppSign!=null">
+				#{AppSign},
+			</if>
+			<if test="AppComment!=null">
+				#{AppComment},
+			</if>
+		</trim>
+	</insert>
+</mapper>

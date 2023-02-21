@@ -63,6 +63,10 @@ public class BatchController {
 	@Autowired
 	private TranslateService translateService;
 	@Autowired
+	private SignoffTemplateService signoffTemplateService;
+	@Autowired
+	private SignoffDataService signoffDataService;
+	@Autowired
 	private MaterialCheckOverIssusBodyService materialCheckOverIssusBodyService;
 	public static final String MODULE_NAME="batch";
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -766,6 +770,55 @@ public class BatchController {
 			return jsonMap;
 		}
 	}
+
+	@RequestMapping(value="/addSignoffFromTemplate")
+	@ResponseBody
+	public Map<String, Object> addSignoffFromTemplate(String workOrderID) {
+
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
+		
+		try {
+			int count=signoffDataService.addFromTemplate(workOrderID);
+			if(count>0) {
+				jsonMap.put("message", "ok");
+				jsonMap.put("info", "添加电子签名成功");
+			}
+			else {
+				jsonMap.put("message", "no");
+				jsonMap.put("info", "添加电子签名失败");
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally {
+			return jsonMap;
+		}
+	}
+	@RequestMapping(value="/addSignoffTemplate")
+	@ResponseBody
+	public Map<String, Object> addSignoffTemplate(SignoffTemplate st) {
+
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
+		
+		try {
+			int count=signoffTemplateService.add(st);
+			if(count>0) {
+				jsonMap.put("message", "ok");
+				jsonMap.put("info", "添加电子签名模板成功");
+			}
+			else {
+				jsonMap.put("message", "no");
+				jsonMap.put("info", "添加电子签名模板失败");
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally {
+			return jsonMap;
+		}
+	}
 	
 	@RequestMapping(value="/addDataToDB")
 	@ResponseBody
@@ -1042,15 +1095,7 @@ public class BatchController {
 		int c=workOrderBodyService.add(wobList.get(0));
 		*/
 
-		List<WorkOrder> woList=new ArrayList<WorkOrder>();
-		net.sf.json.JSONArray woJA = net.sf.json.JSONArray.fromObject(bodyDec);
-		for (int i = 0; i < woJA.size(); i++) {
-			net.sf.json.JSONObject woJO = (net.sf.json.JSONObject)woJA.get(i);
-			WorkOrder wo=(WorkOrder)net.sf.json.JSONObject.toBean(woJO, WorkOrder.class);
-			System.out.println("ID==="+wo.getID());
-			woList.add(wo);
-		}
-		WorkOrder wo = woList.get(0);
+		WorkOrder wo = convertMesWorkOrderDownToJava(bodyEnc);
 		int c=workOrderService.add(wo);
 		if(c>0) {
 			String workOrderID = wo.getWorkOrderID();
@@ -1071,6 +1116,31 @@ public class BatchController {
 			plan.setMsg("失败");
 		}
 		return plan;
+	}
+	
+	private WorkOrder convertMesWorkOrderDownToJava(String mesBody) {
+
+		net.sf.json.JSONObject wodMesJO = net.sf.json.JSONObject.fromObject(mesBody);
+		//WorkOrder wo=(WorkOrder)net.sf.json.JSONObject.toBean(woJO, WorkOrder.class);
+		String formulaId = wodMesJO.getString("formulaId");
+		String id = wodMesJO.getString("id");
+		String lotNo = wodMesJO.getString("lotNo");
+		String planStartTime = wodMesJO.getString("planStartTime");
+		String productName = wodMesJO.getString("productName");
+		String productcode = wodMesJO.getString("productcode");
+		String qty = wodMesJO.getString("qty");
+		String unit = wodMesJO.getString("unit");
+		String workOrder = wodMesJO.getString("workOrder");
+		
+		WorkOrder wo=new WorkOrder();
+		wo.setFormulaId(formulaId);
+		wo.setID(Integer.valueOf(id));
+		wo.setCreateTime(planStartTime);
+		wo.setProductCode(productcode);
+		wo.setTotalOutput(qty);
+		wo.setWorkOrderID(workOrder);
+		
+		return wo;
 	}
 
 	/**
