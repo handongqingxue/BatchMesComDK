@@ -1035,6 +1035,37 @@ public class BatchController {
 		}
 		return jsonMap;
 	}
+
+	/**
+	 * 4.1 工单状态变更
+	 * @param bodyEnc
+	 * @return
+	 */
+	@RequestMapping(value="/changeOrderStatus", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> changeOrderStatus(@RequestBody String bodyEnc) {
+
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
+		
+		System.out.println("bodyEnc==="+bodyEnc);
+		String bodyDec = bodyEnc;
+		net.sf.json.JSONArray cosJA = net.sf.json.JSONArray.fromObject(bodyDec);
+		for (int i = 0; i < cosJA.size(); i++) {
+			net.sf.json.JSONObject cosJO = (net.sf.json.JSONObject)cosJA.get(i);
+			String workOrder = cosJO.getString("workOrder");
+			String orderExecuteStatus = cosJO.getString("orderExecuteStatus");
+			String updateTime = cosJO.getString("updateTime");
+			System.out.println("workOrder==="+workOrder);
+			System.out.println("orderExecuteStatus==="+orderExecuteStatus);
+			System.out.println("updateTime==="+updateTime);
+		}
+		
+		jsonMap.put("success", "true");
+		jsonMap.put("state", "001");//001正常 002数据格式有误 003数据不完整
+		jsonMap.put("msg", "正常");
+		
+		return jsonMap;
+	}
 	
 	/**
 	 * 4.3 配方数据推送
@@ -1042,10 +1073,9 @@ public class BatchController {
 	 */
 	@RequestMapping(value="/formulaPush", method = RequestMethod.POST)
 	@ResponseBody
-	public PlanResult formulaPush(@RequestBody String bodyEnc) {
+	public Map<String, Object> formulaPush(@RequestBody String bodyEnc) {
 		
-		PlanResult plan=new PlanResult();
-		
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		System.out.println("bodyEnc==="+bodyEnc);
 		/*
 		String bodyDec = DesUtil.decrypt(bodyEnc,DesUtil.SECRET_KEY);
@@ -1060,16 +1090,17 @@ public class BatchController {
 		*/
 		int c=1;//formulaDtoService.add(fdList.get(0));
 		if(c>0) {
-			plan.setSuccess(true);
-			plan.setStatus(1);
-			plan.setMsg("成功");
+			jsonMap.put("success", "true");
+			jsonMap.put("state", "001");
+			jsonMap.put("msg", "正常");
 		}
 		else {
-			plan.setSuccess(false);
-			plan.setStatus(0);
-			plan.setMsg("失败");
+			jsonMap.put("success", "true");
+			jsonMap.put("state", "002");
+			jsonMap.put("msg", "数据格式有误");
 		}
-		return plan;
+		
+		return jsonMap;
 	}
 
 	/**
@@ -1078,10 +1109,9 @@ public class BatchController {
 	 */
 	@RequestMapping(value="/workOrderDown", method = RequestMethod.POST)
 	@ResponseBody
-	public PlanResult workOrderDown(@RequestBody String bodyEnc) {
+	public Map<String, Object> workOrderDown(@RequestBody String bodyEnc) {
 
-		PlanResult plan=new PlanResult();
-		
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		System.out.println("bodyEnc==="+bodyEnc);
 		String bodyDec = bodyEnc;
 		//String bodyDec = DesUtil.decrypt(bodyEnc,DesUtil.SECRET_KEY);
@@ -1108,16 +1138,16 @@ public class BatchController {
 				c=workOrderService.updateStateByWorkOrderID(WorkOrder.WLQTWB,workOrderID);
 			}
 			
-			plan.setSuccess(true);
-			plan.setStatus(1);
-			plan.setMsg("成功");
+			jsonMap.put("success", "true");
+			jsonMap.put("state", "001");
+			jsonMap.put("msg", "正常");
 		}
 		else {
-			plan.setSuccess(false);
-			plan.setStatus(0);
-			plan.setMsg("失败");
+			jsonMap.put("success", "true");
+			jsonMap.put("state", "002");
+			jsonMap.put("msg", "数据格式有误");
 		}
-		return plan;
+		return jsonMap;
 	}
 	
 	private WorkOrder convertMesWorkOrderDownToJava(String mesBody) {
@@ -1152,10 +1182,9 @@ public class BatchController {
 	 */
 	@RequestMapping(value="/workOrderCannel", method = RequestMethod.POST)
 	@ResponseBody
-	public PlanResult workOrderCannel(@RequestBody String bodyEnc) {
+	public Map<String, Object> workOrderCannel(@RequestBody String bodyEnc) {
 
-		PlanResult plan=new PlanResult();
-		
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		System.out.println("bodyEnc==="+bodyEnc);
 		//String bodyDec = DesUtil.decrypt(bodyEnc,DesUtil.SECRET_KEY);
 		net.sf.json.JSONArray wocMesJA = net.sf.json.JSONArray.fromObject(bodyEnc);
@@ -1169,10 +1198,11 @@ public class BatchController {
 			System.out.println("orderExecuteStatus==="+orderExecuteStatus);
 		}
 		
-		plan.setSuccess(true);
-		plan.setStatus(1);
-		plan.setMsg("成功");
-		return plan;
+		jsonMap.put("success", "true");
+		jsonMap.put("state", "001");
+		jsonMap.put("msg", "正常");
+		
+		return jsonMap;
 	}
 	
 	/**
@@ -1182,7 +1212,7 @@ public class BatchController {
 	 */
 	@RequestMapping(value="/feedIssusDown", method = RequestMethod.POST)
 	@ResponseBody
-	public PlanResult feedIssusDown(@RequestBody String bodyEnc) {
+	public Map<String, Object> feedIssusDown(@RequestBody String bodyEnc) {
 
 		/*
 		 * 除了ManFeed表里加设定值，RecipePM表里也要加设定值。工单创建时，要从RecipePM表里根据工单id获取相关的配方参数，这些属于物料参数，放入ManFeed表里。
@@ -1190,11 +1220,11 @@ public class BatchController {
 		           当操作员扫码时，填入数量、单位，根据系统时间作进料时间。mes端调用人工投料接口，把填入的数据根据工单id和PhaseID（投料口）两个字段，从人工投料表里查询出符合条件的数据，
 		           把数量、单位那些之前为空的数据填充进去。填充完毕，markbit置1，wincc端就不再读取了，又将markbit置2，便于继续投料时与新的投料信息区分开。
 		 * */
-		
-		PlanResult plan=new PlanResult();
 
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		System.out.println("bodyEnc==="+bodyEnc);
-		String bodyDec = DesUtil.decrypt(bodyEnc,DesUtil.SECRET_KEY);
+		String bodyDec = bodyEnc;
+		//String bodyDec = DesUtil.decrypt(bodyEnc,DesUtil.SECRET_KEY);
 		net.sf.json.JSONObject fibJO = net.sf.json.JSONObject.fromObject(bodyDec);
 		/*
 		FeedIssusBody fib=(FeedIssusBody)net.sf.json.JSONObject.toBean(fibJO, FeedIssusBody.class);
@@ -1204,16 +1234,16 @@ public class BatchController {
 		ManFeed mf=(ManFeed)net.sf.json.JSONObject.toBean(fibJO, ManFeed.class);
 		int c=manFeedService.editByWorkOrderIDPhaseID(mf);
 		if(c>0) {
-			plan.setSuccess(true);
-			plan.setStatus(1);
-			plan.setMsg("成功");
+			jsonMap.put("success", "true");
+			jsonMap.put("state", "001");
+			jsonMap.put("msg", "正常");
 		}
 		else {
-			plan.setSuccess(false);
-			plan.setStatus(0);
-			plan.setMsg("失败");
+			jsonMap.put("success", "true");
+			jsonMap.put("state", "002");
+			jsonMap.put("msg", "数据格式有误");
 		}
-		return plan;
+		return jsonMap;
 	}
 	
 	/**
@@ -1223,10 +1253,9 @@ public class BatchController {
 	 */
 	@RequestMapping(value="/pasteWorkingNumDown", method = RequestMethod.POST)
 	@ResponseBody
-	public PlanResult pasteWorkingNumDown(@RequestBody String bodyEnc) {
+	public Map<String, Object> pasteWorkingNumDown(@RequestBody String bodyEnc) {
 
-		PlanResult plan=new PlanResult();
-		
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		System.out.println("bodyEnc==="+bodyEnc);
 		/*
 		String bodyDec = DesUtil.decrypt(bodyEnc,DesUtil.SECRET_KEY);
@@ -1249,19 +1278,20 @@ public class BatchController {
 			String creamCode=pwndJO.getString("creamCode");
 			System.out.println("workOrder==="+workOrder);
 			System.out.println("creamCode==="+creamCode);
+			//这里的逻辑写的有点问题，制膏编号不是formulaId，需要在数据库表里单独加个制膏编号字段
 			c+=workOrderService.updateCreamCodeByWorkOrder(creamCode, workOrder);
 		}
 		if(c>0) {
-			plan.setSuccess(true);
-			plan.setStatus(1);
-			plan.setMsg("成功");
+			jsonMap.put("success", "true");
+			jsonMap.put("state", "001");
+			jsonMap.put("msg", "正常");
 		}
 		else {
-			plan.setSuccess(false);
-			plan.setStatus(0);
-			plan.setMsg("失败");
+			jsonMap.put("success", "true");
+			jsonMap.put("state", "002");
+			jsonMap.put("msg", "数据格式有误");
 		}
-		return plan;
+		return jsonMap;
 	}
 	
 	@RequestMapping(value="/materialCheckOverIssusDown", method = RequestMethod.POST)
