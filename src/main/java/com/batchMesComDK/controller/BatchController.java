@@ -1047,6 +1047,7 @@ public class BatchController {
 		PlanResult plan=new PlanResult();
 		
 		System.out.println("bodyEnc==="+bodyEnc);
+		/*
 		String bodyDec = DesUtil.decrypt(bodyEnc,DesUtil.SECRET_KEY);
 		List<FormulaDto> fdList=new ArrayList<FormulaDto>();
 		net.sf.json.JSONArray fdJA = net.sf.json.JSONArray.fromObject(bodyDec);
@@ -1056,7 +1057,8 @@ public class BatchController {
 			System.out.println("id==="+fd.getId());
 			fdList.add(fd);
 		}
-		int c=formulaDtoService.add(fdList.get(0));
+		*/
+		int c=1;//formulaDtoService.add(fdList.get(0));
 		if(c>0) {
 			plan.setSuccess(true);
 			plan.setStatus(1);
