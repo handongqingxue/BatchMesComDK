@@ -10,6 +10,8 @@ public interface WorkOrderService {
 
 	int updateStateById(Integer state, Integer id);
 
+	int updateStateByWorkOrderID(Integer state, String workOrderID);
+
 	List<WorkOrder> getKeepWatchList();
 
 	int edit(WorkOrder wo);

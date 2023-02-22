@@ -19,10 +19,10 @@ public class RecipePMServiceImpl implements RecipePMService {
 	RecipePMMapper recipePMDao;
 
 	@Override
-	public int addFromRMT(String workOrderID, String recipeID) {
+	public int addFromRMT(String workOrderID, String productCode, String productName) {
 		// TODO Auto-generated method stub
 		int count=0;
-		List<RecipePM_RMT> rPMRmtList=recipePM_RMTDao.getByRecipeID(recipeID);
+		List<RecipePM_RMT> rPMRmtList=recipePM_RMTDao.getByProductParam(productCode,productName);
 		
 		RecipePM rPM=null;
 		for(int i=0;i<rPMRmtList.size();i++) {

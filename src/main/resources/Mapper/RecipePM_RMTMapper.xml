@@ -3,8 +3,8 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.batchMesComDK.dao.RecipePM_RMTMapper">
-	<select id="getByRecipeID" resultType="com.batchMesComDK.entity.RecipePM_RMT">
-		select * from RecipePM_RMT where RecipeID=#{recipeID}
+	<select id="getByProductParam" resultType="com.batchMesComDK.entity.RecipePM_RMT">
+		select rpm_RMT.* from RecipePM_RMT rpm_RMT,RecipeHeader rh where rpm_RMT.RecipeID=rh.RecipeID and rh.ProductCode=#{productCode} and rh.ProductName=#{productName}
 	</select>
 	<insert id="add" parameterType="com.batchMesComDK.entity.RecipePM_RMT">
 		insert into RecipePM_RMT

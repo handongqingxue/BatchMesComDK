@@ -29,6 +29,12 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	}
 
 	@Override
+	public int updateStateByWorkOrderID(Integer state,String workOrderID) {
+		// TODO Auto-generated method stub
+		return workOrderDao.updateStateByWorkOrderID(state,workOrderID);
+	}
+
+	@Override
 	public List<WorkOrder> getKeepWatchList() {
 		// TODO Auto-generated method stub
 		String states = WorkOrder.CSQRWB+","+WorkOrder.BQD+","+WorkOrder.BQX+","+WorkOrder.BZT;

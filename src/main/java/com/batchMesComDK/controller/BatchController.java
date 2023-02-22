@@ -515,12 +515,12 @@ public class BatchController {
 
 	@RequestMapping(value="/addRecipePMFromRMT")
 	@ResponseBody
-	public Map<String, Object> addRecipePMFromRMT(String workOrderID, String recipeID) {
+	public Map<String, Object> addRecipePMFromRMT(String workOrderID, String productCode, String productName) {
 
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		
 		try {
-			int count=recipePMService.addFromRMT(workOrderID, recipeID);
+			int count=recipePMService.addFromRMT(workOrderID, productCode, productName);
 			if(count>0) {
 				jsonMap.put("message", "ok");
 				jsonMap.put("info", "添加配方参数成功");
@@ -1099,11 +1099,11 @@ public class BatchController {
 		int c=workOrderService.add(wo);
 		if(c>0) {
 			String workOrderID = wo.getWorkOrderID();
-			String recipeID = wo.getRecipeID();
-			c=recipePMService.addFromRMT(workOrderID, recipeID);
+			String productCode = wo.getProductCode();
+			String productName = wo.getProductName();
+			c=recipePMService.addFromRMT(workOrderID, productCode, productName);
 			if(c>0) {
-				Integer id = wo.getID();
-				c=workOrderService.updateStateById(WorkOrder.WLQTWB,id);
+				c=workOrderService.updateStateByWorkOrderID(WorkOrder.WLQTWB,workOrderID);
 			}
 			
 			plan.setSuccess(true);
@@ -1123,7 +1123,7 @@ public class BatchController {
 		net.sf.json.JSONObject wodMesJO = net.sf.json.JSONObject.fromObject(mesBody);
 		//WorkOrder wo=(WorkOrder)net.sf.json.JSONObject.toBean(woJO, WorkOrder.class);
 		String formulaId = wodMesJO.getString("formulaId");
-		String id = wodMesJO.getString("id");
+		//String id = wodMesJO.getString("id");
 		String lotNo = wodMesJO.getString("lotNo");
 		String planStartTime = wodMesJO.getString("planStartTime");
 		String productName = wodMesJO.getString("productName");
@@ -1134,8 +1134,9 @@ public class BatchController {
 		
 		WorkOrder wo=new WorkOrder();
 		wo.setFormulaId(formulaId);
-		wo.setID(Integer.valueOf(id));
+		//wo.setID(Integer.valueOf(id));
 		wo.setCreateTime(planStartTime);
+		wo.setProductName(productName);
 		wo.setProductCode(productcode);
 		wo.setTotalOutput(qty);
 		wo.setWorkOrderID(workOrder);

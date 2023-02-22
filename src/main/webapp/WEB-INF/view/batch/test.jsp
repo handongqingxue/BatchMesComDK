@@ -273,10 +273,11 @@ function getRecipePM_RMT(){
 
 function addRecipePMFromRMT(){
 	var workOrderID=$("#arpmfrmt_div #workOrderID").val();
-	var recipeID=$("#arpmfrmt_div #recipeID").val();
+	var productCode=$("#arpmfrmt_div #productCode").val();
+	var productName=$("#arpmfrmt_div #productName").val();
 	
 	$.post(path+"batch/addRecipePMFromRMT",
-		{workOrderID:workOrderID,recipeID:recipeID},
+		{workOrderID:workOrderID,productCode:productCode,productName:productName},
 		function(data){
 			if(data.message=="ok")
 				alert(data.info);
@@ -1416,7 +1417,10 @@ function splitUnitTagData(data){
 		WorkOrderID:<input type="text" size="50" id="workOrderID" value="20230209"/>
 	</div>
 	<div>
-		RecipeID:<input type="text" size="50" id="recipeID"/>
+		ProductCode:<input type="text" size="50" id="productCode"/>
+	</div>
+	<div>
+		ProductName:<input type="text" size="50" id="productName"/>
 	</div>
 	<input type="button" value="发送" onclick="addRecipePMFromRMT()"/>
 </div>
