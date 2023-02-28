@@ -66,4 +66,10 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 		List<String> idList = Arrays.asList(idArr);
 		return batchRecordDao.deleteByList(idList);
 	}
+
+	@Override
+	public List<BatchRecord> getSendToMesData(String workOrderID) {
+		// TODO Auto-generated method stub
+		return batchRecordDao.getListByWorkOrderID(workOrderID);
+	}
 }

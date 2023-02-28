@@ -1317,6 +1317,26 @@ public class BatchController {
 		}
 		return plan;
 	}
+
+	@RequestMapping(value="/getSendToMesData", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> getSendToMesData(@RequestBody String bodyEnc) {
+
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
+		System.out.println("bodyEnc==="+bodyEnc);
+		String bodyDec = bodyEnc;
+		net.sf.json.JSONObject cosJO = net.sf.json.JSONObject.fromObject(bodyDec);
+		String workOrderID = cosJO.getString("workOrderID");
+		List<BatchRecord> brList=batchRecordService.getSendToMesData(workOrderID);
+		
+		jsonMap.put("success", "true");
+		jsonMap.put("state", "001");
+		jsonMap.put("msg", "正常");
+		net.sf.json.JSONArray brListJA = net.sf.json.JSONArray.fromObject(brList);
+		jsonMap.put("data", brListJA.toString());
+		
+		return jsonMap;
+	}
 	
 	//http://1.1.4.14:19888/mesPlatform/api/remote/batch/changeOrderStatus 工单状态变更
 	//http://1.1.4.14:19888/mesPlatform/api/remote/batch/batchProcessParameters 工艺参数采集
