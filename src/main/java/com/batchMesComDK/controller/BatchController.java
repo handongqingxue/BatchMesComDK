@@ -212,13 +212,106 @@ public class BatchController {
 	 */
 	@RequestMapping(value="/keepWatchOnWorkOrderTest")
 	public void keepWatchOnWorkOrderTest() {
-		List<WorkOrder> woList=workOrderService.getKeepWatchList();
-		System.out.println("woListSize==="+woList.size());
-		String blcResult = batchTestService.getItem(Constant.ITEM_BATCH_LIST_CT);
-		System.out.println("blcResult==="+blcResult);
-		String batchListCt = blcResult.substring(0, blcResult.indexOf(Constant.END_SUCCESS));
-		int batchCount = Integer.valueOf(batchListCt);
-		System.out.println("batchCount==="+batchCount);
+		try {
+			List<WorkOrder> woList=workOrderService.getKeepWatchList();
+			System.out.println("woListSize==="+woList.size());
+			String batchIDs="";
+			String blcResult = batchTestService.getItem(Constant.ITEM_BATCH_LIST_CT);
+			System.out.println("blcResult==="+blcResult);
+			String batchListCt = blcResult.substring(0, blcResult.indexOf(Constant.END_SUCCESS));
+			int batchCount = Integer.valueOf(batchListCt);
+			System.out.println("batchCount==="+batchCount);
+			for (int i = 0; i < woList.size(); i++) {
+				WorkOrder wo = woList.get(i);
+				Integer state = wo.getState();
+				System.out.println("state==="+state);
+				switch (state) {
+				case WorkOrder.CSQRWB:
+					//调用创建batch接口创建batch
+					Integer id = wo.getID();
+					String workOrderID = wo.getWorkOrderID();				
+					String recipeID = wo.getRecipeID();
+					System.out.println("id==="+id);
+					System.out.println("workOrderID==="+workOrderID);
+					System.out.println("recipeID==="+recipeID);
+					
+					BatchTest bt=new BatchTest();
+					bt.setRecipe(recipeID);
+					bt.setBatchID(id.toString());
+					bt.setDescription("FRENCHVANILLA PREMIUM -CLASSBASED");
+					addBatchTest(bt);
+					
+					addManFeedFromRecipePM(workOrderID);//工单创建时，从配方参数表里取数据，放入人工投料表
+					break;
+				case WorkOrder.BQD:
+					//启动执行配方
+					for (int j = 1; j <= batchCount; j++) {
+						String idStr = wo.getID().toString();
+						String batchIDVal = BLKey_x("BatchID",j);
+						if(idStr.equals(batchIDVal)) {
+							String createIDVal = batchTestService.getBLKey_x("CreateID",j);
+							System.out.println("createIDVal==="+createIDVal);
+							
+							batchTestService.updateStateByCreateID(BatchTest.START,Integer.valueOf(createIDVal));
+							
+							String stateVal = batchTestService.getBLKey_x("State",j);
+							if(BatchTest.RUNNING.equals(stateVal)) {
+								workOrderService.updateStateById(WorkOrder.BYX, Integer.valueOf(idStr));
+							}
+						}
+					}
+					break;
+				case WorkOrder.BQX:
+				case WorkOrder.BZT:
+					//调用batch command接口
+					for (int j = 1; j <= batchCount; j++) {
+						String idStr = wo.getID().toString();
+						String batchIDVal = batchTestService.getBLKey_x("BatchID",j);
+						if(idStr.equals(batchIDVal)) {
+							String createIDVal = batchTestService.getBLKey_x("CreateID",j);
+							System.out.println("createIDVal==="+createIDVal);
+							
+							batchTestService.updateStateByCreateID(BatchTest.STOP,Integer.valueOf(createIDVal));
+
+							String stateVal = BLKey_x("State",j);
+							if("STOPPED".equals(stateVal)) {
+								workOrderService.updateStateById(WorkOrder.BYWZZ, Integer.valueOf(idStr));
+							}
+						}
+					}
+					break;
+				}
+				
+				if(state>5) {
+					//把状态大于5的工单id拼接起来
+					batchIDs+=","+wo.getWorkOrderID();
+				}
+			}
+
+			/*
+			if(StringUtils.isEmpty(batchIDs)) {
+				String[] batchIDArr = batchIDs.split(",");
+				for (int i = 0; i < batchIDArr.length; i++) {
+					String batchID = batchIDArr[i];
+					for (int j = 1; j <= batchCount; j++) {
+						String batchIDVal = BLKey_x("BatchID",j);
+						if(batchID.equals(batchIDVal)) {
+							String stateVal = BLKey_x("State",j);
+							if("COMPLATE".equals(stateVal)) {
+								//workOrderService.updateStateById(WorkOrder.BJS, id);
+							}
+							else if("STOPPED".equals(stateVal)) {
+								//workOrderService.updateStateById(WorkOrder.BYWZZ, id);
+							}
+						}
+					}
+				}
+			}
+			*/
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 	

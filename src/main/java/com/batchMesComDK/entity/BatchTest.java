@@ -3,16 +3,18 @@ package com.batchMesComDK.entity;
 public class BatchTest {
 	
 	public static final String READY="READY";
+	public static final String START="START";
 	public static final String RUNNING="RUNNING";
+	public static final String STOP="STOP";
 	public static final String STOPPED="STOPPED";
 	public static final String COMPLETE="COMPLETE";
 
-	private Integer ID;
-	public Integer getID() {
-		return ID;
+	private Integer CreateID;
+	public Integer getCreateID() {
+		return CreateID;
 	}
-	public void setID(Integer iD) {
-		ID = iD;
+	public void setCreateID(Integer createID) {
+		CreateID = createID;
 	}
 	public String getBatchID() {
 		return BatchID;

@@ -7,4 +7,8 @@ public interface BatchTestService {
 	int add(BatchTest bt);
 
 	String getItem(String item);
+
+	String getBLKey_x(String key, int rowNumber);
+
+	int updateStateByCreateID(String state, Integer createID);
 }

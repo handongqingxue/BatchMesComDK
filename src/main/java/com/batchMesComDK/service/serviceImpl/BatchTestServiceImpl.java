@@ -30,4 +30,21 @@ public class BatchTestServiceImpl implements BatchTestService {
 		}
 		return result;
 	}
+
+	@Override
+	public String getBLKey_x(String key, int rowNumber) {
+		// TODO Auto-generated method stub
+		return batchTestDao.getBLCol_x(key,rowNumber-1);
+	}
+
+	@Override
+	public int updateStateByCreateID(String state, Integer createID) {
+		// TODO Auto-generated method stub
+		String state1=null;
+		if(BatchTest.START.equals(state))
+			state1=BatchTest.RUNNING;
+		else if(BatchTest.STOP.equals(state))
+			state1=BatchTest.STOPPED;
+		return batchTestDao.updateStateByCreateID(state1,createID);
+	}
 }
