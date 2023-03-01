@@ -35,6 +35,12 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	}
 
 	@Override
+	public int updateStateByFormulaId(Integer state, String formulaId) {
+		// TODO Auto-generated method stub
+		return workOrderDao.updateStateByFormulaId(state,formulaId);
+	}
+
+	@Override
 	public List<WorkOrder> getKeepWatchList() {
 		// TODO Auto-generated method stub
 		String states = WorkOrder.CSQRWB+","+WorkOrder.BQD+","+WorkOrder.BQX+","+WorkOrder.BZT;

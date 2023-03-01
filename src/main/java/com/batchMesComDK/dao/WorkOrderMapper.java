@@ -14,6 +14,8 @@ public interface WorkOrderMapper {
 
 	int updateStateByWorkOrderID(@Param("state") Integer state, @Param("workOrderID") String workOrderID);
 
+	int updateStateByFormulaId(@Param("state") Integer state, @Param("formulaId") String formulaId);
+
 	List<WorkOrder> getListByStateList(@Param("stateList") List<String> stateList);
 
 	int edit(WorkOrder wo);

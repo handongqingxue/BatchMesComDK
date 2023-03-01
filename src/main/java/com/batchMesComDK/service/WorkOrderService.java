@@ -12,6 +12,8 @@ public interface WorkOrderService {
 
 	int updateStateByWorkOrderID(Integer state, String workOrderID);
 
+	int updateStateByFormulaId(Integer state, String formulaId);
+
 	List<WorkOrder> getKeepWatchList();
 
 	int edit(WorkOrder wo);

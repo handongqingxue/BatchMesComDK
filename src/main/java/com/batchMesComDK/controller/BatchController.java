@@ -215,7 +215,7 @@ public class BatchController {
 		try {
 			List<WorkOrder> woList=workOrderService.getKeepWatchList();
 			System.out.println("woListSize==="+woList.size());
-			String batchIDs="";
+			String formulaIds="";
 			String blcResult = batchTestService.getItem(Constant.ITEM_BATCH_LIST_CT);
 			System.out.println("blcResult==="+blcResult);
 			String batchListCt = blcResult.substring(0, blcResult.indexOf(Constant.END_SUCCESS));
@@ -283,31 +283,29 @@ public class BatchController {
 				}
 				
 				if(state>5) {
-					//把状态大于5的工单id拼接起来
-					batchIDs+=","+wo.getWorkOrderID();
+					//把状态大于5的工单的可执行配方id拼接起来，可执行配方id对应batchID
+					formulaIds+=","+wo.getFormulaId();
 				}
 			}
 
-			/*
-			if(StringUtils.isEmpty(batchIDs)) {
-				String[] batchIDArr = batchIDs.split(",");
-				for (int i = 0; i < batchIDArr.length; i++) {
-					String batchID = batchIDArr[i];
+			if(StringUtils.isEmpty(formulaIds)) {
+				String[] formulaIdArr = formulaIds.split(",");
+				for (int i = 0; i < formulaIdArr.length; i++) {
+					String formulaId = formulaIdArr[i];
 					for (int j = 1; j <= batchCount; j++) {
-						String batchIDVal = BLKey_x("BatchID",j);
-						if(batchID.equals(batchIDVal)) {
-							String stateVal = BLKey_x("State",j);
-							if("COMPLATE".equals(stateVal)) {
-								//workOrderService.updateStateById(WorkOrder.BJS, id);
+						String batchIDVal = batchTestService.getBLKey_x("BatchID",j);
+						if(formulaId.equals(batchIDVal)) {
+							String stateVal = batchTestService.getBLKey_x("State",j);
+							if(BatchTest.COMPLETE.equals(stateVal)) {
+								workOrderService.updateStateByFormulaId(WorkOrder.BJS, formulaId);
 							}
-							else if("STOPPED".equals(stateVal)) {
-								//workOrderService.updateStateById(WorkOrder.BYWZZ, id);
+							else if(BatchTest.STOPPED.equals(stateVal)) {
+								workOrderService.updateStateByFormulaId(WorkOrder.BYWZZ, formulaId);
 							}
 						}
 					}
 				}
 			}
-			*/
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
