@@ -7,6 +7,8 @@ import com.batchMesComDK.entity.*;
 public class Constant {
 
 	public static final String USERID="batchsvr1/ADMINISTRATOR";
+	public static final String ITEM_BATCH_LIST_CT="BatchListCt";
+	public static final String END_SUCCESS="/nSuccess";
 
 	public static void setWorkOrderStateInRequest(HttpServletRequest request) {
 		

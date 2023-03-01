@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.batchMesComDK.dao.BatchTestMapper">
+	<insert id="add" parameterType="com.batchMesComDK.entity.BatchTest">
+		insert into [BatchComTest].[dbo].[BatchTest]
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="BatchID!=null">
+				BatchID,
+			</if>
+			<if test="Recipe!=null">
+				Recipe,
+			</if>
+			<if test="Description!=null">
+				Description,
+			</if>
+				State,
+			<if test="Mode!=null">
+				Mode,
+			</if>
+		</trim>
+		values
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="BatchID!=null">
+				#{BatchID},
+			</if>
+			<if test="Recipe!=null">
+				#{Recipe},
+			</if>
+			<if test="Description!=null">
+				#{Description},
+			</if>
+				'READY',
+			<if test="Mode!=null">
+				#{Mode},
+			</if>
+		</trim>
+	</insert>
+	<select id="getCount" resultType="java.lang.Integer">
+		select count(*) from [BatchComTest].[dbo].[BatchTest] where id=#{id}
+	</select>
+</mapper>

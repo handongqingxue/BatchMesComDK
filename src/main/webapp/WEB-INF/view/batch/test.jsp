@@ -18,10 +18,13 @@ $(function(){
 	//getFormulaCodeMaterialDosage();
 	//keepWatchOnWorkOrder();
 	initUwosStateSel();
+	setInterval(function(){
+		keepWatchOnWorkOrderTest();
+	},"3000");
 });
 
-function keepWatchOnWorkOrder(){
-	$.post(path+"batch/keepWatchOnWorkOrder",
+function keepWatchOnWorkOrderTest(){
+	$.post(path+"batch/keepWatchOnWorkOrderTest",
 		function(data){
 			
 		}
@@ -444,6 +447,24 @@ function getManFeed(){
 				$("#editManFeed_div #feedTime").val("");
 				$("#editManFeed_div #markBit").val("");
 				$("#editManFeed_div #materialSV").val("");
+				alert(data.info);
+			}
+		}
+	,"json");
+}
+
+function addBatchTest(){
+	var batchID=$("#addBatchTest_div #batchID").val();
+	var recipe=$("#addBatchTest_div #recipe").val();
+	var description=$("#addBatchTest_div #description").val();
+	var mode=$("#addBatchTest_div #mode").val();
+	
+	$.post(path+"batch/addBatchTest",
+		{batchID:batchID,recipe:recipe,description:description,mode:mode},
+		function(data){
+			if(data.message=="ok")
+				alert(data.info);
+			else{
 				alert(data.info);
 			}
 		}
@@ -1526,6 +1547,23 @@ function splitUnitTagData(data){
 		IDs:<input type="text" size="50" id="ids"/>
 		<input type="button" value="删除" onclick="deleteManFeed()"/>
 	</div>
+</div>
+
+<div id="addBatchTest_div" style="margin-top: 10px;">
+	添加batch模拟数据:
+	<div>
+		BatchID:<input type="text" size="50" id="batchID"/>
+	</div>
+	<div>
+		Recipe:<input type="text" size="50" id="recipe"/>
+	</div>
+	<div>
+		Description:<input type="text" size="50" id="description"/>
+	</div>
+	<div>
+		Mode:<input type="text" size="50" id="mode"/>
+	</div>
+	<input type="button" value="发送" onclick="addBatchTest()"/>
 </div>
 
 <div id="uwos_div" style="margin-top: 10px;">

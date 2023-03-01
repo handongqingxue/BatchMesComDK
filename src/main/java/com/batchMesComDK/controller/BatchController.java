@@ -61,6 +61,8 @@ public class BatchController {
 	@Autowired
 	private BatchRecordService batchRecordService;
 	@Autowired
+	private BatchTestService batchTestService;
+	@Autowired
 	private TranslateService translateService;
 	@Autowired
 	private SignoffTemplateService signoffTemplateService;
@@ -202,6 +204,21 @@ public class BatchController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+	}
+
+	/**
+	 * 巡回检索工单状态变化(模拟虚拟机测试用)
+	 */
+	@RequestMapping(value="/keepWatchOnWorkOrderTest")
+	public void keepWatchOnWorkOrderTest() {
+		List<WorkOrder> woList=workOrderService.getKeepWatchList();
+		System.out.println("woListSize==="+woList.size());
+		String blcResult = batchTestService.getItem(Constant.ITEM_BATCH_LIST_CT);
+		System.out.println("blcResult==="+blcResult);
+		String batchListCt = blcResult.substring(0, blcResult.indexOf(Constant.END_SUCCESS));
+		int batchCount = Integer.valueOf(batchListCt);
+		System.out.println("batchCount==="+batchCount);
 		
 	}
 	
@@ -810,6 +827,31 @@ public class BatchController {
 			else {
 				jsonMap.put("message", "no");
 				jsonMap.put("info", "添加电子签名模板失败");
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally {
+			return jsonMap;
+		}
+	}
+
+	@RequestMapping(value="/addBatchTest")
+	@ResponseBody
+	public Map<String, Object> addBatchTest(BatchTest bt) {
+
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
+		
+		try {
+			int count=batchTestService.add(bt);
+			if(count>0) {
+				jsonMap.put("message", "ok");
+				jsonMap.put("info", "添加batch模拟数据成功");
+			}
+			else {
+				jsonMap.put("message", "no");
+				jsonMap.put("info", "添加batch模拟数据失败");
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
