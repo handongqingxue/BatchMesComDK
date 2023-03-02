@@ -47,6 +47,8 @@ public class BatchTestServiceImpl implements BatchTestService {
 			state1=BatchTest.RUNNING;
 		else if(BatchTest.STOP.equals(state))
 			state1=BatchTest.STOPPED;
+		else
+			state1=state;
 		return batchTestDao.updateStateByCreateID(state1,createID);
 	}
 }

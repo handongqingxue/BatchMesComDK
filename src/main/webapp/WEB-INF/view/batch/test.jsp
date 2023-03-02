@@ -18,6 +18,7 @@ $(function(){
 	//getFormulaCodeMaterialDosage();
 	//keepWatchOnWorkOrder();
 	initUwosStateSel();
+	initUbtsStateSel();
 	//setInterval(function(){
 		keepWatchOnWorkOrderTest();
 	//},"3000");
@@ -490,6 +491,25 @@ function updateWorkOrderStateById(){
 	}
 }
 
+function updateBatchTestStateByCreateID(){
+	var state=$("#ubts_div #state_sel").val();
+	if(state=="")
+		alert("请选择状态")
+	else{
+		var createID=$("#ubts_div #createID").val();
+		$.post(path+"batch/updateBatchTestStateByCreateID",
+			{state:state,createID:createID},
+			function(data){
+				if(data.message=="ok")
+					alert(data.info);
+				else{
+					alert(data.info);
+				}
+			}
+		,"json");
+	}
+}
+
 function initUwosStateSel(){
 	var wlqtwbState=parseInt('${requestScope.wlqtwbState}');
 	var csqrwbState=parseInt('${requestScope.csqrwbState}');
@@ -522,6 +542,24 @@ function initUwosStateSel(){
 	stateSel.append("<option value=\""+bztState+"\">"+bztStateMc+"</option>");
 	stateSel.append("<option value=\""+bywzzState+"\">"+bywzzStateMc+"</option>");
 	stateSel.append("<option value=\""+bjsState+"\">"+bjsStateMc+"</option>");
+}
+
+function initUbtsStateSel(){
+	var readyState='${requestScope.readyState}';
+	var startState='${requestScope.startState}';
+	var runningState='${requestScope.runningState}';
+	var stopState='${requestScope.stopState}';
+	var stoppedState='${requestScope.stoppedState}';
+	var completeState='${requestScope.completeState}';
+
+	var stateSel=$("#ubts_div #state_sel");
+	stateSel.append("<option value=\"\">请选择</option>");
+	stateSel.append("<option value=\""+readyState+"\">"+readyState+"</option>");
+	stateSel.append("<option value=\""+startState+"\">"+startState+"</option>");
+	stateSel.append("<option value=\""+runningState+"\">"+runningState+"</option>");
+	stateSel.append("<option value=\""+stopState+"\">"+stopState+"</option>");
+	stateSel.append("<option value=\""+stoppedState+"\">"+stoppedState+"</option>");
+	stateSel.append("<option value=\""+completeState+"\">"+completeState+"</option>");
 }
 
 function addDataToDB(){
@@ -1576,6 +1614,18 @@ function splitUnitTagData(data){
 		ID:<input type="text" size="50" id="id"/>
 	</div>
 	<input type="button" value="发送" onclick="updateWorkOrderStateById()"/>
+</div>
+
+<div id="ubts_div" style="margin-top: 10px;">
+	更新BatchTest状态:
+	<div>
+		状态:
+		<select id="state_sel"></select>
+	</div>
+	<div>
+		CreateID:<input type="text" size="50" id="createID"/>
+	</div>
+	<input type="button" value="发送" onclick="updateBatchTestStateByCreateID()"/>
 </div>
 
 <div style="margin-top: 10px;">

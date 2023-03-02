@@ -87,6 +87,7 @@ public class BatchController {
 		//List<BHBatch> bhbList=bHBatchService.getList();
 		//System.out.println("size==="+bhbList.size());
 		Constant.setWorkOrderStateInRequest(request);
+		Constant.setBatchTestStateInRequest(request);
 		
 		return MODULE_NAME+"/test";
 	}
@@ -229,29 +230,29 @@ public class BatchController {
 				switch (state) {
 				case WorkOrder.CSQRWB:
 					//调用创建batch接口创建batch
-					Integer id = wo.getID();
+					String formulaId = wo.getFormulaId();
 					String workOrderID = wo.getWorkOrderID();				
 					String recipeID = wo.getRecipeID();
-					System.out.println("id==="+id);
+					System.out.println("formulaId==="+formulaId);
 					System.out.println("workOrderID==="+workOrderID);
 					System.out.println("recipeID==="+recipeID);
 					
 					BatchTest bt=new BatchTest();
 					bt.setRecipe(recipeID);
-					bt.setBatchID(id.toString());
+					bt.setBatchID(formulaId);
 					bt.setDescription("FRENCHVANILLA PREMIUM -CLASSBASED");
 					addBatchTest(bt);
 					
 					addManFeedFromRecipePM(workOrderID);//工单创建时，从配方参数表里取数据，放入人工投料表
 					
-					workOrderService.updateStateById(WorkOrder.BCJWB, id);
+					workOrderService.updateStateById(WorkOrder.BCJWB, wo.getID());
 					break;
 				case WorkOrder.BQD:
 					//启动执行配方
 					for (int j = 1; j <= batchCount; j++) {
-						String idStr = wo.getID().toString();
-						String batchIDVal = BLKey_x("BatchID",j);
-						if(idStr.equals(batchIDVal)) {
+						String formulaIdStr = wo.getFormulaId().toString();
+						String batchIDVal = batchTestService.getBLKey_x("BatchID",j);
+						if(formulaIdStr.equals(batchIDVal)) {
 							String createIDVal = batchTestService.getBLKey_x("CreateID",j);
 							System.out.println("createIDVal==="+createIDVal);
 							
@@ -259,7 +260,7 @@ public class BatchController {
 							
 							String stateVal = batchTestService.getBLKey_x("State",j);
 							if(BatchTest.RUNNING.equals(stateVal)) {
-								workOrderService.updateStateById(WorkOrder.BYX, Integer.valueOf(idStr));
+								workOrderService.updateStateById(WorkOrder.BYX, wo.getID());
 							}
 						}
 					}
@@ -286,13 +287,13 @@ public class BatchController {
 					break;
 				}
 				
-				if(state>5) {
+				if(state>=5&&state<8) {
 					//把状态大于5的工单的可执行配方id拼接起来，可执行配方id对应batchID
 					formulaIds+=","+wo.getFormulaId();
 				}
 			}
 
-			if(StringUtils.isEmpty(formulaIds)) {
+			if(!StringUtils.isEmpty(formulaIds)) {
 				String[] formulaIdArr = formulaIds.split(",");
 				for (int i = 0; i < formulaIdArr.length; i++) {
 					String formulaId = formulaIdArr[i];
@@ -873,6 +874,33 @@ public class BatchController {
 			else {
 				jsonMap.put("message", "no");
 				jsonMap.put("info", "修改工单状态失败");
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally {
+			return jsonMap;
+		}
+	}
+
+	@RequestMapping(value="/updateBatchTestStateByCreateID")
+	@ResponseBody
+	public Map<String, Object> updateBatchTestStateByCreateID(String state, Integer createID) {
+		
+		System.out.println("state==="+state);
+		System.out.println("createID==="+createID);
+		
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
+		try {
+			int count=batchTestService.updateStateByCreateID(state,createID);
+			if(count>0) {
+				jsonMap.put("message", "ok");
+				jsonMap.put("info", "修改BatchTest状态成功");
+			}
+			else {
+				jsonMap.put("message", "no");
+				jsonMap.put("info", "修改BatchTest状态失败");
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

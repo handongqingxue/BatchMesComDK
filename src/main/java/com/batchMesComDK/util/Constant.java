@@ -33,4 +33,14 @@ public class Constant {
 		request.setAttribute("bjsStateMc", WorkOrder.BJS_TEXT);//BATCH结束
 		
 	}
+
+	public static void setBatchTestStateInRequest(HttpServletRequest request) {
+		
+		request.setAttribute("readyState", BatchTest.READY);
+		request.setAttribute("startState", BatchTest.START);
+		request.setAttribute("runningState", BatchTest.RUNNING);
+		request.setAttribute("stopState", BatchTest.STOP);
+		request.setAttribute("stoppedState", BatchTest.STOPPED);
+		request.setAttribute("completeState", BatchTest.COMPLETE);
+	}
 }
