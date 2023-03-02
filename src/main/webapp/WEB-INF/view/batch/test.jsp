@@ -18,9 +18,9 @@ $(function(){
 	//getFormulaCodeMaterialDosage();
 	//keepWatchOnWorkOrder();
 	initUwosStateSel();
-	setInterval(function(){
+	//setInterval(function(){
 		keepWatchOnWorkOrderTest();
-	},"3000");
+	//},"3000");
 });
 
 function keepWatchOnWorkOrderTest(){

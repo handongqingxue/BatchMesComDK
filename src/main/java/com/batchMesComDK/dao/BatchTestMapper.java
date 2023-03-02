@@ -10,7 +10,7 @@ public interface BatchTestMapper {
 
 	int getCount();
 
-	String getBLCol_x(@Param("key") String key, @Param("startRowNum") int startRowNum);
+	String getBLCol_x(@Param("key") String key, @Param("rowNum") int rowNum);
 
 	int updateStateByCreateID(@Param("state") String state, @Param("createID") Integer createID);
 }

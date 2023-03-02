@@ -72,6 +72,7 @@ public class BatchController {
 	private MaterialCheckOverIssusBodyService materialCheckOverIssusBodyService;
 	public static final String MODULE_NAME="batch";
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private SimpleDateFormat formulaIdSDF = new SimpleDateFormat("yyyyMMddHHmmss");
 	
 	//http://localhost:8080/BatchMesComDK/batch/test
 	@RequestMapping(value="/test")
@@ -242,6 +243,8 @@ public class BatchController {
 					addBatchTest(bt);
 					
 					addManFeedFromRecipePM(workOrderID);//工单创建时，从配方参数表里取数据，放入人工投料表
+					
+					workOrderService.updateStateById(WorkOrder.BCJWB, id);
 					break;
 				case WorkOrder.BQD:
 					//启动执行配方
@@ -265,9 +268,10 @@ public class BatchController {
 				case WorkOrder.BZT:
 					//调用batch command接口
 					for (int j = 1; j <= batchCount; j++) {
-						String idStr = wo.getID().toString();
+						String formulaIdStr = wo.getFormulaId().toString();
 						String batchIDVal = batchTestService.getBLKey_x("BatchID",j);
-						if(idStr.equals(batchIDVal)) {
+						System.out.println("batchIDVal==="+batchIDVal);
+						if(formulaIdStr.equals(batchIDVal)) {
 							String createIDVal = batchTestService.getBLKey_x("CreateID",j);
 							System.out.println("createIDVal==="+createIDVal);
 							
@@ -275,7 +279,7 @@ public class BatchController {
 
 							String stateVal = BLKey_x("State",j);
 							if("STOPPED".equals(stateVal)) {
-								workOrderService.updateStateById(WorkOrder.BYWZZ, Integer.valueOf(idStr));
+								workOrderService.updateStateById(WorkOrder.BYWZZ, wo.getID());
 							}
 						}
 					}
@@ -1287,7 +1291,7 @@ public class BatchController {
 
 		net.sf.json.JSONObject wodMesJO = net.sf.json.JSONObject.fromObject(mesBody);
 		//WorkOrder wo=(WorkOrder)net.sf.json.JSONObject.toBean(woJO, WorkOrder.class);
-		String formulaId = wodMesJO.getString("formulaId");
+		String formulaIdMes = wodMesJO.getString("formulaId");
 		//String id = wodMesJO.getString("id");
 		String lotNo = wodMesJO.getString("lotNo");
 		String planStartTime = wodMesJO.getString("planStartTime");
@@ -1298,7 +1302,8 @@ public class BatchController {
 		String workOrder = wodMesJO.getString("workOrder");
 		
 		WorkOrder wo=new WorkOrder();
-		wo.setFormulaId(formulaId);
+		wo.setFormulaId(formulaIdSDF.format(new Date()));
+		wo.setFormulaIdMes(formulaIdMes);
 		//wo.setID(Integer.valueOf(id));
 		wo.setCreateTime(planStartTime);
 		wo.setProductName(productName);

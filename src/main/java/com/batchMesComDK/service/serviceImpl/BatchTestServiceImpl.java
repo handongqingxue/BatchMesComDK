@@ -34,7 +34,9 @@ public class BatchTestServiceImpl implements BatchTestService {
 	@Override
 	public String getBLKey_x(String key, int rowNumber) {
 		// TODO Auto-generated method stub
-		return batchTestDao.getBLCol_x(key,rowNumber-1);
+		System.out.println("key==="+key);
+		System.out.println("rowNumber==="+rowNumber);
+		return batchTestDao.getBLCol_x(key,rowNumber);
 	}
 
 	@Override

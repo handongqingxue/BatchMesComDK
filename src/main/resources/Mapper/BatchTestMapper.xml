@@ -41,7 +41,7 @@
 		select count(*) from [BatchComTest].[dbo].[BatchTest]
 	</select>
 	<select id="getBLCol_x" resultType="java.lang.String">
-		select [key] from [BatchComTest].[dbo].[BatchTest] limit #{startRowNum},1
+		select ${key} ${key} from(select ${key} ${key},ROW_NUMBER() over(order by CreateID) as RowNum from [BatchComTest].[dbo].[BatchTest]) bt where bt.RowNum=${rowNum}
 	</select>
 	<update id="updateStateByCreateID">
 		update [BatchComTest].[dbo].[BatchTest] set state=#{state} where createID=#{createID}
