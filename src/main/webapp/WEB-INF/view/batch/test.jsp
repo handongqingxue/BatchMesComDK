@@ -19,9 +19,9 @@ $(function(){
 	//keepWatchOnWorkOrder();
 	initUwosStateSel();
 	initUbtsStateSel();
-	//setInterval(function(){
+	setInterval(function(){
 		keepWatchOnWorkOrderTest();
-	//},"3000");
+	},"3000");
 });
 
 function keepWatchOnWorkOrderTest(){

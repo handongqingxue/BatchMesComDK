@@ -101,7 +101,7 @@ public class BatchController {
 		try {
 			List<WorkOrder> woList=workOrderService.getKeepWatchList();
 			System.out.println("woListSize==="+woList.size());
-			String batchIDs="";
+			String formulaIds="";
 			String batchCountResultStr = getItem("BatchListCt");
 			System.out.println("batchCountResultStr==="+batchCountResultStr);
 			JSONObject batchCountResultJO = new JSONObject(batchCountResultStr);
@@ -115,13 +115,13 @@ public class BatchController {
 				switch (state) {
 				case WorkOrder.CSQRWB:
 					//调用创建batch接口创建batch
-					Integer id = wo.getID();
+					String formulaId = wo.getFormulaId();
 					String workOrderID = wo.getWorkOrderID();				
 					String recipeID = wo.getRecipeID();
-					System.out.println("id==="+id);
+					System.out.println("formulaId==="+formulaId);
 					System.out.println("workOrderID==="+workOrderID);
 					System.out.println("recipeID==="+recipeID);
-					createBatch(id,workOrderID,recipeID);
+					createBatch(formulaId,workOrderID,recipeID);
 					
 					addManFeedFromRecipePM(workOrderID);//工单创建时，从配方参数表里取数据，放入人工投料表
 					break;
@@ -129,9 +129,13 @@ public class BatchController {
 					//启动执行配方
 					for (int j = 1; j <= batchCount; j++) {
 						String idStr = wo.getID().toString();
-						String batchIDVal = BLKey_x("BatchID",j);
+						//String batchIDVal = BLKey_x("BatchID",j);
+						String batchIDVal = getItem("BLBatchID_"+j);
+						batchIDVal = batchIDVal.substring(0, batchIDVal.indexOf(Constant.END_SUCCESS));
 						if(idStr.equals(batchIDVal)) {
-							String createIDVal = BLKey_x("CreateID",j);
+							//String createIDVal = BLKey_x("CreateID",j);
+							String createIDVal = getItem("BLCreateID_"+j);
+							createIDVal = createIDVal.substring(0, createIDVal.indexOf(Constant.END_SUCCESS));
 							System.out.println("createIDVal==="+createIDVal);
 							
 							StringBuilder commandBQDSB=new StringBuilder();
@@ -139,11 +143,15 @@ public class BatchController {
 							commandBQDSB.append(Constant.USERID);
 							commandBQDSB.append(",");
 							commandBQDSB.append(createIDVal);
-							commandBQDSB.append(",START)]");
+							commandBQDSB.append(",");
+							commandBQDSB.append(BatchTest.START);
+							commandBQDSB.append(")]");
 							execute(commandBQDSB.toString());
 							
-							String stateVal = BLKey_x("State",j);
-							if("RUNNING".equals(stateVal)) {
+							//String stateVal = BLKey_x("State",j);
+							String stateVal = getItem("BLState_"+j);
+							stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
+							if(BatchTest.RUNNING.equals(stateVal)) {
 								workOrderService.updateStateById(WorkOrder.BYX, Integer.valueOf(idStr));
 							}
 						}
@@ -153,10 +161,14 @@ public class BatchController {
 				case WorkOrder.BZT:
 					//调用batch command接口
 					for (int j = 1; j <= batchCount; j++) {
-						String idStr = wo.getID().toString();
-						String batchIDVal = BLKey_x("BatchID",j);
-						if(idStr.equals(batchIDVal)) {
-							String createIDVal = BLKey_x("CreateID",j);
+						String formulaIdStr = wo.getFormulaId().toString();
+						//String batchIDVal = BLKey_x("BatchID",j);
+						String batchIDVal = getItem("BLBatchID_"+j);
+						batchIDVal = batchIDVal.substring(0, batchIDVal.indexOf(Constant.END_SUCCESS));
+						if(formulaIdStr.equals(batchIDVal)) {
+							//String createIDVal = BLKey_x("CreateID",j);
+							String createIDVal = getItem("BLCreateID_"+j);
+							createIDVal = createIDVal.substring(0, createIDVal.indexOf(Constant.END_SUCCESS));
 							System.out.println("createIDVal==="+createIDVal);
 							
 							StringBuilder commandQXZTSB=new StringBuilder();
@@ -164,44 +176,50 @@ public class BatchController {
 							commandQXZTSB.append(Constant.USERID);
 							commandQXZTSB.append(",");
 							commandQXZTSB.append(createIDVal);
-							commandQXZTSB.append(",STOP)]");
+							commandQXZTSB.append(",");
+							commandQXZTSB.append(BatchTest.STOP);
+							commandQXZTSB.append(")]");
 							execute(commandQXZTSB.toString());
 
-							String stateVal = BLKey_x("State",j);
-							if("STOPPED".equals(stateVal)) {
-								workOrderService.updateStateById(WorkOrder.BYWZZ, Integer.valueOf(idStr));
+							//String stateVal = BLKey_x("State",j);
+							String stateVal = getItem("BLState_"+j);
+							stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
+							if(BatchTest.STOPPED.equals(stateVal)) {
+								workOrderService.updateStateById(WorkOrder.BYWZZ, wo.getID());
 							}
 						}
 					}
 					break;
 				}
 				
-				if(state>5) {
-					//把状态大于5的工单id拼接起来
-					batchIDs+=","+wo.getWorkOrderID();
+				if(state>=5&&state<8) {
+					//把状态大于5的工单的可执行配方id拼接起来，可执行配方id对应batchID
+					formulaIds+=","+wo.getFormulaId();
 				}
 			}
 
-			/*
-			if(StringUtils.isEmpty(batchIDs)) {
-				String[] batchIDArr = batchIDs.split(",");
-				for (int i = 0; i < batchIDArr.length; i++) {
-					String batchID = batchIDArr[i];
+			if(StringUtils.isEmpty(formulaIds)) {
+				String[] formulaIdArr = formulaIds.substring(1).split(",");
+				for (int i = 0; i < formulaIdArr.length; i++) {
+					String formulaId = formulaIdArr[i];
 					for (int j = 1; j <= batchCount; j++) {
-						String batchIDVal = BLKey_x("BatchID",j);
-						if(batchID.equals(batchIDVal)) {
-							String stateVal = BLKey_x("State",j);
-							if("COMPLATE".equals(stateVal)) {
-								//workOrderService.updateStateById(WorkOrder.BJS, id);
+						//String batchIDVal = BLKey_x("BatchID",j);
+						String batchIDVal = getItem("BLBatchID_"+j);
+						batchIDVal = batchIDVal.substring(0, batchIDVal.indexOf(Constant.END_SUCCESS));
+						if(formulaId.equals(batchIDVal)) {
+							//String stateVal = BLKey_x("State",j);
+							String stateVal = getItem("BLState_"+j);
+							stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
+							if(BatchTest.COMPLETE.equals(stateVal)) {
+								workOrderService.updateStateByFormulaId(WorkOrder.BJS, formulaId);
 							}
-							else if("STOPPED".equals(stateVal)) {
-								//workOrderService.updateStateById(WorkOrder.BYWZZ, id);
+							else if(BatchTest.STOPPED.equals(stateVal)) {
+								workOrderService.updateStateByFormulaId(WorkOrder.BYWZZ, formulaId);
 							}
 						}
 					}
 				}
 			}
-			*/
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -279,7 +297,7 @@ public class BatchController {
 							batchTestService.updateStateByCreateID(BatchTest.STOP,Integer.valueOf(createIDVal));
 
 							String stateVal = BLKey_x("State",j);
-							if("STOPPED".equals(stateVal)) {
+							if(BatchTest.STOPPED.equals(stateVal)) {
 								workOrderService.updateStateById(WorkOrder.BYWZZ, wo.getID());
 							}
 						}
@@ -294,7 +312,7 @@ public class BatchController {
 			}
 
 			if(!StringUtils.isEmpty(formulaIds)) {
-				String[] formulaIdArr = formulaIds.split(",");
+				String[] formulaIdArr = formulaIds.substring(1).split(",");
 				for (int i = 0; i < formulaIdArr.length; i++) {
 					String formulaId = formulaIdArr[i];
 					for (int j = 1; j <= batchCount; j++) {
@@ -318,6 +336,12 @@ public class BatchController {
 		
 	}
 	
+	/**
+	 * 这个方法是以前调用batch虚拟机里BLState_x方法不通时模拟调用的，现在虚拟机端那个方法通了，这个方法暂时不用了
+	 * @param key
+	 * @param rowNumber
+	 * @return
+	 */
 	private String BLKey_x(String key, int rowNumber) {
 		String value=null;
 		try {
@@ -366,14 +390,14 @@ public class BatchController {
 		}
 	}
 	
-	private void createBatch(Integer id, String workOrderID, String recipeID) {
+	private void createBatch(String batchID, String workOrderID, String recipeID) {
 		StringBuilder commandSB=new StringBuilder();
 		commandSB.append("[BATCH(Item,");
 		commandSB.append(Constant.USERID);
 		commandSB.append(",");
 		commandSB.append(recipeID);
 		commandSB.append(",");
-		commandSB.append(id);//BatchID
+		commandSB.append(batchID);
 		commandSB.append("");
 		commandSB.append(",100,FRENCHVANILLA PREMIUM -CLASSBASED,FREEZER,4,MIXER,2,PARMS,");
 		//commandSB.append("CREAM_AMOUNT,2001,EGG_AMOUNT,200,FLAVOR_AMOUNT,50,MILK_AMOUNT,1999,SUGAR_AMOUNT, 750");
