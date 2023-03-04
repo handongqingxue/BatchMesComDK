@@ -127,5 +127,8 @@
 	</delete>
 	<select id="getListByWorkOrderID" resultType="com.batchMesComDK.entity.BatchRecord">
 		select * from BatchRecord where WorkOrderID=#{workOrderID}
+		<foreach collection="recordTypeList" item="recordType" open=" and cast(RecordType as char) in (" separator="," close=")">
+		#{recordType}
+		</foreach>
 	</select>
 </mapper>

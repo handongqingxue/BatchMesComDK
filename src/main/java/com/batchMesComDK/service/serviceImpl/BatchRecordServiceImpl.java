@@ -70,6 +70,9 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 	@Override
 	public List<BatchRecord> getSendToMesData(String workOrderID) {
 		// TODO Auto-generated method stub
-		return batchRecordDao.getListByWorkOrderID(workOrderID);
+		String recordTypes = BatchRecord.PCJL+","+BatchRecord.PGCJL+","+BatchRecord.PCGCJL;
+		String[] recordTypeArr = recordTypes.split(",");
+		List<String> recordTypeList = Arrays.asList(recordTypeArr);
+		return batchRecordDao.getListByWorkOrderID(workOrderID,recordTypeList);
 	}
 }

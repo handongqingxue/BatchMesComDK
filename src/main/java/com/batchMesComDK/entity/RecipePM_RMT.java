@@ -69,11 +69,29 @@ public class RecipePM_RMT {
 	public void setCName(String cName) {
 		CName = cName;
 	}
+	public String getFeedPort() {
+		return FeedPort;
+	}
+	public void setFeedPort(String feedPort) {
+		FeedPort = feedPort;
+	}
 	public String getMaterialSV() {
 		return MaterialSV;
 	}
 	public void setMaterialSV(String materialSV) {
 		MaterialSV = materialSV;
+	}
+	public String getHH() {
+		return HH;
+	}
+	public void setHH(String hH) {
+		HH = hH;
+	}
+	public String getLL() {
+		return LL;
+	}
+	public void setLL(String lL) {
+		LL = lL;
 	}
 	private String PMCode;
   	private String PMName;
@@ -85,5 +103,8 @@ public class RecipePM_RMT {
   	private String PMType;
   	private String RecipeID;
   	private String CName;
+	private String FeedPort;
   	private String MaterialSV;
+	private String HH;
+	private String LL;
 }

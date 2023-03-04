@@ -12,7 +12,7 @@ public interface ManFeedMapper {
 
 	int deleteByList(@Param("idList") List<String> idList);
 
-	int editByWorkOrderIDPhaseID(ManFeed mf);
+	int editByWorkOrderIDFeedPort(ManFeed mf);
 
 	ManFeed getByWorkOrderIDPhaseID(@Param("workOrderID") String workOrderID,@Param("phaseID") String phaseID);
 }

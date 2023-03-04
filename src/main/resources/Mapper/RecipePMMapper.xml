@@ -36,8 +36,17 @@
 			<if test="CName!=null">
 				CName,
 			</if>
+			<if test="FeedPort!=null">
+				FeedPort,
+			</if>
 			<if test="MaterialSV!=null">
 				MaterialSV,
+			</if>
+			<if test="HH!=null">
+				HH,
+			</if>
+			<if test="LL!=null">
+				LL,
 			</if>
 		</trim>
 		values
@@ -72,8 +81,17 @@
 			<if test="CName!=null">
 				#{CName},
 			</if>
+			<if test="FeedPort!=null">
+				#{FeedPort},
+			</if>
 			<if test="MaterialSV!=null">
 				#{MaterialSV},
+			</if>
+			<if test="HH!=null">
+				#{HH},
+			</if>
+			<if test="LL!=null">
+				#{LL},
 			</if>
 		</trim>
 	</insert>

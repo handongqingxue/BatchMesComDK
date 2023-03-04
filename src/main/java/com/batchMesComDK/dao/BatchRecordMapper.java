@@ -12,5 +12,5 @@ public interface BatchRecordMapper {
 
 	int deleteByList(@Param("idList") List<String> idList);
 
-	List<BatchRecord> getListByWorkOrderID(@Param("workOrderID") String workOrderID);
+	List<BatchRecord> getListByWorkOrderID(@Param("workOrderID") String workOrderID,@Param("recordTypeList") List<String> recordTypeList);
 }

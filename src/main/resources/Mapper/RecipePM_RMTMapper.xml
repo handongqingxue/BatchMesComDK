@@ -42,8 +42,17 @@
 			<if test="CName!=null">
 				CName,
 			</if>
+			<if test="FeedPort!=null">
+				FeedPort,
+			</if>
 			<if test="materialSV!=null">
 				materialSV,
+			</if>
+			<if test="HH!=null">
+				HH,
+			</if>
+			<if test="LL!=null">
+				LL,
 			</if>
 		</trim>
 		values
@@ -81,8 +90,17 @@
 			<if test="CName!=null">
 				#{CName},
 			</if>
+			<if test="FeedPort!=null">
+				#{FeedPort},
+			</if>
 			<if test="materialSV!=null">
 				#{materialSV},
+			</if>
+			<if test="HH!=null">
+				#{HH},
+			</if>
+			<if test="LL!=null">
+				#{LL},
 			</if>
 		</trim>
 	</insert>
@@ -125,8 +143,17 @@
 			<if test="CName!=null">
 				CName=#{CName},
 			</if>
+			<if test="feedPort!=null">
+				FeedPort=#{feedPort},
+			</if>
 			<if test="materialSV!=null">
 				materialSV=#{materialSV},
+			</if>
+			<if test="HH!=null">
+				HH=#{HH},
+			</if>
+			<if test="LL!=null">
+				LL=#{LL},
 			</if>
 		</trim>
 		 where ID=#{ID}

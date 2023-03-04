@@ -57,9 +57,9 @@ public class ManFeedServiceImpl implements ManFeedService {
 	}
 	
 	@Override
-	public int editByWorkOrderIDPhaseID(ManFeed mf) {
+	public int editByWorkOrderIDFeedPort(ManFeed mf) {
 		// TODO Auto-generated method stub
-		return manFeedDao.editByWorkOrderIDPhaseID(mf);
+		return manFeedDao.editByWorkOrderIDFeedPort(mf);
 	}
 
 	@Override

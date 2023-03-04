@@ -131,10 +131,10 @@
 		#{id}
 		</foreach>
 	</delete>
-	<update id="updateFormulaIdByWorkOrderID">
-		update WorkOrder set FormulaId=#{formulaId} where WorkOrderID=#{workOrderID}
+	<update id="updateCreamCodeByWorkOrderID">
+		update WorkOrder set CreamCode=#{creamCode} where WorkOrderID=#{workOrderID}
 	</update>
 	<select id="getMaxFormulaIdNumByFormulaIdDate" resultType="java.lang.Integer">
-		select substring(MAX(FormulaId),19,3) from WorkOrder where FormulaId like CONCAT(#{formulaIdDate},'%')
+		select substring(MAX(FormulaId),19,3) from WorkOrder where FormulaId like #{formulaIdDate}+'%'
 	</select>
 </mapper>

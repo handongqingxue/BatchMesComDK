@@ -171,10 +171,14 @@ function addRecipePM_RMT(){
 	var pMType=$("#addRecipePM_RMT_div #pMType").val();
 	var recipeID=$("#addRecipePM_RMT_div #recipeID").val();
 	var cName=$("#addRecipePM_RMT_div #cName").val();
+	var feedPort=$("#addRecipePM_RMT_div #feedPort").val();
 	var materialSV=$("#addRecipePM_RMT_div #materialSV").val();
+	var hH=$("#addRecipePM_RMT_div #hH").val();
+	var lL=$("#addRecipePM_RMT_div #lL").val();
 
 	$.post(path+"batch/addRecipePM_RMT",
-		{pMCode:pMCode,pMName:pMName,lot:lot,dosage:dosage,unit:unit,hLimit:hLimit,lLimit:lLimit,pMType:pMType,recipeID:recipeID,cName:cName,materialSV:materialSV},
+		{pMCode:pMCode,pMName:pMName,lot:lot,dosage:dosage,unit:unit,hLimit:hLimit,lLimit:lLimit,pMType:pMType,recipeID:recipeID,cName:cName,
+		feedPort:feedPort,materialSV:materialSV,hH:hH,lL:lL},
 		function(data){
 			if(data.message=="ok")
 				alert(data.info);
@@ -212,11 +216,14 @@ function editRecipePM_RMT(){
 	var pMType=$("#editRecipePM_RMT_div #pMType").val();
 	var recipeID=$("#editRecipePM_RMT_div #recipeID").val();
 	var cName=$("#editRecipePM_RMT_div #cName").val();
+	var feedPort=$("#editRecipePM_RMT_div #feedPort").val();
 	var materialSV=$("#editRecipePM_RMT_div #materialSV").val();
+	var hH=$("#editRecipePM_RMT_div #hH").val();
+	var lL=$("#editRecipePM_RMT_div #lL").val();
 	
 	$.post(path+"batch/editRecipePM_RMT",
-		{ID:id,pMCode:pMCode,pMName:pMName,lot:lot,dosage:dosage,unit:unit,
-		hLimit:hLimit,lLimit:lLimit,pMType:pMType,recipeID:recipeID,cName:cName,materialSV:materialSV},
+		{ID:id,pMCode:pMCode,pMName:pMName,lot:lot,dosage:dosage,unit:unit,hLimit:hLimit,lLimit:lLimit,
+		pMType:pMType,recipeID:recipeID,cName:cName,feedPort:feedPort,materialSV:materialSV,hH:hH,lL:lL},
 		function(data){
 			if(data.message=="ok")
 				alert(data.info);
@@ -1415,7 +1422,16 @@ function splitUnitTagData(data){
 		CName:<input type="text" size="50" id="cName"/>
 	</div>
 	<div>
+		FeedPort:<input type="text" size="50" id="feedPort"/>
+	</div>
+	<div>
 		MaterialSV:<input type="text" size="50" id="materialSV"/>
+	</div>
+	<div>
+		HH:<input type="text" size="50" id="hH"/>
+	</div>
+	<div>
+		LL:<input type="text" size="50" id="lL"/>
 	</div>
 	<input type="button" value="发送" onclick="addRecipePM_RMT()"/>
 </div>
@@ -1457,7 +1473,16 @@ function splitUnitTagData(data){
 		CName:<input type="text" size="50" id="cName"/>
 	</div>
 	<div>
+		FeedPort:<input type="text" size="50" id="feedPort"/>
+	</div>
+	<div>
 		MaterialSV:<input type="text" size="50" id="materialSV"/>
+	</div>
+	<div>
+		HH:<input type="text" size="50" id="hH"/>
+	</div>
+	<div>
+		LL:<input type="text" size="50" id="lL"/>
 	</div>
 	<input type="button" value="提交" onclick="editRecipePM_RMT()"/>
 </div>

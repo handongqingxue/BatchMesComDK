@@ -7,11 +7,11 @@ public class BatchRecord {
 	 */
 	public static final int JDGCJL=0;
 	/**
-	 * 过程参数记录
+	 * 过程(工艺)参数记录
 	 */
 	public static final int GCCSJL=1;
 	/**
-	 * 物料参数记录
+	 * 物料参数记录(原料进料记录)
 	 */
 	public static final int WLCSJL=2;
 	/**
@@ -19,9 +19,9 @@ public class BatchRecord {
 	 */
 	public static final int PCJL=3;
 	/**
-	 * 待记录参数
+	 * PHASE过程记录
 	 */
-	public static final int DJLCS=8;
+	public static final int PGCJL=8;
 	/**
 	 * 批次过程记录
 	 */

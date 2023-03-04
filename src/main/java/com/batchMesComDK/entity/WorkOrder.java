@@ -149,6 +149,12 @@ public class WorkOrder {
 	public void setUnitID(String unitID) {
 		UnitID = unitID;
 	}
+	public String getCreamCode() {
+		return CreamCode;
+	}
+	public void setCreamCode(String creamCode) {
+		CreamCode = creamCode;
+	}
 	private String WorkOrderID;
 	private String ProductCode;
 	private String ProductName;
@@ -160,5 +166,6 @@ public class WorkOrder {
 	private Integer State;
 	private String CreateTime;
 	private String UnitID;
+	private String CreamCode;
 	
 }

@@ -10,6 +10,10 @@ public class RecipePM {
 	 * 工艺参数
 	 */
 	public static final int GYCS=2;
+	/**
+	 * 人工投料参数
+	 */
+	public static final int RGTLCS=3;
 
     private Integer ID;
   	public Integer getID() {

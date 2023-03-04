@@ -842,7 +842,7 @@ public class BatchController {
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		
 		try {
-			int count=manFeedService.editByWorkOrderIDPhaseID(mf);
+			int count=manFeedService.editByWorkOrderIDFeedPort(mf);
 			if(count>0) {
 				jsonMap.put("message", "ok");
 				jsonMap.put("info", "修改人工投料信息成功");
@@ -1415,8 +1415,8 @@ public class BatchController {
 
 		/*
 		 * 除了ManFeed表里加设定值，RecipePM表里也要加设定值。工单创建时，要从RecipePM表里根据工单id获取相关的配方参数，这些属于物料参数，放入ManFeed表里。
-		 * 放入后在操作员扫码之前这个阶段只有物料名、PhaseID（投料口）、MarkBit（为0）、MaterialSV这些字段有数据，其他字段要在操作员扫码填入数后才能填充进去。
-		           当操作员扫码时，填入数量、单位，根据系统时间作进料时间。mes端调用人工投料接口，把填入的数据根据工单id和PhaseID（投料口）两个字段，从人工投料表里查询出符合条件的数据，
+		 * 放入后在操作员扫码之前这个阶段只有物料名、FeedPort（投料口）、MarkBit（是否投料结束为0）、MaterialSV这些字段有数据，其他字段要在操作员扫码填入数后才能填充进去。
+		           当操作员扫码时，填入数量、单位，根据系统时间作进料时间。mes端调用人工投料接口，把填入的数据根据工单id和FeedPort（投料口）两个字段，从人工投料表里查询出符合条件的数据，
 		           把数量、单位那些之前为空的数据填充进去。填充完毕，markbit置1，wincc端就不再读取了，又将markbit置2，便于继续投料时与新的投料信息区分开。
 		 * */
 
@@ -1431,7 +1431,7 @@ public class BatchController {
 		*/
 
 		ManFeed mf=(ManFeed)net.sf.json.JSONObject.toBean(fibJO, ManFeed.class);
-		int c=manFeedService.editByWorkOrderIDPhaseID(mf);
+		int c=manFeedService.editByWorkOrderIDFeedPort(mf);
 		if(c>0) {
 			jsonMap.put("success", "true");
 			jsonMap.put("state", "001");
@@ -1517,9 +1517,9 @@ public class BatchController {
 		return plan;
 	}
 
-	@RequestMapping(value="/getSendToMesData", method = RequestMethod.POST)
+	@RequestMapping(value="/getSendToMesBRData", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> getSendToMesData(@RequestBody String bodyEnc) {
+	public Map<String, Object> getSendToMesBRData(@RequestBody String bodyEnc) {
 
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		System.out.println("bodyEnc==="+bodyEnc);

@@ -10,7 +10,7 @@ public interface ManFeedService {
 
 	int deleteByIds(String ids);
 
-	int editByWorkOrderIDPhaseID(ManFeed mf);
+	int editByWorkOrderIDFeedPort(ManFeed mf);
 
 	ManFeed getByWorkOrderIDPhaseID(String workOrderID,String phaseID);
 

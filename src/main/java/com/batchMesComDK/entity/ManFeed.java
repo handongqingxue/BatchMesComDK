@@ -1,6 +1,19 @@
 package com.batchMesComDK.entity;
 
 public class ManFeed {
+	
+	/**
+	 * 未结束
+	 */
+	public static final int WJS=0;
+	/**
+	 * 已结束
+	 */
+	public static final int YJS=1;
+	/**
+	 * 已确认(该投料口下次可以继续投料)
+	 */
+	public static final int YQR=2;
 
     private Integer ID;
   	public Integer getID() {
