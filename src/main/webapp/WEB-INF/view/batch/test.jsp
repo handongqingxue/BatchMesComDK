@@ -19,9 +19,11 @@ $(function(){
 	//keepWatchOnWorkOrder();
 	initUwosStateSel();
 	initUbtsStateSel();
+	/*
 	setInterval(function(){
 		keepWatchOnWorkOrderTest();
 	},"3000");
+	*/
 });
 
 function keepWatchOnWorkOrderTest(){
@@ -423,9 +425,9 @@ function editManFeed(){
 
 function getManFeed(){
 	var workOrderID=$("#editManFeed_div #workOrderID").val();
-	var phaseID=$("#editManFeed_div #phaseID").val();
+	var feedPort=$("#editManFeed_div #feedPort").val();
 	$.post(path+"batch/getManFeed",
-		{workOrderID:workOrderID,phaseID:phaseID},
+		{workOrderID:workOrderID,feedPort:feedPort},
 		function(data){
 			if(data.message=="ok"){
 				var manFeed=data.manFeed;
@@ -435,7 +437,7 @@ function getManFeed(){
 				var suttle=manFeed.suttle;
 				var unit=manFeed.unit;
 				var feedTime=manFeed.feedTime;
-				var phaseID=manFeed.phaseID;
+				var feedPort=manFeed.feedPort;
 				var markBit=manFeed.markBit;
 				var materialSV=manFeed.materialSV;
 				
@@ -1577,7 +1579,7 @@ function splitUnitTagData(data){
 	修改人工投料信息:
 	<div>
 		WorkOrderID:<input type="text" size="50" id="workOrderID"/>
-		PhaseID:<input type="text" size="50" id="phaseID"/>
+		FeedPort:<input type="text" size="50" id="feedPort"/>
 		<input type="button" value="查询" onclick="getManFeed()"/>
 	</div>
 	<div>

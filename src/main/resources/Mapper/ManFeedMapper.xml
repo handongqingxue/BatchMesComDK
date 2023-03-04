@@ -27,8 +27,8 @@
 			<if test="FeedTime!=null">
 				FeedTime,
 			</if>
-			<if test="PhaseID!=null">
-				PhaseID,
+			<if test="FeedPort!=null">
+				FeedPort,
 			</if>
 				MarkBit
 		</trim>
@@ -55,8 +55,8 @@
 			<if test="FeedTime!=null">
 				#{FeedTime},
 			</if>
-			<if test="PhaseID!=null">
-				#{PhaseID},
+			<if test="FeedPort!=null">
+				#{FeedPort},
 			</if>
 				0
 		</trim>
@@ -86,9 +86,9 @@
 				feedTime=#{feedTime},
 			</if>
 		</trim>
-		 where WorkOrderID=#{workOrderID} and FeedPort=#{feedPort} and MaterialSV=${@com.batchMesComDK.entity.ManFeed@WJS}
+		 where WorkOrderID=#{workOrderID} and FeedPort=#{feedPort} and MarkBit=${@com.batchMesComDK.entity.ManFeed@WJS}
 	</update>
-	<select id="getByWorkOrderIDPhaseID" resultType="com.batchMesComDK.entity.ManFeed">
-		select * from ManFeed where WorkOrderID=#{workOrderID} and PhaseID=#{phaseID}
+	<select id="getByWorkOrderIDFeedPort" resultType="com.batchMesComDK.entity.ManFeed">
+		select * from ManFeed where WorkOrderID=#{workOrderID} and FeedPort=#{feedPort} and MarkBit=0
 	</select>
 </mapper>

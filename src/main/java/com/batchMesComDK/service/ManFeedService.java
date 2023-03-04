@@ -12,6 +12,6 @@ public interface ManFeedService {
 
 	int editByWorkOrderIDFeedPort(ManFeed mf);
 
-	ManFeed getByWorkOrderIDPhaseID(String workOrderID,String phaseID);
+	ManFeed getByWorkOrderIDFeedPort(String workOrderID,String feedPort);
 
 }

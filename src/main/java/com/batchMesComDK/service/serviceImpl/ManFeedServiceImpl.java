@@ -63,9 +63,9 @@ public class ManFeedServiceImpl implements ManFeedService {
 	}
 
 	@Override
-	public ManFeed getByWorkOrderIDPhaseID(String workOrderID,String phaseID) {
+	public ManFeed getByWorkOrderIDFeedPort(String workOrderID,String feedPort) {
 		// TODO Auto-generated method stub
-		return manFeedDao.getByWorkOrderIDPhaseID(workOrderID,phaseID);
+		return manFeedDao.getByWorkOrderIDFeedPort(workOrderID,feedPort);
 	}
 
 }

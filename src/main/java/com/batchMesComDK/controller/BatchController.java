@@ -862,15 +862,15 @@ public class BatchController {
 
 	@RequestMapping(value="/getManFeed")
 	@ResponseBody
-	public Map<String, Object> getManFeed(String workOrderID, String phaseID) {
+	public Map<String, Object> getManFeed(String workOrderID, String feedPort) {
 		
 		System.out.println("workOrderID==="+workOrderID);
-		System.out.println("phaseID==="+phaseID);
+		System.out.println("feedPort==="+feedPort);
 
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		
 		try {
-			ManFeed mf=manFeedService.getByWorkOrderIDPhaseID(workOrderID,phaseID);
+			ManFeed mf=manFeedService.getByWorkOrderIDFeedPort(workOrderID,feedPort);
 			if(mf==null) {
 				jsonMap.put("message", "no");
 				jsonMap.put("info", "查询人工投料信息失败");
@@ -1374,6 +1374,27 @@ public class BatchController {
 		
 		return wo;
 	}
+	
+	private ManFeed convertMesFeedIssusDownToJava(String mesBody) {
+
+		net.sf.json.JSONObject fidMesJO = net.sf.json.JSONObject.fromObject(mesBody);
+		String workOrder = fidMesJO.getString("workOrder");
+		String feedportCode = fidMesJO.getString("feedportCode");
+		String feedTime = fidMesJO.getString("feedTime");
+		String materialCode = fidMesJO.getString("materialCode");
+		String suttle = fidMesJO.getString("suttle");
+		String unit = fidMesJO.getString("unit");
+		
+		ManFeed mf=new ManFeed();
+		mf.setWorkOrderID(workOrder);
+		mf.setFeedPort(feedportCode);
+		mf.setFeedTime(feedTime);
+		mf.setMaterialCode(materialCode);
+		mf.setSuttle(suttle);
+		mf.setUnit(unit);
+		
+		return mf;
+	}
 
 	/**
 	 * 4.5 工单取消
@@ -1430,7 +1451,9 @@ public class BatchController {
 		int c=feedIssusBodyService.add(fib);
 		*/
 
-		ManFeed mf=(ManFeed)net.sf.json.JSONObject.toBean(fibJO, ManFeed.class);
+		//ManFeed mf=(ManFeed)net.sf.json.JSONObject.toBean(fibJO, ManFeed.class);
+		ManFeed mf=convertMesFeedIssusDownToJava(bodyEnc);
+		
 		int c=manFeedService.editByWorkOrderIDFeedPort(mf);
 		if(c>0) {
 			jsonMap.put("success", "true");
