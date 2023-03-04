@@ -90,6 +90,18 @@ public class RecipePM {
 	public void setMaterialSV(String materialSV) {
 		MaterialSV = materialSV;
 	}
+	public String getHH() {
+		return HH;
+	}
+	public void setHH(String hH) {
+		HH = hH;
+	}
+	public String getLL() {
+		return LL;
+	}
+	public void setLL(String lL) {
+		LL = lL;
+	}
 	private String PMCode;
   	private String PMName;
   	private String Lot;
@@ -102,4 +114,6 @@ public class RecipePM {
 	private String CName;
 	private String FeedPort;
 	private String MaterialSV;
+	private String HH;
+	private String LL;
 }

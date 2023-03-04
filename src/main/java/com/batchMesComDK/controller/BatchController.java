@@ -72,7 +72,6 @@ public class BatchController {
 	private MaterialCheckOverIssusBodyService materialCheckOverIssusBodyService;
 	public static final String MODULE_NAME="batch";
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	private SimpleDateFormat formulaIdSDF = new SimpleDateFormat("yyyyMMddHHmmss");
 	
 	//http://localhost:8080/BatchMesComDK/batch/test
 	@RequestMapping(value="/test")
@@ -230,8 +229,10 @@ public class BatchController {
 	/**
 	 * 巡回检索工单状态变化(模拟虚拟机测试用)
 	 */
-	@RequestMapping(value="/keepWatchOnWorkOrderTest")
-	public void keepWatchOnWorkOrderTest() {
+	@RequestMapping(value="/keepWatchOnWorkOrderTest", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> keepWatchOnWorkOrderTest() {
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		try {
 			List<WorkOrder> woList=workOrderService.getKeepWatchList();
 			System.out.println("woListSize==="+woList.size());
@@ -305,7 +306,7 @@ public class BatchController {
 					break;
 				}
 				
-				if(state>=5&&state<8) {
+				if(state==WorkOrder.BYX||state==WorkOrder.BQX||state==WorkOrder.BZT) {
 					//把状态大于5的工单的可执行配方id拼接起来，可执行配方id对应batchID
 					formulaIds+=","+wo.getFormulaId();
 				}
@@ -329,11 +330,18 @@ public class BatchController {
 					}
 				}
 			}
+			
+			jsonMap.put("success", "true");
+			jsonMap.put("state", "001");//001正常 002数据格式有误 003数据不完整
+			jsonMap.put("msg", "正常");
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		finally {
+			return jsonMap;
+		}
 	}
 	
 	/**
@@ -1343,7 +1351,7 @@ public class BatchController {
 
 		net.sf.json.JSONObject wodMesJO = net.sf.json.JSONObject.fromObject(mesBody);
 		//WorkOrder wo=(WorkOrder)net.sf.json.JSONObject.toBean(woJO, WorkOrder.class);
-		String formulaIdMes = wodMesJO.getString("formulaId");
+		String recipeID = wodMesJO.getString("formulaId");//mes那边发来的formulaId对应java端的recipeID
 		//String id = wodMesJO.getString("id");
 		String lotNo = wodMesJO.getString("lotNo");
 		String planStartTime = wodMesJO.getString("planStartTime");
@@ -1354,8 +1362,9 @@ public class BatchController {
 		String workOrder = wodMesJO.getString("workOrder");
 		
 		WorkOrder wo=new WorkOrder();
-		wo.setFormulaId(formulaIdSDF.format(new Date()));
-		wo.setFormulaIdMes(formulaIdMes);
+		String formulaId=workOrderService.createFormulaIdByDateYMD(productcode,productName);
+		wo.setFormulaId(formulaId);
+		wo.setRecipeID(recipeID);
 		//wo.setID(Integer.valueOf(id));
 		wo.setCreateTime(planStartTime);
 		wo.setProductName(productName);

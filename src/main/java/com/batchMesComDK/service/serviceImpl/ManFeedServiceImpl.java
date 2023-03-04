@@ -38,7 +38,7 @@ public class ManFeedServiceImpl implements ManFeedService {
 		  	mf.setWorkOrderID(workOrderID);
 		  	mf.setMaterialCode(rPM.getPMCode());
 		  	mf.setMaterialName(rPM.getPMName());
-		  	mf.setPhaseID(rPM.getFeedPort());
+		  	mf.setFeedPort(rPM.getFeedPort());
 		  	mf.setMarkBit("0");
 		  	mf.setMaterialSV(rPM.getMaterialSV());
 			

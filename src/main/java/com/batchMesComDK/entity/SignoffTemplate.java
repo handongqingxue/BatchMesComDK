@@ -117,6 +117,12 @@ public class SignoffTemplate {
 	public void setAppComment(String appComment) {
 		AppComment = appComment;
 	}
+	public String getFeedPort() {
+		return FeedPort;
+	}
+	public void setFeedPort(String feedPort) {
+		FeedPort = feedPort;
+	}
 	private String SignoffID;
 	private String PMName;
 	private String PMValue;
@@ -135,4 +141,5 @@ public class SignoffTemplate {
 	private String AppUser;
 	private String AppSign;
 	private String AppComment;
+	private String FeedPort;
 }

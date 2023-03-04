@@ -33,9 +33,6 @@
 			<if test="FormulaId!=null">
 				FormulaId,
 			</if>
-			<if test="FormulaIdMes!=null">
-				FormulaIdMes,
-			</if>
 			<if test="State!=null">
 				State,
 			</if>
@@ -68,9 +65,6 @@
 			</if>
 			<if test="FormulaId!=null">
 				#{FormulaId},
-			</if>
-			<if test="FormulaIdMes!=null">
-				#{FormulaIdMes},
 			</if>
 			<if test="State!=null">
 				#{State},
@@ -140,4 +134,7 @@
 	<update id="updateFormulaIdByWorkOrderID">
 		update WorkOrder set FormulaId=#{formulaId} where WorkOrderID=#{workOrderID}
 	</update>
+	<select id="getMaxFormulaIdNumByFormulaIdDate" resultType="java.lang.Integer">
+		select substring(MAX(FormulaId),19,3) from WorkOrder where FormulaId like CONCAT(#{formulaIdDate},'%')
+	</select>
 </mapper>

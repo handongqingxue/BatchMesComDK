@@ -37,7 +37,7 @@ public class WorkOrder {
 	/**
 	 * BATCH结束标识
 	 */
-	public static final int BJS=0;
+	public static final int BJS=10;
 	
 	/**
 	 * 物料齐套完毕名称
@@ -131,12 +131,6 @@ public class WorkOrder {
 	public void setFormulaId(String formulaId) {
 		FormulaId = formulaId;
 	}
-	public String getFormulaIdMes() {
-		return FormulaIdMes;
-	}
-	public void setFormulaIdMes(String formulaIdMes) {
-		FormulaIdMes = formulaIdMes;
-	}
 	public Integer getState() {
 		return State;
 	}
@@ -163,7 +157,6 @@ public class WorkOrder {
 	private String MfgVersion;
 	private String RecipeID;
 	private String FormulaId;
-	private String FormulaIdMes;
 	private Integer State;
 	private String CreateTime;
 	private String UnitID;

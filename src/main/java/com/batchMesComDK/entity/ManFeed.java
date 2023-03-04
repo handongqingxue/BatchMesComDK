@@ -45,11 +45,11 @@ public class ManFeed {
 	public void setFeedTime(String feedTime) {
 		FeedTime = feedTime;
 	}
-	public String getPhaseID() {
-		return PhaseID;
+	public String getFeedPort() {
+		return FeedPort;
 	}
-	public void setPhaseID(String phaseID) {
-		PhaseID = phaseID;
+	public void setFeedPort(String feedPort) {
+		FeedPort = feedPort;
 	}
 	public String getMarkBit() {
 		return MarkBit;
@@ -63,13 +63,27 @@ public class ManFeed {
 	public void setMaterialSV(String materialSV) {
 		MaterialSV = materialSV;
 	}
+	public String getDev1() {
+		return Dev1;
+	}
+	public void setDev1(String dev1) {
+		Dev1 = dev1;
+	}
+	public String getDev2() {
+		return Dev2;
+	}
+	public void setDev2(String dev2) {
+		Dev2 = dev2;
+	}
 	private String WorkOrderID;
 	private String MaterialCode;
   	private String MaterialName;
   	private String Suttle;
   	private String Unit;
   	private String FeedTime;
-  	private String PhaseID;
+  	private String FeedPort;
   	private String MarkBit;
   	private String MaterialSV;
+  	private String Dev1;
+  	private String Dev2;
 }

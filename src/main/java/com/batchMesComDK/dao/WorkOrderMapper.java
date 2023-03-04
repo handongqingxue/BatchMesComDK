@@ -25,4 +25,6 @@ public interface WorkOrderMapper {
 	int deleteByList(@Param("idList") List<String> idList);
 
 	int updateFormulaIdByWorkOrderID(@Param("formulaId") String formulaId, @Param("workOrderID") String workOrderID);
+
+	Integer getMaxFormulaIdNumByFormulaIdDate(@Param("formulaIdDate") String formulaIdDate);
 }

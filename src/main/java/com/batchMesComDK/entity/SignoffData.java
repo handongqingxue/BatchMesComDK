@@ -117,6 +117,18 @@ public class SignoffData {
 	public void setAppComment(String appComment) {
 		AppComment = appComment;
 	}
+	public String getFeedPort() {
+		return FeedPort;
+	}
+	public void setFeedPort(String feedPort) {
+		FeedPort = feedPort;
+	}
+	public String getRanks() {
+		return Ranks;
+	}
+	public void setRanks(String ranks) {
+		Ranks = ranks;
+	}
 	private String SignoffID;
 	private String PMName;
 	private String PMValue;
@@ -135,4 +147,6 @@ public class SignoffData {
 	private String AppUser;
 	private String AppSign;
 	private String AppComment;
+	private String FeedPort;
+	private String Ranks;
 }
