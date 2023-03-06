@@ -286,11 +286,12 @@ function getRecipePM_RMT(){
 
 function addRecipePMFromRMT(){
 	var workOrderID=$("#arpmfrmt_div #workOrderID").val();
+	var pMType=$("#arpmfrmt_div #pMType").val();
 	var productCode=$("#arpmfrmt_div #productCode").val();
 	var productName=$("#arpmfrmt_div #productName").val();
 	
 	$.post(path+"batch/addRecipePMFromRMT",
-		{workOrderID:workOrderID,productCode:productCode,productName:productName},
+		{workOrderID:workOrderID,pMType:pMType,productCode:productCode,productName:productName},
 		function(data){
 			if(data.message=="ok")
 				alert(data.info);
@@ -1501,6 +1502,9 @@ function splitUnitTagData(data){
 	从远程配方参数表添加配方参数:
 	<div>
 		WorkOrderID:<input type="text" size="50" id="workOrderID" value="20230209"/>
+	</div>
+	<div>
+		PMType:<input type="text" size="50" id="pMType"/>
 	</div>
 	<div>
 		ProductCode:<input type="text" size="50" id="productCode"/>

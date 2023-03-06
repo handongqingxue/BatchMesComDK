@@ -660,12 +660,12 @@ public class BatchController {
 
 	@RequestMapping(value="/addRecipePMFromRMT")
 	@ResponseBody
-	public Map<String, Object> addRecipePMFromRMT(String workOrderID, String productCode, String productName) {
+	public Map<String, Object> addRecipePMFromRMT(String workOrderID, Integer pMType, String productCode, String productName) {
 
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		
 		try {
-			int count=recipePMService.addFromRMT(workOrderID, productCode, productName);
+			int count=recipePMService.addFromRMT(workOrderID, pMType, productCode, productName);
 			if(count>0) {
 				jsonMap.put("message", "ok");
 				jsonMap.put("info", "添加配方参数成功");
@@ -1330,7 +1330,7 @@ public class BatchController {
 			String workOrderID = wo.getWorkOrderID();
 			String productCode = wo.getProductCode();
 			String productName = wo.getProductName();
-			c=recipePMService.addFromRMT(workOrderID, productCode, productName);
+			c=recipePMService.addFromRMT(workOrderID, RecipePM_RMT.RGTLCS, productCode, productName);
 			if(c>0) {
 				c=workOrderService.updateStateByWorkOrderID(WorkOrder.WLQTWB,workOrderID);
 			}
