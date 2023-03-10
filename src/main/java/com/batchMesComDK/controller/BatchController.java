@@ -55,7 +55,7 @@ public class BatchController {
 	@Autowired
 	private RecipePMService recipePMService;
 	@Autowired
-	private RecipePM_RMTService recipePM_RMTService;
+	private RecipePM_TMPService recipePM_TMPService;
 	@Autowired
 	private ManFeedService manFeedService;
 	@Autowired
@@ -127,11 +127,11 @@ public class BatchController {
 				case WorkOrder.BQD:
 					//启动执行配方
 					for (int j = 1; j <= batchCount; j++) {
-						String idStr = wo.getID().toString();
+						String formulaIdStr = wo.getFormulaId().toString();
 						//String batchIDVal = BLKey_x("BatchID",j);
 						String batchIDVal = getItem("BLBatchID_"+j);
 						batchIDVal = batchIDVal.substring(0, batchIDVal.indexOf(Constant.END_SUCCESS));
-						if(idStr.equals(batchIDVal)) {
+						if(formulaIdStr.equals(batchIDVal)) {
 							//String createIDVal = BLKey_x("CreateID",j);
 							String createIDVal = getItem("BLCreateID_"+j);
 							createIDVal = createIDVal.substring(0, createIDVal.indexOf(Constant.END_SUCCESS));
@@ -151,7 +151,7 @@ public class BatchController {
 							String stateVal = getItem("BLState_"+j);
 							stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
 							if(BatchTest.RUNNING.equals(stateVal)) {
-								workOrderService.updateStateById(WorkOrder.BYX, Integer.valueOf(idStr));
+								workOrderService.updateStateById(WorkOrder.BYX, wo.getID());
 							}
 						}
 					}
@@ -191,7 +191,7 @@ public class BatchController {
 					break;
 				}
 				
-				if(state>=5&&state<8) {
+				if(state==WorkOrder.BYX||state==WorkOrder.BQX||state==WorkOrder.BZT) {
 					//把状态大于5的工单的可执行配方id拼接起来，可执行配方id对应batchID
 					formulaIds+=","+wo.getFormulaId();
 				}
@@ -256,13 +256,13 @@ public class BatchController {
 					System.out.println("workOrderID==="+workOrderID);
 					System.out.println("recipeID==="+recipeID);
 					
+					addManFeedFromRecipePM(workOrderID);//工单创建时，从配方参数表里取数据，放入人工投料表
+					
 					BatchTest bt=new BatchTest();
 					bt.setRecipe(recipeID);
 					bt.setBatchID(formulaId);
 					bt.setDescription("FRENCHVANILLA PREMIUM -CLASSBASED");
 					addBatchTest(bt);
-					
-					addManFeedFromRecipePM(workOrderID);//工单创建时，从配方参数表里取数据，放入人工投料表
 					
 					workOrderService.updateStateById(WorkOrder.BCJWB, wo.getID());
 					break;
@@ -538,17 +538,17 @@ public class BatchController {
 
 	/**
 	 * 这个接口仅供测试用，真正添加远程配方参数是在上位机端操作
-	 * @param rPM_RMT
+	 * @param rPM_TMP
 	 * @return
 	 */
-	@RequestMapping(value="/addRecipePM_RMT")
+	@RequestMapping(value="/addRecipePM_TMP")
 	@ResponseBody
-	public Map<String, Object> addRecipePM_RMT(RecipePM_RMT rPM_RMT) {
+	public Map<String, Object> addRecipePM_TMP(RecipePM_TMP rPM_TMP) {
 
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		
 		try {
-			int count=recipePM_RMTService.add(rPM_RMT);
+			int count=recipePM_TMPService.add(rPM_TMP);
 			if(count>0) {
 				jsonMap.put("message", "ok");
 				jsonMap.put("info", "添加远程配方参数成功");
@@ -566,14 +566,14 @@ public class BatchController {
 		}
 	}
 
-	@RequestMapping(value="/deleteRecipePM_RMTByIds")
+	@RequestMapping(value="/deleteRecipePM_TMPByIds")
 	@ResponseBody
-	public Map<String, Object> deleteRecipePM_RMTByIds(String ids) {
+	public Map<String, Object> deleteRecipePM_TMPByIds(String ids) {
 
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		
 		try {
-			int count=recipePM_RMTService.deleteByIds(ids);
+			int count=recipePM_TMPService.deleteByIds(ids);
 			if(count>0) {
 				jsonMap.put("message", "ok");
 				jsonMap.put("info", "删除远程配方参数成功");
@@ -591,26 +591,26 @@ public class BatchController {
 		}
 	}
 
-	@RequestMapping(value="/editRecipePM_RMT")
+	@RequestMapping(value="/editRecipePM_TMP")
 	@ResponseBody
-	public Map<String, Object> editRecipePM_RMT(RecipePM_RMT rPM_RMT) {
+	public Map<String, Object> editRecipePM_TMP(RecipePM_TMP rPM_TMP) {
 		
-		System.out.println("id==="+rPM_RMT.getID());
-		System.out.println("pMCode==="+rPM_RMT.getPMCode());
-		System.out.println("pMName==="+rPM_RMT.getPMName());
-		System.out.println("lot==="+rPM_RMT.getLot());
-		System.out.println("dosage==="+rPM_RMT.getDosage());
-		System.out.println("unit==="+rPM_RMT.getUnit());
-		System.out.println("hLimit==="+rPM_RMT.getHLimit());
-		System.out.println("lLimit==="+rPM_RMT.getLLimit());
-		System.out.println("pMType==="+rPM_RMT.getPMType());
-		System.out.println("recipeID==="+rPM_RMT.getRecipeID());
-		System.out.println("cName==="+rPM_RMT.getCName());
+		System.out.println("id==="+rPM_TMP.getID());
+		System.out.println("pMCode==="+rPM_TMP.getPMCode());
+		System.out.println("pMName==="+rPM_TMP.getPMName());
+		System.out.println("lot==="+rPM_TMP.getLot());
+		System.out.println("dosage==="+rPM_TMP.getDosage());
+		System.out.println("unit==="+rPM_TMP.getUnit());
+		System.out.println("hLimit==="+rPM_TMP.getHLimit());
+		System.out.println("lLimit==="+rPM_TMP.getLLimit());
+		System.out.println("pMType==="+rPM_TMP.getPMType());
+		System.out.println("recipeID==="+rPM_TMP.getRecipeID());
+		System.out.println("cName==="+rPM_TMP.getCName());
 		
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		
 		try {
-			int count=recipePM_RMTService.edit(rPM_RMT);
+			int count=recipePM_TMPService.edit(rPM_TMP);
 			if(count>0) {
 				jsonMap.put("message", "ok");
 				jsonMap.put("info", "修改远程配方参数成功");
@@ -630,23 +630,23 @@ public class BatchController {
 		}
 	}
 
-	@RequestMapping(value="/getRecipePM_RMT")
+	@RequestMapping(value="/getRecipePM_TMP")
 	@ResponseBody
-	public Map<String, Object> getRecipePM_RMT(Integer id) {
+	public Map<String, Object> getRecipePM_TMP(Integer id) {
 		
 		System.out.println("id==="+id);
 
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		
 		try {
-			RecipePM_RMT rPM_RMT=recipePM_RMTService.getById(id);
-			if(rPM_RMT==null) {
+			RecipePM_TMP rPM_TMP=recipePM_TMPService.getById(id);
+			if(rPM_TMP==null) {
 				jsonMap.put("message", "no");
 				jsonMap.put("info", "查询远程配方参数失败");
 			}
 			else {
 				jsonMap.put("message", "ok");
-				jsonMap.put("rPM_RMT", rPM_RMT);
+				jsonMap.put("rPM_TMP", rPM_TMP);
 				jsonMap.put("info", "查询远程配方参数成功");
 			}
 		} catch (Exception e) {
@@ -658,14 +658,14 @@ public class BatchController {
 		}
 	}
 
-	@RequestMapping(value="/addRecipePMFromRMT")
+	@RequestMapping(value="/addRecipePMFromTMP")
 	@ResponseBody
-	public Map<String, Object> addRecipePMFromRMT(String workOrderID, Integer pMType, String productCode, String productName) {
+	public Map<String, Object> addRecipePMFromTMP(String workOrderID, Integer pMType, String productCode, String productName) {
 
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		
 		try {
-			int count=recipePMService.addFromRMT(workOrderID, pMType, productCode, productName);
+			int count=recipePMService.addFromTMP(workOrderID, pMType, productCode, productName);
 			if(count>0) {
 				jsonMap.put("message", "ok");
 				jsonMap.put("info", "添加配方参数成功");
@@ -1330,7 +1330,7 @@ public class BatchController {
 			String workOrderID = wo.getWorkOrderID();
 			String productCode = wo.getProductCode();
 			String productName = wo.getProductName();
-			c=recipePMService.addFromRMT(workOrderID, RecipePM_RMT.RGTLCS, productCode, productName);
+			c=recipePMService.addFromTMP(workOrderID, RecipePM_TMP.RGTLCS, productCode, productName);
 			if(c>0) {
 				c=workOrderService.updateStateByWorkOrderID(WorkOrder.WLQTWB,workOrderID);
 			}
@@ -1501,7 +1501,7 @@ public class BatchController {
 			System.out.println("workOrder==="+workOrder);
 			System.out.println("creamCode==="+creamCode);
 			//这里的逻辑写的有点问题，制膏编号不是formulaId，需要在数据库表里单独加个制膏编号字段
-			c+=workOrderService.updateCreamCodeByWorkOrder(creamCode, workOrder);
+			c+=workOrderService.updateZGIDByWorkOrder(creamCode, workOrder);
 		}
 		if(c>0) {
 			jsonMap.put("success", "true");

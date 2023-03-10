@@ -22,7 +22,7 @@ public interface WorkOrderService {
 
 	int deleteByIds(String ids);
 
-	int updateCreamCodeByWorkOrder(String creamCode, String workOrder);
+	int updateZGIDByWorkOrder(String zGID, String workOrder);
 
 	String createFormulaIdByDateYMD(String productCode, String productName);
 }

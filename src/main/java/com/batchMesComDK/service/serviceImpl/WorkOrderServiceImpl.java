@@ -75,9 +75,9 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	}
 
 	@Override
-	public int updateCreamCodeByWorkOrder(String creamCode, String workOrder) {
+	public int updateZGIDByWorkOrder(String zGID, String workOrder) {
 		// TODO Auto-generated method stub
-		return workOrderDao.updateCreamCodeByWorkOrderID(creamCode,workOrder);
+		return workOrderDao.updateZGIDByWorkOrderID(zGID,workOrder);
 	}
 
 	@Override

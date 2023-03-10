@@ -103,7 +103,7 @@ function editWorkOrder(){
 	var unitID=$("#editWorkOrder_div #unitID").val();
 	
 	$.post(path+"batch/editWorkOrder",
-		{id:id,workOrderID:workOrderID,productCode:productCode,productName:productName,totalOutput:totalOutput,mfgCode:mfgCode,
+		{ID:id,workOrderID:workOrderID,productCode:productCode,productName:productName,totalOutput:totalOutput,mfgCode:mfgCode,
 		mfgVersion:mfgVersion,recipeID:recipeID,formulaId:formulaId,state:state,unitID:unitID},
 		function(data){
 			if(data.message=="ok")
@@ -162,23 +162,23 @@ function getWorkOrder(){
 	,"json");
 }
 
-function addRecipePM_RMT(){
-	var pMCode=$("#addRecipePM_RMT_div #pMCode").val();
-	var pMName=$("#addRecipePM_RMT_div #pMName").val();
-	var lot=$("#addRecipePM_RMT_div #lot").val();
-	var dosage=$("#addRecipePM_RMT_div #dosage").val();
-	var unit=$("#addRecipePM_RMT_div #unit").val();
-	var hLimit=$("#addRecipePM_RMT_div #hLimit").val();
-	var lLimit=$("#addRecipePM_RMT_div #lLimit").val();
-	var pMType=$("#addRecipePM_RMT_div #pMType").val();
-	var recipeID=$("#addRecipePM_RMT_div #recipeID").val();
-	var cName=$("#addRecipePM_RMT_div #cName").val();
-	var feedPort=$("#addRecipePM_RMT_div #feedPort").val();
-	var materialSV=$("#addRecipePM_RMT_div #materialSV").val();
-	var hH=$("#addRecipePM_RMT_div #hH").val();
-	var lL=$("#addRecipePM_RMT_div #lL").val();
+function addRecipePM_TMP(){
+	var pMCode=$("#addRecipePM_TMP_div #pMCode").val();
+	var pMName=$("#addRecipePM_TMP_div #pMName").val();
+	var lot=$("#addRecipePM_TMP_div #lot").val();
+	var dosage=$("#addRecipePM_TMP_div #dosage").val();
+	var unit=$("#addRecipePM_TMP_div #unit").val();
+	var hLimit=$("#addRecipePM_TMP_div #hLimit").val();
+	var lLimit=$("#addRecipePM_TMP_div #lLimit").val();
+	var pMType=$("#addRecipePM_TMP_div #pMType").val();
+	var recipeID=$("#addRecipePM_TMP_div #recipeID").val();
+	var cName=$("#addRecipePM_TMP_div #cName").val();
+	var feedPort=$("#addRecipePM_TMP_div #feedPort").val();
+	var materialSV=$("#addRecipePM_TMP_div #materialSV").val();
+	var hH=$("#addRecipePM_TMP_div #hH").val();
+	var lL=$("#addRecipePM_TMP_div #lL").val();
 
-	$.post(path+"batch/addRecipePM_RMT",
+	$.post(path+"batch/addRecipePM_TMP",
 		{pMCode:pMCode,pMName:pMName,lot:lot,dosage:dosage,unit:unit,hLimit:hLimit,lLimit:lLimit,pMType:pMType,recipeID:recipeID,cName:cName,
 		feedPort:feedPort,materialSV:materialSV,hH:hH,lL:lL},
 		function(data){
@@ -191,10 +191,10 @@ function addRecipePM_RMT(){
 	,"json");
 }
 
-function deleteRecipePM_RMT(){
-	var ids=$("#deleteRecipePM_RMT_div #ids").val();
+function deleteRecipePM_TMP(){
+	var ids=$("#deleteRecipePM_TMP_div #ids").val();
 
-	$.post(path+"batch/deleteRecipePM_RMTByIds",
+	$.post(path+"batch/deleteRecipePM_TMPByIds",
 		{ids:ids},
 		function(data){
 			if(data.message=="ok")
@@ -206,24 +206,24 @@ function deleteRecipePM_RMT(){
 	,"json");
 }
 
-function editRecipePM_RMT(){
-	var id=$("#editRecipePM_RMT_div #id").val();
-	var pMCode=$("#editRecipePM_RMT_div #pMCode").val();
-	var pMName=$("#editRecipePM_RMT_div #pMName").val();
-	var lot=$("#editRecipePM_RMT_div #lot").val();
-	var dosage=$("#editRecipePM_RMT_div #dosage").val();
-	var unit=$("#editRecipePM_RMT_div #unit").val();
-	var hLimit=$("#editRecipePM_RMT_div #hLimit").val();
-	var lLimit=$("#editRecipePM_RMT_div #lLimit").val();
-	var pMType=$("#editRecipePM_RMT_div #pMType").val();
-	var recipeID=$("#editRecipePM_RMT_div #recipeID").val();
-	var cName=$("#editRecipePM_RMT_div #cName").val();
-	var feedPort=$("#editRecipePM_RMT_div #feedPort").val();
-	var materialSV=$("#editRecipePM_RMT_div #materialSV").val();
-	var hH=$("#editRecipePM_RMT_div #hH").val();
-	var lL=$("#editRecipePM_RMT_div #lL").val();
+function editRecipePM_TMP(){
+	var id=$("#editRecipePM_TMP_div #id").val();
+	var pMCode=$("#editRecipePM_TMP_div #pMCode").val();
+	var pMName=$("#editRecipePM_TMP_div #pMName").val();
+	var lot=$("#editRecipePM_TMP_div #lot").val();
+	var dosage=$("#editRecipePM_TMP_div #dosage").val();
+	var unit=$("#editRecipePM_TMP_div #unit").val();
+	var hLimit=$("#editRecipePM_TMP_div #hLimit").val();
+	var lLimit=$("#editRecipePM_TMP_div #lLimit").val();
+	var pMType=$("#editRecipePM_TMP_div #pMType").val();
+	var recipeID=$("#editRecipePM_TMP_div #recipeID").val();
+	var cName=$("#editRecipePM_TMP_div #cName").val();
+	var feedPort=$("#editRecipePM_TMP_div #feedPort").val();
+	var materialSV=$("#editRecipePM_TMP_div #materialSV").val();
+	var hH=$("#editRecipePM_TMP_div #hH").val();
+	var lL=$("#editRecipePM_TMP_div #lL").val();
 	
-	$.post(path+"batch/editRecipePM_RMT",
+	$.post(path+"batch/editRecipePM_TMP",
 		{ID:id,pMCode:pMCode,pMName:pMName,lot:lot,dosage:dosage,unit:unit,hLimit:hLimit,lLimit:lLimit,
 		pMType:pMType,recipeID:recipeID,cName:cName,feedPort:feedPort,materialSV:materialSV,hH:hH,lL:lL},
 		function(data){
@@ -236,61 +236,61 @@ function editRecipePM_RMT(){
 	,"json");
 }
 
-function getRecipePM_RMT(){
-	var id=$("#editRecipePM_RMT_div #id").val();
+function getRecipePM_TMP(){
+	var id=$("#editRecipePM_TMP_div #id").val();
 
-	$.post(path+"batch/getRecipePM_RMT",
+	$.post(path+"batch/getRecipePM_TMP",
 		{id:id},
 		function(data){
 			if(data.message=="ok"){
-				var rPM_RMT=data.rPM_RMT;
-				console.log(rPM_RMT)
-				var pMCode=rPM_RMT.pmcode;
-				var pMName=rPM_RMT.pmname;
-				var lot=rPM_RMT.lot;
-				var dosage=rPM_RMT.dosage;
-				var unit=rPM_RMT.unit;
-				var hLimit=rPM_RMT.hlimit;
-				var lLimit=rPM_RMT.llimit;
-				var pMType=rPM_RMT.pmType;
-				var recipeID=rPM_RMT.recipeID;
-				var cName=rPM_RMT.cname;
+				var rPM_TMP=data.rPM_TMP;
+				console.log(rPM_TMP)
+				var pMCode=rPM_TMP.pmcode;
+				var pMName=rPM_TMP.pmname;
+				var lot=rPM_TMP.lot;
+				var dosage=rPM_TMP.dosage;
+				var unit=rPM_TMP.unit;
+				var hLimit=rPM_TMP.hlimit;
+				var lLimit=rPM_TMP.llimit;
+				var pMType=rPM_TMP.pmType;
+				var recipeID=rPM_TMP.recipeID;
+				var cName=rPM_TMP.cname;
 				
-				$("#editRecipePM_RMT_div #pMCode").val(pMCode);
-				$("#editRecipePM_RMT_div #pMName").val(pMName);
-				$("#editRecipePM_RMT_div #lot").val(lot);
-				$("#editRecipePM_RMT_div #dosage").val(dosage);
-				$("#editRecipePM_RMT_div #unit").val(unit);
-				$("#editRecipePM_RMT_div #hLimit").val(hLimit);
-				$("#editRecipePM_RMT_div #lLimit").val(lLimit);
-				$("#editRecipePM_RMT_div #pMType").val(pMType);
-				$("#editRecipePM_RMT_div #recipeID").val(recipeID);
-				$("#editRecipePM_RMT_div #cName").val(cName);
+				$("#editRecipePM_TMP_div #pMCode").val(pMCode);
+				$("#editRecipePM_TMP_div #pMName").val(pMName);
+				$("#editRecipePM_TMP_div #lot").val(lot);
+				$("#editRecipePM_TMP_div #dosage").val(dosage);
+				$("#editRecipePM_TMP_div #unit").val(unit);
+				$("#editRecipePM_TMP_div #hLimit").val(hLimit);
+				$("#editRecipePM_TMP_div #lLimit").val(lLimit);
+				$("#editRecipePM_TMP_div #pMType").val(pMType);
+				$("#editRecipePM_TMP_div #recipeID").val(recipeID);
+				$("#editRecipePM_TMP_div #cName").val(cName);
 			}
 			else{
-				$("#editRecipePM_RMT_div #pMCode").val("");
-				$("#editRecipePM_RMT_div #pMName").val("");
-				$("#editRecipePM_RMT_div #lot").val("");
-				$("#editRecipePM_RMT_div #dosage").val("");
-				$("#editRecipePM_RMT_div #unit").val("");
-				$("#editRecipePM_RMT_div #hLimit").val("");
-				$("#editRecipePM_RMT_div #lLimit").val("");
-				$("#editRecipePM_RMT_div #pMType").val("");
-				$("#editRecipePM_RMT_div #recipeID").val("");
-				$("#editRecipePM_RMT_div #cName").val("");
+				$("#editRecipePM_TMP_div #pMCode").val("");
+				$("#editRecipePM_TMP_div #pMName").val("");
+				$("#editRecipePM_TMP_div #lot").val("");
+				$("#editRecipePM_TMP_div #dosage").val("");
+				$("#editRecipePM_TMP_div #unit").val("");
+				$("#editRecipePM_TMP_div #hLimit").val("");
+				$("#editRecipePM_TMP_div #lLimit").val("");
+				$("#editRecipePM_TMP_div #pMType").val("");
+				$("#editRecipePM_TMP_div #recipeID").val("");
+				$("#editRecipePM_TMP_div #cName").val("");
 				alert(data.info);
 			}
 		}
 	,"json");
 }
 
-function addRecipePMFromRMT(){
-	var workOrderID=$("#arpmfrmt_div #workOrderID").val();
-	var pMType=$("#arpmfrmt_div #pMType").val();
-	var productCode=$("#arpmfrmt_div #productCode").val();
-	var productName=$("#arpmfrmt_div #productName").val();
+function addRecipePMFromTMP(){
+	var workOrderID=$("#arpmftmp_div #workOrderID").val();
+	var pMType=$("#arpmftmp_div #pMType").val();
+	var productCode=$("#arpmftmp_div #productCode").val();
+	var productName=$("#arpmftmp_div #productName").val();
 	
-	$.post(path+"batch/addRecipePMFromRMT",
+	$.post(path+"batch/addRecipePMFromTMP",
 		{workOrderID:workOrderID,pMType:pMType,productCode:productCode,productName:productName},
 		function(data){
 			if(data.message=="ok")
@@ -1392,7 +1392,7 @@ function splitUnitTagData(data){
 	</div>
 </div>
 
-<div id="addRecipePM_RMT_div" style="margin-top: 10px;">
+<div id="addRecipePM_TMP_div" style="margin-top: 10px;">
 	添加远程配方参数数据:
 	<div>
 		PMCode:<input type="text" size="50" id="pMCode"/>
@@ -1436,14 +1436,14 @@ function splitUnitTagData(data){
 	<div>
 		LL:<input type="text" size="50" id="lL"/>
 	</div>
-	<input type="button" value="发送" onclick="addRecipePM_RMT()"/>
+	<input type="button" value="发送" onclick="addRecipePM_TMP()"/>
 </div>
 
-<div id="editRecipePM_RMT_div" style="margin-top: 10px;">
+<div id="editRecipePM_TMP_div" style="margin-top: 10px;">
 	修改远程配方参数数据:
 	<div>
 		ID:<input type="text" size="50" id="id"/>
-		<input type="button" value="查询" onclick="getRecipePM_RMT()"/>
+		<input type="button" value="查询" onclick="getRecipePM_TMP()"/>
 	</div>
 	<div>
 		PMCode:<input type="text" size="50" id="pMCode"/>
@@ -1487,18 +1487,18 @@ function splitUnitTagData(data){
 	<div>
 		LL:<input type="text" size="50" id="lL"/>
 	</div>
-	<input type="button" value="提交" onclick="editRecipePM_RMT()"/>
+	<input type="button" value="提交" onclick="editRecipePM_TMP()"/>
 </div>
 
-<div id="deleteRecipePM_RMT_div" style="margin-top: 10px;">
+<div id="deleteRecipePM_TMP_div" style="margin-top: 10px;">
 	删除远程配方参数数据:
 	<div>
 		IDs:<input type="text" size="50" id="ids"/>
-		<input type="button" value="删除" onclick="deleteRecipePM_RMT()"/>
+		<input type="button" value="删除" onclick="deleteRecipePM_TMP()"/>
 	</div>
 </div>
 
-<div id="arpmfrmt_div" style="margin-top: 10px;">
+<div id="arpmftmp_div" style="margin-top: 10px;">
 	从远程配方参数表添加配方参数:
 	<div>
 		WorkOrderID:<input type="text" size="50" id="workOrderID" value="20230209"/>
@@ -1512,7 +1512,7 @@ function splitUnitTagData(data){
 	<div>
 		ProductName:<input type="text" size="50" id="productName"/>
 	</div>
-	<input type="button" value="发送" onclick="addRecipePMFromRMT()"/>
+	<input type="button" value="发送" onclick="addRecipePMFromTMP()"/>
 </div>
 
 <div id="deleteRecipePM_div" style="margin-top: 10px;">

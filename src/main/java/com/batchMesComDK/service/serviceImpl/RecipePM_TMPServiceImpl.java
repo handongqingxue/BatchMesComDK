@@ -11,15 +11,15 @@ import com.batchMesComDK.entity.*;
 import com.batchMesComDK.service.*;
 
 @Service
-public class RecipePM_RMTServiceImpl implements RecipePM_RMTService {
+public class RecipePM_TMPServiceImpl implements RecipePM_TMPService {
 
 	@Autowired
-	RecipePM_RMTMapper recipePM_RMTDao;
+	RecipePM_TMPMapper recipePM_TMPDao;
 
 	@Override
-	public int add(RecipePM_RMT rPM_RMT) {
+	public int add(RecipePM_TMP rPM_TMP) {
 		// TODO Auto-generated method stub
-		return recipePM_RMTDao.add(rPM_RMT);
+		return recipePM_TMPDao.add(rPM_TMP);
 	}
 
 	@Override
@@ -27,18 +27,18 @@ public class RecipePM_RMTServiceImpl implements RecipePM_RMTService {
 		// TODO Auto-generated method stub
 		String[] idArr = ids.split(",");
 		List<String> idList = Arrays.asList(idArr);
-		return recipePM_RMTDao.deleteByList(idList);
+		return recipePM_TMPDao.deleteByList(idList);
 	}
 
 	@Override
-	public int edit(RecipePM_RMT rPM_RMT) {
+	public int edit(RecipePM_TMP rPM_TMP) {
 		// TODO Auto-generated method stub
-		return recipePM_RMTDao.edit(rPM_RMT);
+		return recipePM_TMPDao.edit(rPM_TMP);
 	}
 
 	@Override
-	public RecipePM_RMT getById(Integer id) {
+	public RecipePM_TMP getById(Integer id) {
 		// TODO Auto-generated method stub
-		return recipePM_RMTDao.getById(id);
+		return recipePM_TMPDao.getById(id);
 	}
 }

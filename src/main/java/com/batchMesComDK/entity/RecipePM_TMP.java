@@ -1,6 +1,6 @@
 package com.batchMesComDK.entity;
 
-public class RecipePM_RMT {
+public class RecipePM_TMP {
 	
 	/**
 	 * 物料参数

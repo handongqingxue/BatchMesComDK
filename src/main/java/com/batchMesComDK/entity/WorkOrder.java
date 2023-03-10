@@ -149,11 +149,11 @@ public class WorkOrder {
 	public void setUnitID(String unitID) {
 		UnitID = unitID;
 	}
-	public String getCreamCode() {
-		return CreamCode;
+	public String getZGID() {
+		return ZGID;
 	}
-	public void setCreamCode(String creamCode) {
-		CreamCode = creamCode;
+	public void setZGID(String zGID) {
+		ZGID = zGID;
 	}
 	private String WorkOrderID;
 	private String ProductCode;
@@ -166,6 +166,6 @@ public class WorkOrder {
 	private Integer State;
 	private String CreateTime;
 	private String UnitID;
-	private String CreamCode;
+	private String ZGID;
 	
 }

@@ -14,35 +14,35 @@ import com.batchMesComDK.service.*;
 public class RecipePMServiceImpl implements RecipePMService {
 
 	@Autowired
-	RecipePM_RMTMapper recipePM_RMTDao;
+	RecipePM_TMPMapper recipePM_TMPDao;
 	@Autowired
 	RecipePMMapper recipePMDao;
 
 	@Override
-	public int addFromRMT(String workOrderID, Integer pMType, String productCode, String productName) {
+	public int addFromTMP(String workOrderID, Integer pMType, String productCode, String productName) {
 		// TODO Auto-generated method stub
 		int count=0;
-		List<RecipePM_RMT> rPMRmtList=recipePM_RMTDao.getByProductParam(pMType,productCode,productName);
+		List<RecipePM_TMP> rPMTmpList=recipePM_TMPDao.getByProductParam(pMType,productCode,productName);
 		
 		RecipePM rPM=null;
-		for(int i=0;i<rPMRmtList.size();i++) {
-			RecipePM_RMT rPMRmt = rPMRmtList.get(i);
+		for(int i=0;i<rPMTmpList.size();i++) {
+			RecipePM_TMP rPMTmp = rPMTmpList.get(i);
 			rPM=new RecipePM();
-			rPM.setPMCode(rPMRmt.getPMCode());
-			rPM.setPMName(rPMRmt.getPMName());
-			rPM.setLot(rPMRmt.getLot());
-			rPM.setDosage(rPMRmt.getDosage());
-			rPM.setUnit(rPMRmt.getUnit());
-			rPM.setHLimit(rPMRmt.getHLimit());
-			rPM.setLLimit(rPMRmt.getLLimit());
-			rPM.setPMType(rPMRmt.getPMType());
+			rPM.setPMCode(rPMTmp.getPMCode());
+			rPM.setPMName(rPMTmp.getPMName());
+			rPM.setLot(rPMTmp.getLot());
+			rPM.setDosage(rPMTmp.getDosage());
+			rPM.setUnit(rPMTmp.getUnit());
+			rPM.setHLimit(rPMTmp.getHLimit());
+			rPM.setLLimit(rPMTmp.getLLimit());
+			rPM.setPMType(rPMTmp.getPMType());
 			rPM.setWorkOrderID(workOrderID);
-			rPM.setCName(rPMRmt.getCName());
-			rPM.setCName(rPMRmt.getCName());
-			rPM.setFeedPort(rPMRmt.getFeedPort());
-			rPM.setMaterialSV(rPMRmt.getMaterialSV());
-			rPM.setHH(rPMRmt.getHH());
-			rPM.setLL(rPMRmt.getLL());
+			rPM.setCName(rPMTmp.getCName());
+			rPM.setCName(rPMTmp.getCName());
+			rPM.setFeedPort(rPMTmp.getFeedPort());
+			rPM.setMaterialSV(rPMTmp.getMaterialSV());
+			rPM.setHH(rPMTmp.getHH());
+			rPM.setLL(rPMTmp.getLL());
 			
 			count+=recipePMDao.add(rPM);
 		}

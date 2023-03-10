@@ -120,7 +120,7 @@
 				unitID=#{unitID},
 			</if>
 		</trim>
-		 where id=#{id}
+		 where ID=#{ID}
 	</update>
 	<select id="getById" resultType="com.batchMesComDK.entity.WorkOrder">
 		select * from WorkOrder where id=#{id}
@@ -131,8 +131,8 @@
 		#{id}
 		</foreach>
 	</delete>
-	<update id="updateCreamCodeByWorkOrderID">
-		update WorkOrder set CreamCode=#{creamCode} where WorkOrderID=#{workOrderID}
+	<update id="updateZGIDByWorkOrderID">
+		update WorkOrder set ZGID=#{zGID} where WorkOrderID=#{workOrderID}
 	</update>
 	<select id="getMaxFormulaIdNumByFormulaIdDate" resultType="java.lang.Integer">
 		select substring(MAX(FormulaId),19,3) from WorkOrder where FormulaId like #{formulaIdDate}+'%'

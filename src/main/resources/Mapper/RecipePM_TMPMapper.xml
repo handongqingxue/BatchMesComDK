@@ -2,12 +2,12 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.batchMesComDK.dao.RecipePM_RMTMapper">
-	<select id="getByProductParam" resultType="com.batchMesComDK.entity.RecipePM_RMT">
-		select rpm_RMT.* from RecipePM_RMT rpm_RMT,RecipeHeader rh where rpm_RMT.PMType=#{pMType} and rpm_RMT.RecipeID=rh.RecipeID and rh.ProductCode=#{productCode} and rh.ProductName=#{productName}
+<mapper namespace="com.batchMesComDK.dao.RecipePM_TMPMapper">
+	<select id="getByProductParam" resultType="com.batchMesComDK.entity.RecipePM_TMP">
+		select rpm_TMP.* from RecipePM_TMP rpm_TMP,RecipeHeader rh where rpm_TMP.PMType=#{pMType} and rpm_TMP.RecipeID=rh.RecipeID and rh.ProductCode=#{productCode} and rh.ProductName=#{productName}
 	</select>
-	<insert id="add" parameterType="com.batchMesComDK.entity.RecipePM_RMT">
-		insert into RecipePM_RMT
+	<insert id="add" parameterType="com.batchMesComDK.entity.RecipePM_TMP">
+		insert into RecipePM_TMP
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<if test="ID!=null">
 				ID,
@@ -105,13 +105,13 @@
 		</trim>
 	</insert>
 	<delete id="deleteByList">
-		delete from RecipePM_RMT where 1=1
+		delete from RecipePM_TMP where 1=1
 		<foreach collection="idList" item="id" open=" and cast(id as char) in (" separator="," close=")">
 		#{id}
 		</foreach>
 	</delete>
-	<update id="edit" parameterType="com.batchMesComDK.entity.RecipePM_RMT">
-		update RecipePM_RMT set 
+	<update id="edit" parameterType="com.batchMesComDK.entity.RecipePM_TMP">
+		update RecipePM_TMP set 
 		<trim suffixOverrides=",">
 			<if test="PMCode!=null">
 				PMCode=#{PMCode},
@@ -158,7 +158,7 @@
 		</trim>
 		 where ID=#{ID}
 	</update>
-	<select id="getById" resultType="com.batchMesComDK.entity.RecipePM_RMT">
-		select * from RecipePM_RMT where id=#{id}
+	<select id="getById" resultType="com.batchMesComDK.entity.RecipePM_TMP">
+		select * from RecipePM_TMP where id=#{id}
 	</select>
 </mapper>
