@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -1375,25 +1376,34 @@ public class BatchController {
 		return wo;
 	}
 	
-	private ManFeed convertMesFeedIssusDownToJava(String mesBody) {
+	private List<ManFeed> convertMesFeedIssusDownToJava(String mesBody) {
 
-		net.sf.json.JSONObject fidMesJO = net.sf.json.JSONObject.fromObject(mesBody);
-		String workOrder = fidMesJO.getString("workOrder");
-		String feedportCode = fidMesJO.getString("feedportCode");
-		String feedTime = fidMesJO.getString("feedTime");
-		String materialCode = fidMesJO.getString("materialCode");
-		String suttle = fidMesJO.getString("suttle");
-		String unit = fidMesJO.getString("unit");
+		List<ManFeed> mfList=new ArrayList<ManFeed>();
+		ManFeed mf=null;
+		net.sf.json.JSONArray fidMesJA = net.sf.json.JSONArray.fromObject(mesBody);
+		int fidMesJASize = fidMesJA.size();
+		for(int i=0;i<fidMesJASize;i++) {
+			net.sf.json.JSONObject fidMesJO = (net.sf.json.JSONObject)fidMesJA.get(i);
+			String workOrder = fidMesJO.getString("workOrder");
+			String feedportCode = fidMesJO.getString("feedportCode");
+			String feedTime = fidMesJO.getString("feedTime");
+			String materialCode = fidMesJO.getString("materialCode");
+			String materialName = fidMesJO.getString("materialName");
+			String suttle = fidMesJO.getString("suttle");
+			String unit = fidMesJO.getString("unit");
+			
+			mf=new ManFeed();
+			mf.setWorkOrderID(workOrder);
+			mf.setFeedPort(feedportCode);
+			mf.setFeedTime(feedTime);
+			mf.setMaterialCode(materialCode);
+			mf.setMaterialName(materialName);
+			mf.setSuttle(suttle);
+			mf.setUnit(unit);
+			mfList.add(mf);
+		}
 		
-		ManFeed mf=new ManFeed();
-		mf.setWorkOrderID(workOrder);
-		mf.setFeedPort(feedportCode);
-		mf.setFeedTime(feedTime);
-		mf.setMaterialCode(materialCode);
-		mf.setSuttle(suttle);
-		mf.setUnit(unit);
-		
-		return mf;
+		return mfList;
 	}
 
 	/**
@@ -1445,16 +1455,16 @@ public class BatchController {
 		System.out.println("bodyEnc==="+bodyEnc);
 		String bodyDec = bodyEnc;
 		//String bodyDec = DesUtil.decrypt(bodyEnc,DesUtil.SECRET_KEY);
-		net.sf.json.JSONObject fibJO = net.sf.json.JSONObject.fromObject(bodyDec);
+		//net.sf.json.JSONArray fibJA = net.sf.json.JSONArray.fromObject(bodyDec);
 		/*
 		FeedIssusBody fib=(FeedIssusBody)net.sf.json.JSONObject.toBean(fibJO, FeedIssusBody.class);
 		int c=feedIssusBodyService.add(fib);
 		*/
 
 		//ManFeed mf=(ManFeed)net.sf.json.JSONObject.toBean(fibJO, ManFeed.class);
-		ManFeed mf=convertMesFeedIssusDownToJava(bodyEnc);
+		List<ManFeed> mfList=convertMesFeedIssusDownToJava(bodyEnc);
 		
-		int c=manFeedService.editByWorkOrderIDFeedPort(mf);
+		int c=manFeedService.editByWorkOrderIDFeedPortList(mfList);
 		if(c>0) {
 			jsonMap.put("success", "true");
 			jsonMap.put("state", "001");

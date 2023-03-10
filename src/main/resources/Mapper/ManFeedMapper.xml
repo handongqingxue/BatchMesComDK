@@ -70,12 +70,6 @@
 	<update id="editByWorkOrderIDFeedPort" parameterType="com.batchMesComDK.entity.ManFeed">
 		update ManFeed set 
 		<trim suffixOverrides=",">
-			<if test="materialCode!=null">
-				materialCode=#{materialCode},
-			</if>
-			<if test="materialName!=null">
-				materialName=#{materialName},
-			</if>
 			<if test="suttle!=null">
 				suttle=#{suttle},
 			</if>
@@ -86,7 +80,7 @@
 				feedTime=#{feedTime},
 			</if>
 		</trim>
-		 where WorkOrderID=#{workOrderID} and FeedPort=#{feedPort} and MarkBit=${@com.batchMesComDK.entity.ManFeed@WJS}
+		 where WorkOrderID=#{workOrderID} and FeedPort=#{feedPort} and materialCode=#{materialCode} and materialName=#{materialName} and MarkBit=${@com.batchMesComDK.entity.ManFeed@WJS}
 	</update>
 	<select id="getByWorkOrderIDFeedPort" resultType="com.batchMesComDK.entity.ManFeed">
 		select * from ManFeed where WorkOrderID=#{workOrderID} and FeedPort=#{feedPort} and MarkBit=0

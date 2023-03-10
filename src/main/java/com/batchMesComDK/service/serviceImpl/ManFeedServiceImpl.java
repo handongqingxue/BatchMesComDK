@@ -55,11 +55,21 @@ public class ManFeedServiceImpl implements ManFeedService {
 		List<String> idList = Arrays.asList(idArr);
 		return manFeedDao.deleteByList(idList);
 	}
-	
+
 	@Override
 	public int editByWorkOrderIDFeedPort(ManFeed mf) {
 		// TODO Auto-generated method stub
 		return manFeedDao.editByWorkOrderIDFeedPort(mf);
+	}
+	
+	@Override
+	public int editByWorkOrderIDFeedPortList(List<ManFeed> mfList) {
+		// TODO Auto-generated method stub
+		int count=0;
+		for (ManFeed mf : mfList) {
+			count+=manFeedDao.editByWorkOrderIDFeedPort(mf);
+		}
+		return count;
 	}
 
 	@Override
