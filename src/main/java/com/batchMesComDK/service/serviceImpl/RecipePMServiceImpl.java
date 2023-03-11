@@ -63,4 +63,17 @@ public class RecipePMServiceImpl implements RecipePMService {
 		// TODO Auto-generated method stub
 		return recipePMDao.getListByWorkOrderID(workOrderID);
 	}
+
+	@Override
+	public int updateDosageByPMParam(List<RecipePM> recipePMList) {
+		// TODO Auto-generated method stub
+		int count=0;
+		for (RecipePM recipePM : recipePMList) {
+			String pMCode = recipePM.getPMCode();
+			String pMName = recipePM.getPMName();
+			String dosage = recipePM.getDosage();
+			count+=recipePMDao.updateDosageByPMParam(pMCode,pMName,dosage);
+		}
+		return count;
+	}
 }

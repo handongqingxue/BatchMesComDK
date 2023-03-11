@@ -286,7 +286,7 @@ public class BatchController {
 					}
 					break;
 				case WorkOrder.BQX:
-				case WorkOrder.BZT:
+				//case WorkOrder.BZT:
 					//调用batch command接口
 					for (int j = 1; j <= batchCount; j++) {
 						String formulaIdStr = wo.getFormulaId().toString();
@@ -1333,6 +1333,7 @@ public class BatchController {
 			String productName = wo.getProductName();
 			c=recipePMService.addFromTMP(workOrderID, RecipePM_TMP.RGTLCS, productCode, productName);
 			if(c>0) {
+				c=recipePMService.updateDosageByPMParam(wo.getRecipePMList());
 				c=workOrderService.updateStateByWorkOrderID(WorkOrder.WLQTWB,workOrderID);
 			}
 			
@@ -1361,6 +1362,8 @@ public class BatchController {
 		String qty = wodMesJO.getString("qty");
 		String unit = wodMesJO.getString("unit");
 		String workOrder = wodMesJO.getString("workOrder");
+		String materialListStr = wodMesJO.getString("materialList");
+		List<RecipePM> recipePMList=convertMesMaterialListStrToRecipePMList(materialListStr);
 		
 		WorkOrder wo=new WorkOrder();
 		String formulaId=workOrderService.createFormulaIdByDateYMD(productcode,productName);
@@ -1372,8 +1375,30 @@ public class BatchController {
 		wo.setProductCode(productcode);
 		wo.setTotalOutput(qty);
 		wo.setWorkOrderID(workOrder);
+		wo.setRecipePMList(recipePMList);
 		
 		return wo;
+	}
+	
+	private List<RecipePM> convertMesMaterialListStrToRecipePMList(String materialListStr){
+		List<RecipePM> recipePMList=new ArrayList<>();
+		net.sf.json.JSONArray materialListJA = net.sf.json.JSONArray.fromObject(materialListStr);
+		int materialListJASize = materialListJA.size();
+		RecipePM recipePM=null;
+		for (int i = 0; i < materialListJASize; i++) {
+			net.sf.json.JSONObject materialListJO = (net.sf.json.JSONObject)materialListJA.get(i);
+			String materialCode = materialListJO.getString("materialCode");
+			String materialName = materialListJO.getString("materialName");
+			String qty = materialListJO.getString("qty");
+			
+			recipePM=new RecipePM();
+			recipePM.setPMCode(materialCode);
+			recipePM.setPMName(materialName);
+			recipePM.setDosage(qty);
+			
+			recipePMList.add(recipePM);
+		}
+		return recipePMList;
 	}
 	
 	private List<ManFeed> convertMesFeedIssusDownToJava(String mesBody) {

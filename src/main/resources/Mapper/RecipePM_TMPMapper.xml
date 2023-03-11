@@ -4,7 +4,7 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.batchMesComDK.dao.RecipePM_TMPMapper">
 	<select id="getByProductParam" resultType="com.batchMesComDK.entity.RecipePM_TMP">
-		select rpm_TMP.* from RecipePM_TMP rpm_TMP,RecipeHeader rh where rpm_TMP.PMType=#{pMType} and rpm_TMP.RecipeID=rh.RecipeID and rh.ProductCode=#{productCode} and rh.ProductName=#{productName}
+		select rpm_TMP.* from RecipePM_TMP rpm_TMP,RecipeHeader rh where rpm_TMP.RecipeID=rh.RecipeID and rh.ProductCode=#{productCode} and rh.ProductName=#{productName}
 	</select>
 	<insert id="add" parameterType="com.batchMesComDK.entity.RecipePM_TMP">
 		insert into RecipePM_TMP

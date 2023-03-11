@@ -1,5 +1,7 @@
 package com.batchMesComDK.entity;
 
+import java.util.List;
+
 public class WorkOrder {
 	
 	/**
@@ -167,5 +169,12 @@ public class WorkOrder {
 	private String CreateTime;
 	private String UnitID;
 	private String ZGID;
+	private List<RecipePM> recipePMList;
+	public List<RecipePM> getRecipePMList() {
+		return recipePMList;
+	}
+	public void setRecipePMList(List<RecipePM> recipePMList) {
+		this.recipePMList = recipePMList;
+	}
 	
 }

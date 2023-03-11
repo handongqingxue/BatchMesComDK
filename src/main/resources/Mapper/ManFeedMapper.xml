@@ -79,6 +79,7 @@
 			<if test="feedTime!=null">
 				feedTime=#{feedTime},
 			</if>
+				MarkBit=${@com.batchMesComDK.entity.ManFeed@YJS}
 		</trim>
 		 where WorkOrderID=#{workOrderID} and FeedPort=#{feedPort} and materialCode=#{materialCode} and materialName=#{materialName} and MarkBit=${@com.batchMesComDK.entity.ManFeed@WJS}
 	</update>

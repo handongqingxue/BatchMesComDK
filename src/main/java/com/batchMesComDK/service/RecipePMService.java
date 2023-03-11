@@ -11,4 +11,6 @@ public interface RecipePMService {
 	int deleteByIds(String ids);
 
 	List<RecipePM> getListByWorkOrderID(String workOrderID);
+
+	int updateDosageByPMParam(List<RecipePM> recipePMList);
 }
