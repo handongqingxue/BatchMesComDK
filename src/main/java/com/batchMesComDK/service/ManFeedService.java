@@ -8,7 +8,7 @@ public interface ManFeedService {
 
 	int add(ManFeed manFeed);
 
-	int addFromRecipePM(String workOrderID);
+	int addFromRecipePM(String workOrderID, String productCode, String productName);
 
 	int deleteByIds(String ids);
 

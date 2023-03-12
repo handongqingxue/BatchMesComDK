@@ -123,7 +123,7 @@ public class BatchController {
 					System.out.println("recipeID==="+recipeID);
 					createBatch(formulaId,workOrderID,recipeID);
 					
-					addManFeedFromRecipePM(workOrderID);//工单创建时，从配方参数表里取数据，放入人工投料表
+					addManFeedFromRecipePM(workOrderID,null,null);//工单创建时，从配方参数表里取数据，放入人工投料表
 					break;
 				case WorkOrder.BQD:
 					//启动执行配方
@@ -253,11 +253,15 @@ public class BatchController {
 					String formulaId = wo.getFormulaId();
 					String workOrderID = wo.getWorkOrderID();				
 					String recipeID = wo.getRecipeID();
+					String productCode = wo.getProductCode();
+					String productName = wo.getProductName();
 					System.out.println("formulaId==="+formulaId);
 					System.out.println("workOrderID==="+workOrderID);
 					System.out.println("recipeID==="+recipeID);
+					System.out.println("productCode==="+productCode);
+					System.out.println("productName==="+productName);
 					
-					addManFeedFromRecipePM(workOrderID);//工单创建时，从配方参数表里取数据，放入人工投料表
+					addManFeedFromRecipePM(workOrderID,productCode,productName);//工单创建时，从配方参数表里取数据，放入人工投料表
 					
 					BatchTest bt=new BatchTest();
 					bt.setRecipe(recipeID);
@@ -661,12 +665,12 @@ public class BatchController {
 
 	@RequestMapping(value="/addRecipePMFromTMP")
 	@ResponseBody
-	public Map<String, Object> addRecipePMFromTMP(String workOrderID, Integer pMType, String productCode, String productName) {
+	public Map<String, Object> addRecipePMFromTMP(String workOrderID, String productCode, String productName) {
 
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		
 		try {
-			int count=recipePMService.addFromTMP(workOrderID, pMType, productCode, productName);
+			int count=recipePMService.addFromTMP(workOrderID, productCode, productName);
 			if(count>0) {
 				jsonMap.put("message", "ok");
 				jsonMap.put("info", "添加配方参数成功");
@@ -786,12 +790,13 @@ public class BatchController {
 
 	@RequestMapping(value="/addManFeedFromRecipePM")
 	@ResponseBody
-	public Map<String, Object> addManFeedFromRecipePM(String workOrderID) {
+	public Map<String, Object> addManFeedFromRecipePM(String workOrderID, String productCode, String productName) {
 
+		//后面两个参数在jsp页面还没加
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		
 		try {
-			int count=manFeedService.addFromRecipePM(workOrderID);
+			int count=manFeedService.addFromRecipePM(workOrderID,productCode,productName);
 			if(count>0) {
 				jsonMap.put("message", "ok");
 				jsonMap.put("info", "添加人工投料信息成功");
@@ -1331,7 +1336,7 @@ public class BatchController {
 			String workOrderID = wo.getWorkOrderID();
 			String productCode = wo.getProductCode();
 			String productName = wo.getProductName();
-			c=recipePMService.addFromTMP(workOrderID, RecipePM_TMP.RGTLCS, productCode, productName);
+			c=recipePMService.addFromTMP(workOrderID, productCode, productName);
 			if(c>0) {
 				c=recipePMService.updateDosageByPMParam(wo.getRecipePMList());
 				c=workOrderService.updateStateByWorkOrderID(WorkOrder.WLQTWB,workOrderID);
@@ -1440,24 +1445,66 @@ public class BatchController {
 	public Map<String, Object> workOrderCannel(@RequestBody String bodyEnc) {
 
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
-		System.out.println("bodyEnc==="+bodyEnc);
-		//String bodyDec = DesUtil.decrypt(bodyEnc,DesUtil.SECRET_KEY);
-		net.sf.json.JSONArray wocMesJA = net.sf.json.JSONArray.fromObject(bodyEnc);
-		//WorkOrder wo=(WorkOrder)net.sf.json.JSONObject.toBean(woJO, WorkOrder.class);
-		int wocMesJASize = wocMesJA.size();
-		for(int i=0;i<wocMesJASize;i++) {
-			net.sf.json.JSONObject wocMesJO=(net.sf.json.JSONObject)wocMesJA.get(i);
-			String workOrder = wocMesJO.getString("workOrder");
-			String orderExecuteStatus = wocMesJO.getString("orderExecuteStatus");
-			System.out.println("workOrder==="+workOrder);
-			System.out.println("orderExecuteStatus==="+orderExecuteStatus);
+		try {
+			System.out.println("bodyEnc==="+bodyEnc);
+			//String bodyDec = DesUtil.decrypt(bodyEnc,DesUtil.SECRET_KEY);
+			net.sf.json.JSONArray wocMesJA = net.sf.json.JSONArray.fromObject(bodyEnc);
+			//WorkOrder wo=(WorkOrder)net.sf.json.JSONObject.toBean(woJO, WorkOrder.class);
+			int wocMesJASize = wocMesJA.size();
+			for(int i=0;i<wocMesJASize;i++) {
+				net.sf.json.JSONObject wocMesJO=(net.sf.json.JSONObject)wocMesJA.get(i);
+				String workOrder = wocMesJO.getString("workOrder");
+				String orderExecuteStatus = wocMesJO.getString("orderExecuteStatus");
+				System.out.println("workOrder==="+workOrder);
+				System.out.println("orderExecuteStatus==="+orderExecuteStatus);
+				
+				String batchID=workOrderService.getFormulaIdByWOID(workOrder);
+				
+				String batchCountResultStr = getItem("BatchListCt");
+				System.out.println("batchCountResultStr==="+batchCountResultStr);
+				JSONObject batchCountResultJO = new JSONObject(batchCountResultStr);
+				String data = batchCountResultJO.getString("data");
+				int batchCount = Integer.valueOf(data);
+				System.out.println("batchCount==="+batchCount);
+				for(int j=0;j<batchCount;j++) {
+					String batchIDVal = getItem("BLBatchID_"+j);
+					if(batchID.equals(batchIDVal)){
+						String createIDVal = getItem("BLCreateID_"+j);
+
+						StringBuilder commandABORTSB=new StringBuilder();
+						commandABORTSB.append("[COMMAND(Item,");
+						commandABORTSB.append(Constant.USERID);
+						commandABORTSB.append(",");
+						commandABORTSB.append(createIDVal);
+						commandABORTSB.append(",");
+						commandABORTSB.append(BatchTest.ABORT);
+						commandABORTSB.append(")]");
+						execute(commandABORTSB.toString());
+
+						StringBuilder removeSB=new StringBuilder();
+						removeSB.append("[REMOVE(Item,");
+						removeSB.append(Constant.USERID);
+						removeSB.append(",");
+						removeSB.append(createIDVal);
+						removeSB.append(")]");
+						execute(removeSB.toString());
+						break;
+					}
+					
+				}
+
+			}
+			
+			jsonMap.put("success", "true");
+			jsonMap.put("state", "001");
+			jsonMap.put("msg", "正常");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		
-		jsonMap.put("success", "true");
-		jsonMap.put("state", "001");
-		jsonMap.put("msg", "正常");
-		
-		return jsonMap;
+		finally {
+			return jsonMap;
+		}
 	}
 	
 	/**

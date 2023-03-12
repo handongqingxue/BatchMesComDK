@@ -7,6 +7,7 @@ public class BatchTest {
 	public static final String RUNNING="RUNNING";
 	public static final String STOP="STOP";
 	public static final String STOPPED="STOPPED";
+	public static final String ABORT="ABORT";
 	public static final String COMPLETE="COMPLETE";
 
 	private Integer CreateID;

@@ -36,6 +36,7 @@
 			<if test="State!=null">
 				State,
 			</if>
+				CreateTime
 		</trim>
 		values
 		<trim prefix="(" suffix=")" suffixOverrides=",">
@@ -69,6 +70,7 @@
 			<if test="State!=null">
 				#{State},
 			</if>
+				GETDATE()
 		</trim>
 	</insert>
 	<update id="updateStateById">
@@ -136,5 +138,8 @@
 	</update>
 	<select id="getMaxFormulaIdNumByFormulaIdDate" resultType="java.lang.Integer">
 		select substring(MAX(FormulaId),19,3) from WorkOrder where FormulaId like #{formulaIdDate}+'%'
+	</select>
+	<select id="getFormulaIdByWOID" resultType="java.lang.String">
+		select FormulaId from WorkOrder where WorkOrderID=#{workOrderID}
 	</select>
 </mapper>

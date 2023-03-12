@@ -8,7 +8,7 @@ import com.batchMesComDK.entity.*;
 
 public interface RecipePM_TMPMapper {
 
-	List<RecipePM_TMP> getByProductParam(@Param("pMType") Integer pMType,@Param("productCode") String productCode, @Param("productName") String productName);
+	List<RecipePM_TMP> getByProductParam(@Param("productCode") String productCode, @Param("productName") String productName);
 
 	int add(RecipePM_TMP rPM_TMP);
 

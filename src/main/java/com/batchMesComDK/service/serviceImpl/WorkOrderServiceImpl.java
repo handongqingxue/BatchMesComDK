@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -83,8 +84,12 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	@Override
 	public String createFormulaIdByDateYMD(String productCode, String productName) {
 		// TODO Auto-generated method stub
-		String namePre = recipeHeaderDao.getNamePreByProductParam(productCode, productName);
-		String formulaIdDate = namePre+"_BATCH"+formulaIdSDF.format(new Date());
+		String identifierPre = "";
+		String identifier = recipeHeaderDao.getIdentifierByProductParam(productCode, productName);
+		if(!StringUtils.isEmpty(identifier)) {
+			identifierPre=identifier.substring(0, 3);
+		}
+		String formulaIdDate = identifierPre+"_BATCH"+formulaIdSDF.format(new Date());
 		Integer count=workOrderDao.getMaxFormulaIdNumByFormulaIdDate(formulaIdDate);
 		if(count==null)
 			count=0;
@@ -95,5 +100,11 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		else if(formulaIdXh<100)
 			formulaIdXhStr="0"+formulaIdXh;
 		return formulaIdDate+formulaIdXhStr;
+	}
+
+	@Override
+	public String getFormulaIdByWOID(String workOrderID) {
+		// TODO Auto-generated method stub
+		return workOrderDao.getFormulaIdByWOID(workOrderID);
 	}
 }

@@ -17,6 +17,8 @@ public class ManFeedServiceImpl implements ManFeedService {
 	ManFeedMapper manFeedDao;
 	@Autowired
 	RecipePMMapper recipePMDao;
+	@Autowired
+	RecipeHeaderMapper recipeHeaderDao;
 
 	@Override
 	public int add(ManFeed manFeed) {
@@ -25,10 +27,13 @@ public class ManFeedServiceImpl implements ManFeedService {
 	}
 
 	@Override
-	public int addFromRecipePM(String workOrderID) {
+	public int addFromRecipePM(String workOrderID, String productCode, String productName) {
 		// TODO Auto-generated method stub
 		int count=0;
-		List<RecipePM> rPMList=recipePMDao.getListByWorkOrderID(workOrderID);
+		List<RecipePM> rPMList=recipePMDao.getManFeedListByWorkOrderID(workOrderID);
+		RecipeHeader rh=recipeHeaderDao.getByProductParam(productCode,productName);
+		String dev1 = rh.getDev1();
+		String dev2 = rh.getDev2();
 		
 		ManFeed mf=null;
 		for (int i = 0; i < rPMList.size(); i++) {
@@ -38,9 +43,12 @@ public class ManFeedServiceImpl implements ManFeedService {
 		  	mf.setWorkOrderID(workOrderID);
 		  	mf.setMaterialCode(rPM.getPMCode());
 		  	mf.setMaterialName(rPM.getPMName());
+		  	mf.setUnit(rPM.getUnit());
 		  	mf.setFeedPort(rPM.getFeedPort());
 		  	mf.setMarkBit("0");
-		  	mf.setMaterialSV(rPM.getMaterialSV());
+		  	mf.setMaterialSV(rPM.getDosage());
+		  	mf.setDev1(dev1);
+		  	mf.setDev2(dev2);
 			
 			count+=manFeedDao.add(mf);
 		}

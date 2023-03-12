@@ -30,7 +30,18 @@
 			<if test="FeedPort!=null">
 				FeedPort,
 			</if>
-				MarkBit
+			<if test="MarkBit!=null">
+				MarkBit,
+			</if>
+			<if test="MaterialSV!=null">
+				MaterialSV,
+			</if>
+			<if test="Dev1!=null">
+				Dev1,
+			</if>
+			<if test="Dev2!=null">
+				Dev2,
+			</if>
 		</trim>
 		values
 		<trim prefix="(" suffix=")" suffixOverrides=",">
@@ -58,7 +69,18 @@
 			<if test="FeedPort!=null">
 				#{FeedPort},
 			</if>
-				0
+			<if test="MarkBit!=null">
+				#{MarkBit},
+			</if>
+			<if test="MaterialSV!=null">
+				#{MaterialSV},
+			</if>
+			<if test="Dev1!=null">
+				#{Dev1},
+			</if>
+			<if test="Dev2!=null">
+				#{Dev2},
+			</if>
 		</trim>
 	</insert>
 	<delete id="deleteByList">

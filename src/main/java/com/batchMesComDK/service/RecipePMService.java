@@ -6,7 +6,7 @@ import com.batchMesComDK.entity.RecipePM;
 
 public interface RecipePMService {
 
-	int addFromTMP(String workOrderID, Integer pMType, String productCode, String productName);
+	int addFromTMP(String workOrderID, String productCode, String productName);
 
 	int deleteByIds(String ids);
 
