@@ -40,10 +40,10 @@ public class ManFeed {
 	public void setMaterialName(String materialName) {
 		MaterialName = materialName;
 	}
-	public String getSuttle() {
+	public Float getSuttle() {
 		return Suttle;
 	}
-	public void setSuttle(String suttle) {
+	public void setSuttle(Float suttle) {
 		Suttle = suttle;
 	}
 	public String getUnit() {
@@ -91,7 +91,7 @@ public class ManFeed {
 	private String WorkOrderID;
 	private String MaterialCode;
   	private String MaterialName;
-  	private String Suttle;
+  	private Float Suttle;
   	private String Unit;
   	private String FeedTime;
   	private String FeedPort;

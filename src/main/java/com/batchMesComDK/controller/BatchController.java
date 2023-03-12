@@ -1419,7 +1419,7 @@ public class BatchController {
 			String feedTime = fidMesJO.getString("feedTime");
 			String materialCode = fidMesJO.getString("materialCode");
 			String materialName = fidMesJO.getString("materialName");
-			String suttle = fidMesJO.getString("suttle");
+			Float suttle = Float.valueOf(fidMesJO.getString("suttle"));
 			String unit = fidMesJO.getString("unit");
 			
 			mf=new ManFeed();
