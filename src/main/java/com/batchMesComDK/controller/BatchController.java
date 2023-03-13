@@ -261,7 +261,10 @@ public class BatchController {
 					System.out.println("productCode==="+productCode);
 					System.out.println("productName==="+productName);
 					
+					/*
+					 * 内部测试先屏蔽掉这个逻辑
 					addManFeedFromRecipePM(workOrderID,productCode,productName);//工单创建时，从配方参数表里取数据，放入人工投料表
+					*/
 					
 					BatchTest bt=new BatchTest();
 					bt.setRecipe(recipeID);
@@ -290,7 +293,7 @@ public class BatchController {
 					}
 					break;
 				case WorkOrder.BQX:
-				//case WorkOrder.BZT:
+				//case WorkOrder.BZT://电子签名时需要暂停工单，因此这里不需要意外终止，待签名结束后工单仍然继续执行
 					//调用batch command接口
 					for (int j = 1; j <= batchCount; j++) {
 						String formulaIdStr = wo.getFormulaId().toString();
@@ -1336,9 +1339,13 @@ public class BatchController {
 			String workOrderID = wo.getWorkOrderID();
 			String productCode = wo.getProductCode();
 			String productName = wo.getProductName();
-			c=recipePMService.addFromTMP(workOrderID, productCode, productName);
+			//c=recipePMService.addFromTMP(workOrderID, productCode, productName);
+			c=recipePMService.addFromWORecipePMList(workOrderID, wo.getRecipePMList());
 			if(c>0) {
-				c=recipePMService.updateDosageByPMParam(wo.getRecipePMList());
+				/*
+				 * 为了测试这块先屏蔽掉
+				 */
+				//c=recipePMService.updateDosageByPMParam(wo.getRecipePMList());
 				c=workOrderService.updateStateByWorkOrderID(WorkOrder.WLQTWB,workOrderID);
 			}
 			
