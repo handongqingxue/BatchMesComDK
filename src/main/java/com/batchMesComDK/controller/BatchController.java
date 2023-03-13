@@ -102,6 +102,7 @@ public class BatchController {
 			List<WorkOrder> woList=workOrderService.getKeepWatchList();
 			System.out.println("woListSize==="+woList.size());
 			String formulaIds="";
+			String startWorkOrderIDs="";
 			String batchCountResultStr = getItem("BatchListCt");
 			System.out.println("batchCountResultStr==="+batchCountResultStr);
 			JSONObject batchCountResultJO = new JSONObject(batchCountResultStr);
@@ -219,6 +220,18 @@ public class BatchController {
 						}
 					}
 				}
+			}
+			if(StringUtils.isEmpty(startWorkOrderIDs)) {
+				formulaIds=formulaIds.substring(1);
+				JSONArray bodyParamJA=new JSONArray();
+				JSONObject bodyParamJO=new JSONObject();
+				bodyParamJO.put("workOrder", "WO48qn5e9go9");
+				bodyParamJO.put("orderExecuteStatus", "PRODUCTION");
+				bodyParamJO.put("updateTime", "2023-03-13 15:40:13");
+				bodyParamJO.put("updateBy", "OPR2");
+				bodyParamJA.put(bodyParamJO);
+				APIUtil.doHttpMes("changeOrderStatus", bodyParamJA);
+				//aaaaaaaaa
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -1253,24 +1266,58 @@ public class BatchController {
 
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		
-		System.out.println("bodyEnc==="+bodyEnc);
-		String bodyDec = bodyEnc;
-		net.sf.json.JSONArray cosJA = net.sf.json.JSONArray.fromObject(bodyDec);
-		for (int i = 0; i < cosJA.size(); i++) {
-			net.sf.json.JSONObject cosJO = (net.sf.json.JSONObject)cosJA.get(i);
-			String workOrder = cosJO.getString("workOrder");
-			String orderExecuteStatus = cosJO.getString("orderExecuteStatus");
-			String updateTime = cosJO.getString("updateTime");
-			System.out.println("workOrder==="+workOrder);
-			System.out.println("orderExecuteStatus==="+orderExecuteStatus);
-			System.out.println("updateTime==="+updateTime);
+		try {
+			System.out.println("bodyEnc==="+bodyEnc);
+			String bodyDec = bodyEnc;
+			JSONArray bodyParamJA=new JSONArray();
+			JSONObject bodyParamJO=null;
+			//net.sf.json.JSONArray cosJA = net.sf.json.JSONArray.fromObject(bodyDec);
+			JSONArray cosJA=new JSONArray(bodyDec);
+			for (int i = 0; i < cosJA.length(); i++) {
+				bodyParamJO=new JSONObject();
+				JSONObject cosJO = (JSONObject)cosJA.get(i);
+				String workOrder = cosJO.getString("workOrder");
+				String orderExecuteStatus = cosJO.getString("orderExecuteStatus");
+				String updateTime = cosJO.getString("updateTime");
+				String updateBy = cosJO.getString("updateBy");
+				System.out.println("workOrder==="+workOrder);
+				System.out.println("orderExecuteStatus==="+orderExecuteStatus);
+				System.out.println("updateTime==="+updateTime);
+				System.out.println("updateBy==="+updateBy);
+				
+				/*
+				bodyParamJO.put("workOrder", "WO48qn5e9go9");
+				bodyParamJO.put("orderExecuteStatus", "PRODUCTION");
+				bodyParamJO.put("updateTime", "2023-03-13 15:40:13");
+				bodyParamJO.put("updateBy", "OPR2");
+				*/
+				bodyParamJO.put("workOrder", workOrder);
+				bodyParamJO.put("orderExecuteStatus", orderExecuteStatus);
+				bodyParamJO.put("updateTime", updateTime);
+				bodyParamJO.put("updateBy", updateBy);
+				bodyParamJA.put(bodyParamJO);
+			}
+			
+			
+			JSONObject resultJO = APIUtil.doHttpMes("changeOrderStatus", bodyParamJA);
+			boolean success = resultJO.getBoolean("success");
+			if(success) {
+				jsonMap.put("success", "true");
+				jsonMap.put("state", "001");//001正常 002数据格式有误 003数据不完整
+				jsonMap.put("msg", "正常");
+			}
+			else {
+				jsonMap.put("success", "false");
+				jsonMap.put("state", "002");
+				jsonMap.put("msg", "数据格式有误");
+			}
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		
-		jsonMap.put("success", "true");
-		jsonMap.put("state", "001");//001正常 002数据格式有误 003数据不完整
-		jsonMap.put("msg", "正常");
-		
-		return jsonMap;
+		finally {
+			return jsonMap;
+		}
 	}
 	
 	/**
