@@ -107,4 +107,20 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		// TODO Auto-generated method stub
 		return workOrderDao.getFormulaIdByWOID(workOrderID);
 	}
+
+	@Override
+	public int updateStateByWOIDs(Integer state, String workOrders) {
+		// TODO Auto-generated method stub
+		String[] workOrderArr = workOrders.split(",");
+		List<String> workOrderIDList = Arrays.asList(workOrderArr);
+		return workOrderDao.updateStateByWOIDList(state,workOrderIDList);
+	}
+
+	@Override
+	public Integer getCountByByWOIDs(String workOrders) {
+		// TODO Auto-generated method stub
+		String[] workOrderArr = workOrders.split(",");
+		List<String> workOrderIDList = Arrays.asList(workOrderArr);
+		return workOrderDao.getCountByByWOIDList(workOrderIDList);
+	}
 }

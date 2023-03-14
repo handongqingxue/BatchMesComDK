@@ -102,7 +102,6 @@ public class BatchController {
 			List<WorkOrder> woList=workOrderService.getKeepWatchList();
 			System.out.println("woListSize==="+woList.size());
 			String formulaIds="";
-			String startWorkOrderIDs="";
 			String batchCountResultStr = getItem("BatchListCt");
 			System.out.println("batchCountResultStr==="+batchCountResultStr);
 			JSONObject batchCountResultJO = new JSONObject(batchCountResultStr);
@@ -221,18 +220,6 @@ public class BatchController {
 					}
 				}
 			}
-			if(StringUtils.isEmpty(startWorkOrderIDs)) {
-				formulaIds=formulaIds.substring(1);
-				JSONArray bodyParamJA=new JSONArray();
-				JSONObject bodyParamJO=new JSONObject();
-				bodyParamJO.put("workOrder", "WO48qn5e9go9");
-				bodyParamJO.put("orderExecuteStatus", "PRODUCTION");
-				bodyParamJO.put("updateTime", "2023-03-13 15:40:13");
-				bodyParamJO.put("updateBy", "OPR2");
-				bodyParamJA.put(bodyParamJO);
-				APIUtil.doHttpMes("changeOrderStatus", bodyParamJA);
-				//aaaaaaaaa
-			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -251,6 +238,7 @@ public class BatchController {
 			List<WorkOrder> woList=workOrderService.getKeepWatchList();
 			System.out.println("woListSize==="+woList.size());
 			String formulaIds="";
+			String startWorkOrderIDs="";
 			String blcResult = batchTestService.getItem(Constant.ITEM_BATCH_LIST_CT);
 			System.out.println("blcResult==="+blcResult);
 			String batchListCt = blcResult.substring(0, blcResult.indexOf(Constant.END_SUCCESS));
@@ -350,6 +338,22 @@ public class BatchController {
 						}
 					}
 				}
+			}
+			if(!StringUtils.isEmpty(startWorkOrderIDs)) {
+				formulaIds=formulaIds.substring(1);
+				JSONArray bodyParamJA=new JSONArray();
+				JSONObject bodyParamJO=new JSONObject();
+				bodyParamJO.put("workOrder", "WO48qn5e9go9");
+				bodyParamJO.put("orderExecuteStatus", "PRODUCTION");
+				bodyParamJO.put("updateTime", "2023-03-13 15:40:13");
+				bodyParamJO.put("updateBy", "OPR2");
+				bodyParamJA.put(bodyParamJO);
+				APIUtil.doHttpMes("changeOrderStatus", bodyParamJA);
+				
+				StringBuilder commandSB=new StringBuilder();
+				commandSB.append("");
+				//changeOrderStatus();
+				//aaaaaaaaa
 			}
 			
 			jsonMap.put("success", "true");
@@ -1505,13 +1509,23 @@ public class BatchController {
 			net.sf.json.JSONArray wocMesJA = net.sf.json.JSONArray.fromObject(bodyEnc);
 			//WorkOrder wo=(WorkOrder)net.sf.json.JSONObject.toBean(woJO, WorkOrder.class);
 			int wocMesJASize = wocMesJA.size();
+			boolean workOrderBool=true;
+			boolean statusBool=true;
+			String workOrders = "";
 			for(int i=0;i<wocMesJASize;i++) {
 				net.sf.json.JSONObject wocMesJO=(net.sf.json.JSONObject)wocMesJA.get(i);
 				String workOrder = wocMesJO.getString("workOrder");
 				String orderExecuteStatus = wocMesJO.getString("orderExecuteStatus");
 				System.out.println("workOrder==="+workOrder);
 				System.out.println("orderExecuteStatus==="+orderExecuteStatus);
+				if("CANCEL".equals(orderExecuteStatus)) {
+					workOrders+=","+workOrder;
+				}
+				else {
+					statusBool=false;
+				}
 				
+				/*
 				String batchID=workOrderService.getFormulaIdByWOID(workOrder);
 				
 				String batchCountResultStr = getItem("BatchListCt");
@@ -1546,12 +1560,31 @@ public class BatchController {
 					}
 					
 				}
-
+				*/
 			}
 			
-			jsonMap.put("success", "true");
-			jsonMap.put("state", "001");
-			jsonMap.put("msg", "正常");
+			if(statusBool) {
+				workOrders=workOrders.substring(1);
+				//Integer workOrderCount=workOrderService.getCountByByWOIDs(workOrders);
+				
+				int updateCount=workOrderService.updateStateByWOIDs(WorkOrder.BQX, workOrders);
+				if(updateCount>0) {
+					jsonMap.put("success", "true");
+					jsonMap.put("state", "001");
+					jsonMap.put("msg", "正常");
+				}
+				else {
+					jsonMap.put("success", "false");
+					jsonMap.put("state", "002");
+					jsonMap.put("msg", "数据格式有误");
+				}
+			}
+			else {
+				jsonMap.put("success", "false");
+				jsonMap.put("state", "003");
+				jsonMap.put("msg", "数据不完整");
+			}
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

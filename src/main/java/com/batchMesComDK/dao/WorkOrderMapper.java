@@ -29,4 +29,8 @@ public interface WorkOrderMapper {
 	Integer getMaxFormulaIdNumByFormulaIdDate(@Param("formulaIdDate") String formulaIdDate);
 
 	String getFormulaIdByWOID(@Param("workOrderID") String workOrderID);
+
+	int updateStateByWOIDList(@Param("state") Integer state, @Param("workOrderIDList") List<String> workOrderIDList);
+
+	Integer getCountByByWOIDList(@Param("workOrderIDList") List<String> workOrderIDList);
 }

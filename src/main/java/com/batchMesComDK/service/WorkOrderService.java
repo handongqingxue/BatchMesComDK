@@ -27,4 +27,8 @@ public interface WorkOrderService {
 	String createFormulaIdByDateYMD(String productCode, String productName);
 
 	String getFormulaIdByWOID(String workOrderID);
+
+	int updateStateByWOIDs(Integer state, String workOrders);
+
+	Integer getCountByByWOIDs(String workOrders);
 }

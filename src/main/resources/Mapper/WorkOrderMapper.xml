@@ -142,4 +142,16 @@
 	<select id="getFormulaIdByWOID" resultType="java.lang.String">
 		select FormulaId from WorkOrder where WorkOrderID=#{workOrderID}
 	</select>
+	<update id="updateStateByWOIDList">
+		update WorkOrder set State=#{state} where 1=1
+		<foreach collection="workOrderIDList" item="workOrderID" open=" and cast(workOrderID as char) in (" separator="," close=")">
+		#{workOrderID}
+		</foreach>
+	</update>
+	<select id="getCountByByWOIDList" resultType="java.lang.Integer">
+		select count(*) from WorkOrder where 1=1
+		<foreach collection="workOrderIDList" item="workOrderID" open=" and cast(workOrderID as char) in (" separator="," close=")">
+		#{workOrderID}
+		</foreach>
+	</select>
 </mapper>
