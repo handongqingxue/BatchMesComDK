@@ -18,4 +18,6 @@ public interface ManFeedService {
 
 	ManFeed getByWorkOrderIDFeedPort(String workOrderID,String feedPort);
 
+	int addTestFromList(List<ManFeed> mfList);
+
 }

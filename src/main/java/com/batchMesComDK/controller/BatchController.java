@@ -1576,13 +1576,13 @@ public class BatchController {
 				else {
 					jsonMap.put("success", "false");
 					jsonMap.put("state", "002");
-					jsonMap.put("msg", "数据格式有误");
+					jsonMap.put("msg", "工单号不存在");
 				}
 			}
 			else {
 				jsonMap.put("success", "false");
 				jsonMap.put("state", "003");
-				jsonMap.put("msg", "数据不完整");
+				jsonMap.put("msg", "状态有误");
 			}
 			
 		} catch (Exception e) {
@@ -1623,7 +1623,11 @@ public class BatchController {
 		//ManFeed mf=(ManFeed)net.sf.json.JSONObject.toBean(fibJO, ManFeed.class);
 		List<ManFeed> mfList=convertMesFeedIssusDownToJava(bodyEnc);
 		
+		/*
+		 * 为了测试暂时屏蔽掉
 		int c=manFeedService.editByWorkOrderIDFeedPortList(mfList);
+		*/
+		int c=manFeedService.addTestFromList(mfList);
 		if(c>0) {
 			jsonMap.put("success", "true");
 			jsonMap.put("state", "001");

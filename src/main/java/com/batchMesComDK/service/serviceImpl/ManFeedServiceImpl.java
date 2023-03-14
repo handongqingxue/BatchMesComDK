@@ -57,6 +57,18 @@ public class ManFeedServiceImpl implements ManFeedService {
 	}
 
 	@Override
+	public int addTestFromList(List<ManFeed> mfList) {
+		// TODO Auto-generated method stub
+		int count=0;
+		for (ManFeed mf : mfList) {
+			mf.setFeedPort("001");
+			mf.setMarkBit("0");
+			count+=manFeedDao.add(mf);
+		}
+		return count;
+	}
+
+	@Override
 	public int deleteByIds(String ids) {
 		// TODO Auto-generated method stub
 		String[] idArr = ids.split(",");
