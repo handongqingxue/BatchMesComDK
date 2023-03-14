@@ -10,5 +10,5 @@ public interface BatchRecordService {
 
 	int deleteByIds(String ids);
 
-	List<BatchRecord> getSendToMesData(String workOrderID);
+	List<BatchRecord> getSendToMesData(List<String> workOrderList);
 }

@@ -277,6 +277,14 @@ public class BatchController {
 					
 					workOrderService.updateStateById(WorkOrder.BCJWB, wo.getID());
 					
+					StringBuilder qrwbSB=new StringBuilder();
+					qrwbSB.append("[{");
+					qrwbSB.append("\"workOrder\":\"");
+					qrwbSB.append(wo.getWorkOrderID());
+					qrwbSB.append("\",\"orderExecuteStatus\":\"CREATED\",");
+					qrwbSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
+					changeOrderStatus(qrwbSB.toString());
+					
 					addWOPreStateInList(WorkOrder.BCJWB,wo.getWorkOrderID());
 					break;
 				case WorkOrder.BQD:
@@ -294,6 +302,14 @@ public class BatchController {
 							String stateVal = batchTestService.getBLKey_x("State",j);
 							if(BatchTest.RUNNING.equals(stateVal)) {
 								workOrderService.updateStateById(WorkOrder.BYX, wo.getID());
+								
+								StringBuilder qdSB=new StringBuilder();
+								qdSB.append("[{");
+								qdSB.append("\"workOrder\":\"");
+								qdSB.append(wo.getWorkOrderID());
+								qdSB.append("\",\"orderExecuteStatus\":\"COMMENCED\",");
+								qdSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
+								changeOrderStatus(qdSB.toString());
 								
 								addWOPreStateInList(WorkOrder.BYX,workOrderIDStr);
 							}
@@ -316,6 +332,14 @@ public class BatchController {
 							String stateVal = BLKey_x("State",j);
 							if(BatchTest.STOPPED.equals(stateVal)) {
 								workOrderService.updateStateById(WorkOrder.BYWZZ, wo.getID());
+								
+								StringBuilder qxSB=new StringBuilder();
+								qxSB.append("[{");
+								qxSB.append("\"workOrder\":\"");
+								qxSB.append(wo.getWorkOrderID());
+								qxSB.append("\",\"orderExecuteStatus\":\"CANCEL\",");
+								qxSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
+								changeOrderStatus(qxSB.toString());
 								
 								addWOPreStateInList(WorkOrder.BYWZZ,wo.getWorkOrderID());
 							}
@@ -344,10 +368,26 @@ public class BatchController {
 							if(BatchTest.COMPLETE.equals(stateVal)) {
 								workOrderService.updateStateByFormulaId(WorkOrder.BJS, formulaId);
 								
+								StringBuilder jsSB=new StringBuilder();
+								jsSB.append("[{");
+								jsSB.append("\"workOrder\":\"");
+								jsSB.append(workOrderID);
+								jsSB.append("\",\"orderExecuteStatus\":\"COMPLETE\",");
+								jsSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
+								changeOrderStatus(jsSB.toString());
+								
 								addWOPreStateInList(WorkOrder.BJS,workOrderID);
 							}
 							else if(BatchTest.STOPPED.equals(stateVal)) {
 								workOrderService.updateStateByFormulaId(WorkOrder.BYWZZ, formulaId);
+
+								StringBuilder jsSB=new StringBuilder();
+								jsSB.append("[{");
+								jsSB.append("\"workOrder\":\"");
+								jsSB.append(workOrderID);
+								jsSB.append("\",\"orderExecuteStatus\":\"PRODUCTBREAK\",");
+								jsSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
+								changeOrderStatus(jsSB.toString());
 								
 								addWOPreStateInList(WorkOrder.BYWZZ,workOrderID);
 							}
@@ -416,20 +456,6 @@ public class BatchController {
 			}
 		}
 		return exist;
-	}
-	
-	@RequestMapping(value="/keepWatchOnWOFinish", method = RequestMethod.POST)
-	@ResponseBody
-	public Map<String, Object> keepWatchOnWOFinish(){
-		Map<String, Object> jsonMap = new HashMap<String, Object>();
-		//List<WorkOrder> woList=workOrderService.getFinishedList();
-		System.out.println("woPreStateListSize="+woPreStateList.size());
-		for (Map<String, Object> woPreStateMap : woPreStateList) {
-			String preWorkOrderID = woPreStateMap.get("workOrderID").toString();
-			String preState = woPreStateMap.get("state").toString();
-			System.out.println("preWorkOrderID==="+preWorkOrderID+",preState==="+preState);
-		}
-		return jsonMap;
 	}
 	
 	/**
@@ -1778,19 +1804,140 @@ public class BatchController {
 
 	@RequestMapping(value="/getSendToMesBRData", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> getSendToMesBRData(@RequestBody String bodyEnc) {
+	public Map<String, Object> getSendToMesBRData() {
 
+		//batchrecord 批次过程记录  deviationrecord 偏差记录    processrecord 工艺参数记录
+		//哦，1 3 8 9 89合成一次发，89 3 1 2这样顺序发。哎，之前写好的逻辑不是按这顺序的，看来我还得改改才行。刚才看群里那帮人的信息感觉焦头烂额的，马上改改逻辑
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		try {
-			System.out.println("bodyEnc==="+bodyEnc);
-			String bodyDec = bodyEnc;
-			net.sf.json.JSONObject cosJO = net.sf.json.JSONObject.fromObject(bodyDec);
-			String workOrderID = cosJO.getString("workOrderID");
-			List<BatchRecord> brList=batchRecordService.getSendToMesData(workOrderID);
+			List<WorkOrder> sendToMesWOList=new ArrayList<>();
+			List<String> sendToMesWOIDList=new ArrayList<>();
+			List<WorkOrder> woList=workOrderService.getFinishedList();
+			for (int i = 0; i < woList.size(); i++) {
+				WorkOrder wo = woList.get(i);
+				String workOrderID=wo.getWorkOrderID();
+				Integer state = wo.getState();
+				for (int j = 0; j < woPreStateList.size(); j++) {
+					Map<String, Object> woPreStateMap = woPreStateList.get(j);
+					String preWorkOrderID = woPreStateMap.get("workOrderID").toString();
+					Integer preState = Integer.valueOf(woPreStateMap.get("state").toString());
+					if(workOrderID.equals(preWorkOrderID)&&state==preState) {
+						sendToMesWOIDList.add(workOrderID);
+						sendToMesWOList.add(wo);
+					}
+				}
+			}
+			
+			List<BatchRecord> brList=batchRecordService.getSendToMesData(sendToMesWOIDList);
+			System.out.println("sendToMesWOIDListSize==="+sendToMesWOIDList.size());
+			
+			if(sendToMesWOIDList.size()>0) {
+				for (int i = 0; i < sendToMesWOIDList.size(); i++) {
+					WorkOrder sendToMesWO = sendToMesWOList.get(i);
+					Integer id = sendToMesWO.getID();
+					String workOrderID=sendToMesWO.getWorkOrderID();
+					String productCode = sendToMesWO.getProductCode();
+					String productName = sendToMesWO.getProductName();
+					String recipeID = sendToMesWO.getRecipeID();
+					
+					JSONObject bodyParamBRJO=new JSONObject();
+					bodyParamBRJO.put("id", id);
+					bodyParamBRJO.put("workOrder", workOrderID);
+					bodyParamBRJO.put("procuctCode", productCode);
+					bodyParamBRJO.put("procuctName", productName);
+					bodyParamBRJO.put("lotNo", "");
+					bodyParamBRJO.put("formulaId", recipeID);
+					bodyParamBRJO.put("formulaName", productName);
+					bodyParamBRJO.put("workcenterId", "");
+					bodyParamBRJO.put("recordType", "batchRecord");
+					
+					JSONObject bodyParamDevJO=new JSONObject();
+					bodyParamDevJO.put("id", id);
+					bodyParamDevJO.put("workOrder", workOrderID);
+					bodyParamDevJO.put("procuctCode", productCode);
+					bodyParamDevJO.put("procuctName", productName);
+					bodyParamDevJO.put("lotNo", "");
+					bodyParamDevJO.put("formulaId", recipeID);
+					bodyParamDevJO.put("formulaName", productName);
+					bodyParamDevJO.put("workcenterId", "");
+					bodyParamDevJO.put("recordType", "deviationRecord");
+					
+					JSONObject bodyParamProJO=new JSONObject();
+					bodyParamProJO.put("id", id);
+					bodyParamProJO.put("workOrder", workOrderID);
+					bodyParamProJO.put("procuctCode", productCode);
+					bodyParamProJO.put("procuctName", productName);
+					bodyParamProJO.put("lotNo", "");
+					bodyParamProJO.put("formulaId", recipeID);
+					bodyParamProJO.put("formulaName", productName);
+					bodyParamProJO.put("workcenterId", "");
+					bodyParamProJO.put("recordType", "processRecord");
 
+					JSONArray electtonBatchRecordBRJA=new JSONArray();
+					JSONArray electtonBatchRecordDevJA=new JSONArray();
+					JSONArray electtonBatchRecordProJA=new JSONArray();
+					for (int j = 0; j < brList.size(); j++) {
+						BatchRecord sendToMesBR = brList.get(j);
+						String sendToMesBRWorkOrderID = sendToMesBR.getWorkOrderID();
+						if(workOrderID.equals(sendToMesBRWorkOrderID)) {
+							String recordType = sendToMesBR.getRecordType();
+							if("8".equals(recordType)||"9".equals(recordType)) {
+								JSONObject electtonBatchRecordJO=new JSONObject();
+								electtonBatchRecordJO.put("recordContent", sendToMesBR.getRecordContent());
+								electtonBatchRecordJO.put("isOver", "是");
+								electtonBatchRecordJO.put("isDeviation", "否");
+								electtonBatchRecordJO.put("recordValue", sdf.format(new Date()));
+								electtonBatchRecordJO.put("valueDecribe", sendToMesBR.getRecordEvent());//RecordEvent
+								
+								electtonBatchRecordBRJA.put(electtonBatchRecordJO);
+							}
+							else if("3".equals(recordType)) {
+								JSONObject electtonBatchRecordJO=new JSONObject();
+								electtonBatchRecordJO.put("recordContent", sendToMesBR.getRecordContent());
+								electtonBatchRecordJO.put("isOver", "是");
+								electtonBatchRecordJO.put("isDeviation", "是");
+								electtonBatchRecordJO.put("recordValue", sdf.format(new Date()));
+								electtonBatchRecordJO.put("valueDecribe", sendToMesBR.getRecordEvent());
+								electtonBatchRecordJO.put("deviationTop", sendToMesBR.getHLimit());
+								electtonBatchRecordJO.put("deviationBottom", sendToMesBR.getLLimit());
+								electtonBatchRecordJO.put("deviationName", sendToMesBR.getDeviationType());
+								electtonBatchRecordJO.put("actualNum", sendToMesBR.getRecordEvent());
+								electtonBatchRecordJO.put("occurTime", sendToMesBR.getRecordStartTime());
+								electtonBatchRecordJO.put("workOrder", sendToMesBRWorkOrderID);
+								
+								electtonBatchRecordDevJA.put(electtonBatchRecordJO);
+							}
+							if("1".equals(recordType)) {
+								JSONObject electtonBatchRecordJO=new JSONObject();
+								electtonBatchRecordJO.put("recordContent", sendToMesBR.getRecordContent());
+								electtonBatchRecordJO.put("isOver", "是");
+								electtonBatchRecordJO.put("isDeviation", "否");
+								electtonBatchRecordJO.put("recordValue", sdf.format(new Date()));
+								electtonBatchRecordJO.put("valueDecribe", sendToMesBR.getRecordEvent());
+								
+								electtonBatchRecordProJA.put(electtonBatchRecordJO);
+							}
+						}
+					}
+					
+					bodyParamBRJO.put("electtonBatchRecord", electtonBatchRecordBRJA);
+					APIUtil.doHttpMes("electronicBatchRecord",bodyParamBRJO);
+					
+					bodyParamDevJO.put("electtonBatchRecord", electtonBatchRecordDevJA);
+					APIUtil.doHttpMes("electronicBatchRecord",bodyParamDevJO);
+					
+					bodyParamDevJO.put("electtonBatchRecord", electtonBatchRecordProJA);
+					APIUtil.doHttpMes("electronicBatchRecord",bodyParamProJO);
+				}
+				//System.out.println("brListSize==="+brList.size());
+				
+				
+			}
+
+			/*
 			JSONObject bodyParamJO=new JSONObject();
 			bodyParamJO.put("id", "1634004927641407490");
-			bodyParamJO.put("workOrder", "WO48qn5e9go9");
+			bodyParamJO.put("workOrder", workOrderID);
 			bodyParamJO.put("procuctCode", "3010003");
 			bodyParamJO.put("procuctName", "防菌抗敏牙膏膏体");
 			bodyParamJO.put("lotNo", "LOTdjrev3");
@@ -1815,6 +1962,7 @@ public class BatchController {
 			jsonMap.put("msg", "正常");
 			net.sf.json.JSONArray brListJA = net.sf.json.JSONArray.fromObject(brList);
 			jsonMap.put("data", brListJA.toString());
+			*/
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

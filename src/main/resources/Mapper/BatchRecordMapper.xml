@@ -125,10 +125,14 @@
 		#{id}
 		</foreach>
 	</delete>
-	<select id="getListByWorkOrderID" resultType="com.batchMesComDK.entity.BatchRecord">
-		select * from BatchRecord where WorkOrderID=#{workOrderID}
+	<select id="getListByWorkOrderIDList" resultType="com.batchMesComDK.entity.BatchRecord">
+		select * from BatchRecord where 1=1
+		<foreach collection="workOrderIDList" item="workOrderID" open=" and cast(workOrderID as char) in (" separator="," close=")">
+		#{workOrderID}
+		</foreach>
 		<foreach collection="recordTypeList" item="recordType" open=" and cast(RecordType as char) in (" separator="," close=")">
 		#{recordType}
 		</foreach>
+		order by RecordType
 	</select>
 </mapper>
