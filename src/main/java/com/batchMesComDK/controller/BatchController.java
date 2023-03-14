@@ -1718,19 +1718,47 @@ public class BatchController {
 	public Map<String, Object> getSendToMesBRData(@RequestBody String bodyEnc) {
 
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
-		System.out.println("bodyEnc==="+bodyEnc);
-		String bodyDec = bodyEnc;
-		net.sf.json.JSONObject cosJO = net.sf.json.JSONObject.fromObject(bodyDec);
-		String workOrderID = cosJO.getString("workOrderID");
-		List<BatchRecord> brList=batchRecordService.getSendToMesData(workOrderID);
-		
-		jsonMap.put("success", "true");
-		jsonMap.put("state", "001");
-		jsonMap.put("msg", "正常");
-		net.sf.json.JSONArray brListJA = net.sf.json.JSONArray.fromObject(brList);
-		jsonMap.put("data", brListJA.toString());
-		
-		return jsonMap;
+		try {
+			System.out.println("bodyEnc==="+bodyEnc);
+			String bodyDec = bodyEnc;
+			net.sf.json.JSONObject cosJO = net.sf.json.JSONObject.fromObject(bodyDec);
+			String workOrderID = cosJO.getString("workOrderID");
+			List<BatchRecord> brList=batchRecordService.getSendToMesData(workOrderID);
+
+			JSONObject bodyParamJO=new JSONObject();
+			bodyParamJO.put("id", "1634004927641407490");
+			bodyParamJO.put("workOrder", "WO48qn5e9go9");
+			bodyParamJO.put("procuctCode", "3010003");
+			bodyParamJO.put("procuctName", "防菌抗敏牙膏膏体");
+			bodyParamJO.put("lotNo", "LOTdjrev3");
+			bodyParamJO.put("formulaId", "1628998712578641921");
+			bodyParamJO.put("formulaName", "防菌抗敏牙膏膏体");
+			bodyParamJO.put("workcenterId", "MX31");
+			
+			JSONArray electtonBatchRecordJA=new JSONArray();
+			JSONObject electtonBatchRecordJO=new JSONObject();
+			electtonBatchRecordJO.put("recordContent", "程序启动");
+			electtonBatchRecordJO.put("isOver", "是");
+			electtonBatchRecordJO.put("isDeviation", "否");
+			electtonBatchRecordJO.put("recordValue", "2022-12-15 12:12:12");
+			electtonBatchRecordJO.put("valueDecribe", "开机");
+			electtonBatchRecordJA.put(electtonBatchRecordJO);
+			bodyParamJO.put("electtonBatchRecord", electtonBatchRecordJA);
+			
+			APIUtil.doHttpMes("electronicBatchRecord",bodyParamJO);
+			
+			jsonMap.put("success", "true");
+			jsonMap.put("state", "001");
+			jsonMap.put("msg", "正常");
+			net.sf.json.JSONArray brListJA = net.sf.json.JSONArray.fromObject(brList);
+			jsonMap.put("data", brListJA.toString());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally {
+			return jsonMap;
+		}
 	}
 	
 	//http://1.1.4.14:19888/mesPlatform/api/remote/batch/changeOrderStatus 工单状态变更
