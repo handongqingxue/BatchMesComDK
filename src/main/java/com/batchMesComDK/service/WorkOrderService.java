@@ -16,6 +16,8 @@ public interface WorkOrderService {
 
 	List<WorkOrder> getKeepWatchList();
 
+	List<WorkOrder> getFinishedList();
+
 	int edit(WorkOrder wo);
 
 	WorkOrder getById(Integer id);

@@ -73,6 +73,7 @@ public class BatchController {
 	private MaterialCheckOverIssusBodyService materialCheckOverIssusBodyService;
 	public static final String MODULE_NAME="batch";
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private List<Map<String, Object>> woPreStateList=new ArrayList<>();
 	
 	//http://localhost:8080/BatchMesComDK/batch/test
 	@RequestMapping(value="/test")
@@ -237,6 +238,7 @@ public class BatchController {
 		try {
 			List<WorkOrder> woList=workOrderService.getKeepWatchList();
 			System.out.println("woListSize==="+woList.size());
+			String workOrderIDs="";
 			String formulaIds="";
 			String startWorkOrderIDs="";
 			String blcResult = batchTestService.getItem(Constant.ITEM_BATCH_LIST_CT);
@@ -274,10 +276,13 @@ public class BatchController {
 					addBatchTest(bt);
 					
 					workOrderService.updateStateById(WorkOrder.BCJWB, wo.getID());
+					
+					addWOPreStateInList(WorkOrder.BCJWB,wo.getWorkOrderID());
 					break;
 				case WorkOrder.BQD:
 					//启动执行配方
 					for (int j = 1; j <= batchCount; j++) {
+						String workOrderIDStr = wo.getWorkOrderID().toString();
 						String formulaIdStr = wo.getFormulaId().toString();
 						String batchIDVal = batchTestService.getBLKey_x("BatchID",j);
 						if(formulaIdStr.equals(batchIDVal)) {
@@ -289,6 +294,8 @@ public class BatchController {
 							String stateVal = batchTestService.getBLKey_x("State",j);
 							if(BatchTest.RUNNING.equals(stateVal)) {
 								workOrderService.updateStateById(WorkOrder.BYX, wo.getID());
+								
+								addWOPreStateInList(WorkOrder.BYX,workOrderIDStr);
 							}
 						}
 					}
@@ -309,6 +316,8 @@ public class BatchController {
 							String stateVal = BLKey_x("State",j);
 							if(BatchTest.STOPPED.equals(stateVal)) {
 								workOrderService.updateStateById(WorkOrder.BYWZZ, wo.getID());
+								
+								addWOPreStateInList(WorkOrder.BYWZZ,wo.getWorkOrderID());
 							}
 						}
 					}
@@ -318,22 +327,29 @@ public class BatchController {
 				if(state==WorkOrder.BYX||state==WorkOrder.BQX||state==WorkOrder.BZT) {
 					//把状态大于5的工单的可执行配方id拼接起来，可执行配方id对应batchID
 					formulaIds+=","+wo.getFormulaId();
+					workOrderIDs+=","+wo.getWorkOrderID();
 				}
 			}
 
 			if(!StringUtils.isEmpty(formulaIds)) {
 				String[] formulaIdArr = formulaIds.substring(1).split(",");
+				String[] workOrderIDArr = workOrderIDs.substring(1).split(",");
 				for (int i = 0; i < formulaIdArr.length; i++) {
 					String formulaId = formulaIdArr[i];
+					String workOrderID = workOrderIDArr[i];
 					for (int j = 1; j <= batchCount; j++) {
 						String batchIDVal = batchTestService.getBLKey_x("BatchID",j);
 						if(formulaId.equals(batchIDVal)) {
 							String stateVal = batchTestService.getBLKey_x("State",j);
 							if(BatchTest.COMPLETE.equals(stateVal)) {
 								workOrderService.updateStateByFormulaId(WorkOrder.BJS, formulaId);
+								
+								addWOPreStateInList(WorkOrder.BJS,workOrderID);
 							}
 							else if(BatchTest.STOPPED.equals(stateVal)) {
 								workOrderService.updateStateByFormulaId(WorkOrder.BYWZZ, formulaId);
+								
+								addWOPreStateInList(WorkOrder.BYWZZ,workOrderID);
 							}
 						}
 					}
@@ -367,6 +383,53 @@ public class BatchController {
 		finally {
 			return jsonMap;
 		}
+	}
+	
+	private void addWOPreStateInList(Integer state, String workOrderID) {
+		System.out.println("addWOPreStateInList...."+workOrderID);
+		boolean exist=checkWOIfExistInPreStateList(workOrderID);
+		System.out.println("exist==="+exist);
+		if(exist) {
+			for (Map<String, Object> woPreStateMap : woPreStateList) {
+				String preWorkOrderID = woPreStateMap.get("workOrderID").toString();
+				if(workOrderID.equals(preWorkOrderID)) {
+					System.out.println("state==="+state);
+					woPreStateMap.put("state", state);
+				}
+			}
+		}
+		else {
+			Map<String,Object> preStateMap=new HashMap<>();
+			preStateMap.put("workOrderID", workOrderID);
+			preStateMap.put("state", state);
+			woPreStateList.add(preStateMap);
+		}
+	}
+	
+	private boolean checkWOIfExistInPreStateList(String workOrderID) {
+		boolean exist=false;
+		for (Map<String, Object> woPreStateMap : woPreStateList) {
+			String preWorkOrderID = woPreStateMap.get("workOrderID").toString();
+			if(workOrderID.equals(preWorkOrderID)) {
+				exist=true;
+				break;
+			}
+		}
+		return exist;
+	}
+	
+	@RequestMapping(value="/keepWatchOnWOFinish", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> keepWatchOnWOFinish(){
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
+		//List<WorkOrder> woList=workOrderService.getFinishedList();
+		System.out.println("woPreStateListSize="+woPreStateList.size());
+		for (Map<String, Object> woPreStateMap : woPreStateList) {
+			String preWorkOrderID = woPreStateMap.get("workOrderID").toString();
+			String preState = woPreStateMap.get("state").toString();
+			System.out.println("preWorkOrderID==="+preWorkOrderID+",preState==="+preState);
+		}
+		return jsonMap;
 	}
 	
 	/**
