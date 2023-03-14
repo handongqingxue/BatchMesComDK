@@ -70,6 +70,8 @@ public class BatchController {
 	@Autowired
 	private SignoffDataService signoffDataService;
 	@Autowired
+	private TestLogService testLogService;
+	@Autowired
 	private MaterialCheckOverIssusBodyService materialCheckOverIssusBodyService;
 	public static final String MODULE_NAME="batch";
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -283,7 +285,7 @@ public class BatchController {
 					qrwbSB.append(wo.getWorkOrderID());
 					qrwbSB.append("\",\"orderExecuteStatus\":\"CREATED\",");
 					qrwbSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
-					changeOrderStatus(qrwbSB.toString());
+					//changeOrderStatus(qrwbSB.toString());
 					
 					addWOPreStateInList(WorkOrder.BCJWB,wo.getWorkOrderID());
 					break;
@@ -309,7 +311,7 @@ public class BatchController {
 								qdSB.append(wo.getWorkOrderID());
 								qdSB.append("\",\"orderExecuteStatus\":\"COMMENCED\",");
 								qdSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
-								changeOrderStatus(qdSB.toString());
+								//changeOrderStatus(qdSB.toString());
 								
 								addWOPreStateInList(WorkOrder.BYX,workOrderIDStr);
 							}
@@ -339,7 +341,7 @@ public class BatchController {
 								qxSB.append(wo.getWorkOrderID());
 								qxSB.append("\",\"orderExecuteStatus\":\"CANCEL\",");
 								qxSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
-								changeOrderStatus(qxSB.toString());
+								//changeOrderStatus(qxSB.toString());
 								
 								addWOPreStateInList(WorkOrder.BYWZZ,wo.getWorkOrderID());
 							}
@@ -374,7 +376,7 @@ public class BatchController {
 								jsSB.append(workOrderID);
 								jsSB.append("\",\"orderExecuteStatus\":\"COMPLETE\",");
 								jsSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
-								changeOrderStatus(jsSB.toString());
+								//changeOrderStatus(jsSB.toString());
 								
 								addWOPreStateInList(WorkOrder.BJS,workOrderID);
 							}
@@ -387,7 +389,7 @@ public class BatchController {
 								jsSB.append(workOrderID);
 								jsSB.append("\",\"orderExecuteStatus\":\"PRODUCTBREAK\",");
 								jsSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
-								changeOrderStatus(jsSB.toString());
+								//changeOrderStatus(jsSB.toString());
 								
 								addWOPreStateInList(WorkOrder.BYWZZ,workOrderID);
 							}
@@ -409,7 +411,6 @@ public class BatchController {
 				StringBuilder commandSB=new StringBuilder();
 				commandSB.append("");
 				//changeOrderStatus();
-				//aaaaaaaaa
 			}
 			
 			jsonMap.put("success", "true");
@@ -1356,6 +1357,8 @@ public class BatchController {
 	@RequestMapping(value="/changeOrderStatus", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> changeOrderStatus(@RequestBody String bodyEnc) {
+		
+		System.out.println("changeOrderStatus........");
 
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		
@@ -1394,6 +1397,18 @@ public class BatchController {
 			
 			JSONObject resultJO = APIUtil.doHttpMes("changeOrderStatus", bodyParamJA);
 			boolean success = resultJO.getBoolean("success");
+			String state = resultJO.getString("state");
+			String msg = resultJO.getString("msg");
+			System.out.println("success=========="+success);
+			System.out.println("state=========="+state);
+			System.out.println("msg=========="+msg);
+			
+			TestLog testLog=new TestLog();
+			testLog.setSuccess(success+"");
+			testLog.setState(state);
+			testLog.setMsg(msg);
+			testLogService.add(testLog);
+			
 			if(success) {
 				jsonMap.put("success", "true");
 				jsonMap.put("state", "001");//001正常 002数据格式有误 003数据不完整
