@@ -36,7 +36,13 @@
 			<if test="State!=null">
 				State,
 			</if>
-				CreateTime
+				CreateTime,
+			<if test="LotNo!=null">
+				LotNo,
+			</if>
+			<if test="WorkcenterId!=null">
+				WorkcenterId,
+			</if>
 		</trim>
 		values
 		<trim prefix="(" suffix=")" suffixOverrides=",">
@@ -70,7 +76,13 @@
 			<if test="State!=null">
 				#{State},
 			</if>
-				GETDATE()
+				GETDATE(),
+			<if test="LotNo!=null">
+				#{LotNo},
+			</if>
+			<if test="WorkcenterId!=null">
+				#{WorkcenterId},
+			</if>
 		</trim>
 	</insert>
 	<update id="updateStateById">
@@ -150,6 +162,12 @@
 	</update>
 	<select id="getCountByByWOIDList" resultType="java.lang.Integer">
 		select count(*) from WorkOrder where 1=1
+		<foreach collection="workOrderIDList" item="workOrderID" open=" and cast(workOrderID as char) in (" separator="," close=")">
+		#{workOrderID}
+		</foreach>
+	</select>
+	<select id="getStateListByWOIDList" resultType="java.lang.Integer">
+		select State from WorkOrder where 1=1
 		<foreach collection="workOrderIDList" item="workOrderID" open=" and cast(workOrderID as char) in (" separator="," close=")">
 		#{workOrderID}
 		</foreach>

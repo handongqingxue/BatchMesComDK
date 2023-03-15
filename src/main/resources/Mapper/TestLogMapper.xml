@@ -6,6 +6,9 @@
 	<insert id="add" parameterType="com.batchMesComDK.entity.TestLog">
 		insert into [BatchComTest].[dbo].[TestLog]
 		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="action!=null">
+				action,
+			</if>
 			<if test="success!=null">
 				success,
 			</if>
@@ -19,6 +22,9 @@
 		</trim>
 		values
 		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="action!=null">
+				#{action},
+			</if>
 			<if test="success!=null">
 				#{success},
 			</if>

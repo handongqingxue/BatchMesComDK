@@ -2,7 +2,13 @@ package com.batchMesComDK.entity;
 
 public class TestLog {
 
-	private String success;
+	private String action;
+	public String getAction() {
+		return action;
+	}
+	public void setAction(String action) {
+		this.action = action;
+	}
 	public String getSuccess() {
 		return success;
 	}
@@ -27,6 +33,7 @@ public class TestLog {
 	public void setTime(String time) {
 		this.time = time;
 	}
+	private String success;
 	private String state;
 	private String msg;
 	private String time; 

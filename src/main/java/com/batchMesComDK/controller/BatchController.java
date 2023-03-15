@@ -1394,16 +1394,21 @@ public class BatchController {
 				bodyParamJA.put(bodyParamJO);
 			}
 			
-			
 			JSONObject resultJO = APIUtil.doHttpMes("changeOrderStatus", bodyParamJA);
 			boolean success = resultJO.getBoolean("success");
 			int state = resultJO.getInt("state");
 			String msg = resultJO.getString("msg");
+			/*
+			boolean success = true;
+			int state = 1;
+			String msg = "操作成功!";
+			*/
 			System.out.println("success=========="+success);
 			System.out.println("state=========="+state);
 			System.out.println("msg=========="+msg);
 			
 			TestLog testLog=new TestLog();
+			testLog.setAction("changeOrderStatus");
 			testLog.setSuccess(success+"");
 			testLog.setState(state+"");
 			testLog.setMsg(msg);
@@ -1529,6 +1534,7 @@ public class BatchController {
 		String qty = wodMesJO.getString("qty");
 		String unit = wodMesJO.getString("unit");
 		String workOrder = wodMesJO.getString("workOrder");
+		String workcenterId = wodMesJO.getString("workcenterId");
 		String materialListStr = wodMesJO.getString("materialList");
 		List<RecipePM> recipePMList=convertMesMaterialListStrToRecipePMList(materialListStr);
 		
@@ -1543,6 +1549,8 @@ public class BatchController {
 		wo.setTotalOutput(qty);
 		wo.setWorkOrderID(workOrder);
 		wo.setRecipePMList(recipePMList);
+		wo.setLotNo(lotNo);
+		wo.setWorkcenterId(workcenterId);
 		
 		return wo;
 	}
@@ -1613,8 +1621,9 @@ public class BatchController {
 			net.sf.json.JSONArray wocMesJA = net.sf.json.JSONArray.fromObject(bodyEnc);
 			//WorkOrder wo=(WorkOrder)net.sf.json.JSONObject.toBean(woJO, WorkOrder.class);
 			int wocMesJASize = wocMesJA.size();
+			boolean bodyEncStatusBool=true;
 			boolean workOrderBool=true;
-			boolean statusBool=true;
+			boolean workOrderStatusBool=true;
 			String workOrders = "";
 			for(int i=0;i<wocMesJASize;i++) {
 				net.sf.json.JSONObject wocMesJO=(net.sf.json.JSONObject)wocMesJA.get(i);
@@ -1626,7 +1635,8 @@ public class BatchController {
 					workOrders+=","+workOrder;
 				}
 				else {
-					statusBool=false;
+					bodyEncStatusBool=false;
+					break;
 				}
 				
 				/*
@@ -1667,7 +1677,7 @@ public class BatchController {
 				*/
 			}
 			
-			if(statusBool) {
+			if(bodyEncStatusBool) {
 				workOrders=workOrders.substring(1);
 				String[] workOrderArr = workOrders.split(",");
 				Integer workOrderCount=workOrderService.getCountByByWOIDs(workOrders);
@@ -1676,16 +1686,31 @@ public class BatchController {
 				}
 				
 				if(workOrderBool) {
-					int updateCount=workOrderService.updateStateByWOIDs(WorkOrder.BQX, workOrders);
-					if(updateCount>0) {
-						jsonMap.put("success", "true");
-						jsonMap.put("state", "001");
-						jsonMap.put("msg", "正常");
+					List<Integer> stateList=workOrderService.getStateListByWOIDs(workOrders);
+					for (Integer state : stateList) {
+						if(state>WorkOrder.BCJWB) {
+							workOrderStatusBool=false;
+							break;
+						}
+					}
+					
+					if(workOrderStatusBool) {
+						int updateCount=workOrderService.updateStateByWOIDs(WorkOrder.BQX, workOrders);
+						if(updateCount>0) {
+							jsonMap.put("success", "true");
+							jsonMap.put("state", "001");
+							jsonMap.put("msg", "正常");
+						}
+						else {
+							jsonMap.put("success", "false");
+							jsonMap.put("state", "002");
+							jsonMap.put("msg", "工单号不存在");
+						}
 					}
 					else {
 						jsonMap.put("success", "false");
 						jsonMap.put("state", "002");
-						jsonMap.put("msg", "工单号不存在");
+						jsonMap.put("msg", "执行中的工单不允许取消");
 					}
 				}
 				else {
@@ -1836,8 +1861,8 @@ public class BatchController {
 		//哦，1 3 8 9 89合成一次发，89 3 1 2这样顺序发。哎，之前写好的逻辑不是按这顺序的，看来我还得改改才行。刚才看群里那帮人的信息感觉焦头烂额的，马上改改逻辑
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		try {
-			List<WorkOrder> sendToMesWOList=new ArrayList<>();
 			List<String> sendToMesWOIDList=new ArrayList<>();
+			List<WorkOrder> sendToMesWOList=new ArrayList<>();
 			List<WorkOrder> woList=workOrderService.getFinishedList();
 			for (int i = 0; i < woList.size(); i++) {
 				WorkOrder wo = woList.get(i);
@@ -1856,9 +1881,10 @@ public class BatchController {
 			
 
 			/*
-			List<WorkOrder> sendToMesWOList=workOrderService.getFinishedList();
-			for (WorkOrder workOrder : woList) {
-				
+			sendToMesWOList=workOrderService.getFinishedList();
+			for (WorkOrder sendToMesWO : sendToMesWOList) {
+				String sendToMesWOID = sendToMesWO.getWorkOrderID();
+				sendToMesWOIDList.add(sendToMesWOID);
 			}
 			*/
 			
@@ -1875,16 +1901,18 @@ public class BatchController {
 					String productCode = sendToMesWO.getProductCode();
 					String productName = sendToMesWO.getProductName();
 					String recipeID = sendToMesWO.getRecipeID();
+					String lotNo = sendToMesWO.getLotNo();
+					String workcenterId = sendToMesWO.getWorkcenterId();
 					
 					JSONObject bodyParamBRJO=new JSONObject();
 					bodyParamBRJO.put("id", id);
 					bodyParamBRJO.put("workOrder", workOrderID);
 					bodyParamBRJO.put("procuctCode", productCode);
 					bodyParamBRJO.put("procuctName", productName);
-					bodyParamBRJO.put("lotNo", "");
+					bodyParamBRJO.put("lotNo", lotNo);
 					bodyParamBRJO.put("formulaId", recipeID);
 					bodyParamBRJO.put("formulaName", productName);
-					bodyParamBRJO.put("workcenterId", "");
+					bodyParamBRJO.put("workcenterId", workcenterId);
 					bodyParamBRJO.put("recordType", "batchRecord");
 					
 					JSONObject bodyParamDevJO=new JSONObject();
@@ -1892,10 +1920,10 @@ public class BatchController {
 					bodyParamDevJO.put("workOrder", workOrderID);
 					bodyParamDevJO.put("procuctCode", productCode);
 					bodyParamDevJO.put("procuctName", productName);
-					bodyParamDevJO.put("lotNo", "");
+					bodyParamDevJO.put("lotNo", lotNo);
 					bodyParamDevJO.put("formulaId", recipeID);
 					bodyParamDevJO.put("formulaName", productName);
-					bodyParamDevJO.put("workcenterId", "");
+					bodyParamDevJO.put("workcenterId", workcenterId);
 					bodyParamDevJO.put("recordType", "deviationRecord");
 					
 					JSONObject bodyParamProJO=new JSONObject();
@@ -1903,15 +1931,15 @@ public class BatchController {
 					bodyParamProJO.put("workOrder", workOrderID);
 					bodyParamProJO.put("procuctCode", productCode);
 					bodyParamProJO.put("procuctName", productName);
-					bodyParamProJO.put("lotNo", "");
+					bodyParamProJO.put("lotNo", lotNo);
 					bodyParamProJO.put("formulaId", recipeID);
 					bodyParamProJO.put("formulaName", productName);
-					bodyParamProJO.put("workcenterId", "");
-					bodyParamProJO.put("recordType", "processRecord");
+					bodyParamProJO.put("workcenterId", workcenterId);
+					bodyParamProJO.put("recordType", "materialRecord");
 
 					JSONArray electtonBatchRecordBRJA=new JSONArray();
 					JSONArray electtonBatchRecordDevJA=new JSONArray();
-					JSONArray electtonBatchRecordProJA=new JSONArray();
+					JSONArray electtonBatchRecordMaterJA=new JSONArray();
 					for (int j = 0; j < brList.size(); j++) {
 						BatchRecord sendToMesBR = brList.get(j);
 						String sendToMesBRWorkOrderID = sendToMesBR.getWorkOrderID();
@@ -1943,7 +1971,7 @@ public class BatchController {
 								
 								electtonBatchRecordDevJA.put(electtonBatchRecordJO);
 							}
-							if("1".equals(recordType)) {
+							if("2".equals(recordType)) {
 								JSONObject electtonBatchRecordJO=new JSONObject();
 								electtonBatchRecordJO.put("recordContent", sendToMesBR.getRecordContent());
 								electtonBatchRecordJO.put("isOver", "是");
@@ -1951,20 +1979,22 @@ public class BatchController {
 								electtonBatchRecordJO.put("recordValue", sdf.format(new Date()));
 								electtonBatchRecordJO.put("valueDecribe", sendToMesBR.getRecordEvent());
 								
-								electtonBatchRecordProJA.put(electtonBatchRecordJO);
+								electtonBatchRecordMaterJA.put(electtonBatchRecordJO);
 							}
 						}
 					}
 					
 					bodyParamBRJO.put("electtonBatchRecord", electtonBatchRecordBRJA);
-					System.out.println("");
+					//System.out.println("bodyParamBRJOStr==="+bodyParamBRJO.toString());
 					//APIUtil.doHttpMes("electronicBatchRecord",bodyParamBRJO);
 					
 					bodyParamDevJO.put("electtonBatchRecord", electtonBatchRecordDevJA);
+					//System.out.println("bodyParamDevJOStr==="+bodyParamDevJO.toString());
 					//APIUtil.doHttpMes("electronicBatchRecord",bodyParamDevJO);
 					
-					bodyParamDevJO.put("electtonBatchRecord", electtonBatchRecordProJA);
-					//APIUtil.doHttpMes("electronicBatchRecord",bodyParamProJO);
+					bodyParamProJO.put("electtonBatchRecord", electtonBatchRecordMaterJA);
+					//System.out.println("bodyParamMaterJOStr==="+bodyParamMaterJO.toString());
+					//APIUtil.doHttpMes("electronicBatchRecord",bodyParamMaterJO);
 				}
 				//System.out.println("brListSize==="+brList.size());
 				

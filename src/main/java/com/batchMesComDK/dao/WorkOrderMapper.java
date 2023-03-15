@@ -33,4 +33,6 @@ public interface WorkOrderMapper {
 	int updateStateByWOIDList(@Param("state") Integer state, @Param("workOrderIDList") List<String> workOrderIDList);
 
 	Integer getCountByByWOIDList(@Param("workOrderIDList") List<String> workOrderIDList);
+
+	List<Integer> getStateListByWOIDList(@Param("workOrderIDList") List<String> workOrderIDList);
 }

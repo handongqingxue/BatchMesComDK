@@ -132,4 +132,12 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		List<String> workOrderIDList = Arrays.asList(workOrderArr);
 		return workOrderDao.getCountByByWOIDList(workOrderIDList);
 	}
+
+	@Override
+	public List<Integer> getStateListByWOIDs(String workOrders) {
+		// TODO Auto-generated method stub
+		String[] workOrderArr = workOrders.split(",");
+		List<String> workOrderIDList = Arrays.asList(workOrderArr);
+		return workOrderDao.getStateListByWOIDList(workOrderIDList);
+	}
 }

@@ -157,6 +157,18 @@ public class WorkOrder {
 	public void setZGID(String zGID) {
 		ZGID = zGID;
 	}
+	public String getLotNo() {
+		return LotNo;
+	}
+	public void setLotNo(String lotNo) {
+		LotNo = lotNo;
+	}
+	public String getWorkcenterId() {
+		return WorkcenterId;
+	}
+	public void setWorkcenterId(String workcenterId) {
+		WorkcenterId = workcenterId;
+	}
 	private String WorkOrderID;
 	private String ProductCode;
 	private String ProductName;
@@ -169,6 +181,8 @@ public class WorkOrder {
 	private String CreateTime;
 	private String UnitID;
 	private String ZGID;
+	private String LotNo;
+	private String WorkcenterId;
 	private List<RecipePM> recipePMList;
 	public List<RecipePM> getRecipePMList() {
 		return recipePMList;

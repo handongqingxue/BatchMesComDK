@@ -63,6 +63,9 @@ public class ManFeedServiceImpl implements ManFeedService {
 		for (ManFeed mf : mfList) {
 			mf.setFeedPort("001");
 			mf.setMarkBit("0");
+			mf.setMaterialSV("100");
+			mf.setDev1("0.3");
+			mf.setDev2("0.5");
 			count+=manFeedDao.add(mf);
 		}
 		return count;

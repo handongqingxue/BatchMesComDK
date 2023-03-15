@@ -33,4 +33,6 @@ public interface WorkOrderService {
 	int updateStateByWOIDs(Integer state, String workOrders);
 
 	Integer getCountByByWOIDs(String workOrders);
+
+	List<Integer> getStateListByWOIDs(String workOrders);
 }
