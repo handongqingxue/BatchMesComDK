@@ -285,7 +285,7 @@ public class BatchController {
 					qrwbSB.append(wo.getWorkOrderID());
 					qrwbSB.append("\",\"orderExecuteStatus\":\"CREATED\",");
 					qrwbSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
-					//changeOrderStatus(qrwbSB.toString());
+					changeOrderStatus(qrwbSB.toString());
 					
 					addWOPreStateInList(WorkOrder.BCJWB,wo.getWorkOrderID());
 					break;
@@ -311,7 +311,7 @@ public class BatchController {
 								qdSB.append(wo.getWorkOrderID());
 								qdSB.append("\",\"orderExecuteStatus\":\"COMMENCED\",");
 								qdSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
-								//changeOrderStatus(qdSB.toString());
+								changeOrderStatus(qdSB.toString());
 								
 								addWOPreStateInList(WorkOrder.BYX,workOrderIDStr);
 							}
@@ -341,7 +341,7 @@ public class BatchController {
 								qxSB.append(wo.getWorkOrderID());
 								qxSB.append("\",\"orderExecuteStatus\":\"CANCEL\",");
 								qxSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
-								//changeOrderStatus(qxSB.toString());
+								changeOrderStatus(qxSB.toString());
 								
 								addWOPreStateInList(WorkOrder.BYWZZ,wo.getWorkOrderID());
 							}
@@ -376,7 +376,7 @@ public class BatchController {
 								jsSB.append(workOrderID);
 								jsSB.append("\",\"orderExecuteStatus\":\"COMPLETE\",");
 								jsSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
-								//changeOrderStatus(jsSB.toString());
+								changeOrderStatus(jsSB.toString());
 								
 								addWOPreStateInList(WorkOrder.BJS,workOrderID);
 							}
@@ -389,7 +389,7 @@ public class BatchController {
 								jsSB.append(workOrderID);
 								jsSB.append("\",\"orderExecuteStatus\":\"PRODUCTBREAK\",");
 								jsSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
-								//changeOrderStatus(jsSB.toString());
+								changeOrderStatus(jsSB.toString());
 								
 								addWOPreStateInList(WorkOrder.BYWZZ,workOrderID);
 							}
@@ -1397,7 +1397,7 @@ public class BatchController {
 			
 			JSONObject resultJO = APIUtil.doHttpMes("changeOrderStatus", bodyParamJA);
 			boolean success = resultJO.getBoolean("success");
-			String state = resultJO.getString("state");
+			int state = resultJO.getInt("state");
 			String msg = resultJO.getString("msg");
 			System.out.println("success=========="+success);
 			System.out.println("state=========="+state);
@@ -1405,7 +1405,7 @@ public class BatchController {
 			
 			TestLog testLog=new TestLog();
 			testLog.setSuccess(success+"");
-			testLog.setState(state);
+			testLog.setState(state+"");
 			testLog.setMsg(msg);
 			testLogService.add(testLog);
 			
@@ -1669,13 +1669,24 @@ public class BatchController {
 			
 			if(statusBool) {
 				workOrders=workOrders.substring(1);
-				//Integer workOrderCount=workOrderService.getCountByByWOIDs(workOrders);
+				String[] workOrderArr = workOrders.split(",");
+				Integer workOrderCount=workOrderService.getCountByByWOIDs(workOrders);
+				if(workOrderArr.length!=workOrderCount) {
+					workOrderBool=false;
+				}
 				
-				int updateCount=workOrderService.updateStateByWOIDs(WorkOrder.BQX, workOrders);
-				if(updateCount>0) {
-					jsonMap.put("success", "true");
-					jsonMap.put("state", "001");
-					jsonMap.put("msg", "正常");
+				if(workOrderBool) {
+					int updateCount=workOrderService.updateStateByWOIDs(WorkOrder.BQX, workOrders);
+					if(updateCount>0) {
+						jsonMap.put("success", "true");
+						jsonMap.put("state", "001");
+						jsonMap.put("msg", "正常");
+					}
+					else {
+						jsonMap.put("success", "false");
+						jsonMap.put("state", "002");
+						jsonMap.put("msg", "工单号不存在");
+					}
 				}
 				else {
 					jsonMap.put("success", "false");
@@ -1843,6 +1854,16 @@ public class BatchController {
 				}
 			}
 			
+
+			/*
+			List<WorkOrder> sendToMesWOList=workOrderService.getFinishedList();
+			for (WorkOrder workOrder : woList) {
+				
+			}
+			*/
+			
+			
+			
 			List<BatchRecord> brList=batchRecordService.getSendToMesData(sendToMesWOIDList);
 			System.out.println("sendToMesWOIDListSize==="+sendToMesWOIDList.size());
 			
@@ -1936,13 +1957,14 @@ public class BatchController {
 					}
 					
 					bodyParamBRJO.put("electtonBatchRecord", electtonBatchRecordBRJA);
-					APIUtil.doHttpMes("electronicBatchRecord",bodyParamBRJO);
+					System.out.println("");
+					//APIUtil.doHttpMes("electronicBatchRecord",bodyParamBRJO);
 					
 					bodyParamDevJO.put("electtonBatchRecord", electtonBatchRecordDevJA);
-					APIUtil.doHttpMes("electronicBatchRecord",bodyParamDevJO);
+					//APIUtil.doHttpMes("electronicBatchRecord",bodyParamDevJO);
 					
 					bodyParamDevJO.put("electtonBatchRecord", electtonBatchRecordProJA);
-					APIUtil.doHttpMes("electronicBatchRecord",bodyParamProJO);
+					//APIUtil.doHttpMes("electronicBatchRecord",bodyParamProJO);
 				}
 				//System.out.println("brListSize==="+brList.size());
 				

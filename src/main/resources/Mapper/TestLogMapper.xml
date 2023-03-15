@@ -15,9 +15,7 @@
 			<if test="msg!=null">
 				msg,
 			</if>
-			<if test="time!=null">
-				time,
-			</if>
+				time
 		</trim>
 		values
 		<trim prefix="(" suffix=")" suffixOverrides=",">
@@ -30,9 +28,7 @@
 			<if test="msg!=null">
 				#{msg},
 			</if>
-			<if test="time!=null">
-				#{time},
-			</if>
+				GETDATE()
 		</trim>
 	</insert>
 </mapper>

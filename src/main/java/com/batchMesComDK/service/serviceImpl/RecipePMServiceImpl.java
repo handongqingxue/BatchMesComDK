@@ -126,6 +126,8 @@ public class RecipePMServiceImpl implements RecipePMService {
 					cName="DCHP进料量";
 				else if("ML".equals(pMName))
 					cName="香精";
+				else
+					cName=pMName;
 				rPM.setCName(cName);
 				System.out.println("11111111111111");
 				
