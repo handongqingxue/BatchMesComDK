@@ -77,6 +77,15 @@ public class WorkOrder {
 	 * BATCH结束名称
 	 */
 	public static final String BJS_TEXT="BATCH结束";//0
+	
+	/**
+	 * 生产中
+	 */
+	public static final String PRODUCTION="PRODUCTION";
+	/**
+	 * 完工
+	 */
+	public static final String COMPLETE="COMPLETE";
 
 	private Integer ID;
 	public Integer getID() {

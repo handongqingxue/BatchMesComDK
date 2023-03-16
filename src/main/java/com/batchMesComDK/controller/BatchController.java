@@ -279,6 +279,7 @@ public class BatchController {
 					
 					workOrderService.updateStateById(WorkOrder.BCJWB, wo.getID());
 					
+					/*
 					StringBuilder qrwbSB=new StringBuilder();
 					qrwbSB.append("[{");
 					qrwbSB.append("\"workOrder\":\"");
@@ -286,6 +287,7 @@ public class BatchController {
 					qrwbSB.append("\",\"orderExecuteStatus\":\"CREATED\",");
 					qrwbSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
 					changeOrderStatus(qrwbSB.toString());
+					 */
 					
 					addWOPreStateInList(WorkOrder.BCJWB,wo.getWorkOrderID());
 					break;
@@ -309,7 +311,7 @@ public class BatchController {
 								qdSB.append("[{");
 								qdSB.append("\"workOrder\":\"");
 								qdSB.append(wo.getWorkOrderID());
-								qdSB.append("\",\"orderExecuteStatus\":\"COMMENCED\",");
+								qdSB.append("\",\"orderExecuteStatus\":\""+WorkOrder.PRODUCTION+"\",");
 								qdSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
 								changeOrderStatus(qdSB.toString());
 								
@@ -335,6 +337,7 @@ public class BatchController {
 							if(BatchTest.STOPPED.equals(stateVal)) {
 								workOrderService.updateStateById(WorkOrder.BYWZZ, wo.getID());
 								
+								/*
 								StringBuilder qxSB=new StringBuilder();
 								qxSB.append("[{");
 								qxSB.append("\"workOrder\":\"");
@@ -342,6 +345,7 @@ public class BatchController {
 								qxSB.append("\",\"orderExecuteStatus\":\"CANCEL\",");
 								qxSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
 								changeOrderStatus(qxSB.toString());
+								*/
 								
 								addWOPreStateInList(WorkOrder.BYWZZ,wo.getWorkOrderID());
 							}
@@ -374,7 +378,7 @@ public class BatchController {
 								jsSB.append("[{");
 								jsSB.append("\"workOrder\":\"");
 								jsSB.append(workOrderID);
-								jsSB.append("\",\"orderExecuteStatus\":\"COMPLETE\",");
+								jsSB.append("\",\"orderExecuteStatus\":\""+WorkOrder.COMPLETE+"\",");
 								jsSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
 								changeOrderStatus(jsSB.toString());
 								
