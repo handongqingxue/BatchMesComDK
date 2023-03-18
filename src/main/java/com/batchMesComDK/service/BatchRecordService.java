@@ -11,4 +11,6 @@ public interface BatchRecordService {
 	int deleteByIds(String ids);
 
 	List<BatchRecord> getSendToMesData(List<String> workOrderList);
+
+	int addMaterialFromBHBatchHis(List<String> workOrderIDList);
 }

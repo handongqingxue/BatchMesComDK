@@ -219,6 +219,18 @@ public class BHBatchHis {
 	public void setRecordID(String recordID) {
 		RecordID = recordID;
 	}
+	public String getWorkOrderID() {
+		return WorkOrderID;
+	}
+	public void setWorkOrderID(String workOrderID) {
+		WorkOrderID = workOrderID;
+	}
+	public String getCName() {
+		return CName;
+	}
+	public void setCName(String cName) {
+		CName = cName;
+	}
 	private String lclTime;
 	private String UniqueID;
 	private String BatchID;
@@ -254,5 +266,7 @@ public class BHBatchHis {
 	private String ContextsID;
 	private String Contexts;
 	private String RecordID;
+	private String WorkOrderID;
+	private String CName;
 	
 }

@@ -1,5 +1,6 @@
 package com.batchMesComDK.service.serviceImpl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,6 +18,8 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 	BatchRecordMapper batchRecordDao;
 	@Autowired
 	RecipePMMapper recipePMDao;
+	@Autowired
+	BHBatchHisMapper bHBatchHisDao;
 
 	@Override
 	public int addFromRecordPM(String workOrderID) {
@@ -74,5 +77,37 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 		String[] recordTypeArr = recordTypes.split(",");
 		List<String> recordTypeList = Arrays.asList(recordTypeArr);
 		return batchRecordDao.getListByWorkOrderIDList(workOrderIDList,recordTypeList);
+	}
+
+	@Override
+	public int addMaterialFromBHBatchHis(List<String> workOrderIDList) {
+		// TODO Auto-generated method stub
+		int count=0;
+		List<BHBatchHis> materialList = bHBatchHisDao.getMaterialListByWOIDList(workOrderIDList);
+		BatchRecord batchRecord=null;
+		for (BHBatchHis bhBatchHis : materialList) {
+			batchRecord=new BatchRecord();
+			String workOrderID = bhBatchHis.getWorkOrderID();
+			String materialID = bhBatchHis.getMaterialID();
+			String materialName = bhBatchHis.getMaterialName();
+			String lotName = bhBatchHis.getLotName();
+			String pValue = bhBatchHis.getPValue();
+			String eu = bhBatchHis.getEU();
+			String cName = bhBatchHis.getCName();
+			
+			batchRecord.setWorkOrderID(workOrderID);
+			batchRecord.setPMCode(materialID);
+			batchRecord.setPMName(materialName);
+			batchRecord.setLotNo(lotName);
+			batchRecord.setRecordEvent("原料进料记录");
+			batchRecord.setRecordContent(pValue);
+			batchRecord.setUnit(eu);
+			batchRecord.setRecordType("2");
+			batchRecord.setPMCName(cName);
+			
+			count+=batchRecordDao.add(batchRecord);
+		}
+		
+		return count;
 	}
 }

@@ -1867,6 +1867,7 @@ public class BatchController {
 		try {
 			List<String> sendToMesWOIDList=new ArrayList<>();
 			List<WorkOrder> sendToMesWOList=new ArrayList<>();
+			/*
 			List<WorkOrder> woList=workOrderService.getFinishedList();
 			for (int i = 0; i < woList.size(); i++) {
 				WorkOrder wo = woList.get(i);
@@ -1882,15 +1883,18 @@ public class BatchController {
 					}
 				}
 			}
+			*/
 			
 
-			/*
 			sendToMesWOList=workOrderService.getFinishedList();
 			for (WorkOrder sendToMesWO : sendToMesWOList) {
 				String sendToMesWOID = sendToMesWO.getWorkOrderID();
 				sendToMesWOIDList.add(sendToMesWOID);
 			}
-			*/
+			
+			
+			int count=batchRecordService.addMaterialFromBHBatchHis(sendToMesWOIDList);
+			System.out.println("count===="+count);
 			
 			
 			
