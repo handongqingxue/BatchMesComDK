@@ -231,6 +231,24 @@ public class BHBatchHis {
 	public void setCName(String cName) {
 		CName = cName;
 	}
+	public String getPhaseDisc() {
+		return PhaseDisc;
+	}
+	public void setPhaseDisc(String phaseDisc) {
+		PhaseDisc = phaseDisc;
+	}
+	public String getPMName() {
+		return PMName;
+	}
+	public void setPMName(String pMName) {
+		PMName = pMName;
+	}
+	public String getPMDisc() {
+		return PMDisc;
+	}
+	public void setPMDisc(String pMDisc) {
+		PMDisc = pMDisc;
+	}
 	private String lclTime;
 	private String UniqueID;
 	private String BatchID;
@@ -268,5 +286,7 @@ public class BHBatchHis {
 	private String RecordID;
 	private String WorkOrderID;
 	private String CName;
-	
+	private String PhaseDisc;
+	private String PMName;
+	private String PMDisc;
 }

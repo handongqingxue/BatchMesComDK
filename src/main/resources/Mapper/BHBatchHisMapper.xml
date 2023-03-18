@@ -11,4 +11,13 @@
 		</foreach>
 		 and his.Descript='ADDED_AMOUNT' and his.Event='report'
 	</select>
+	<select id="getPhaseListByWOIDList" resultType="com.batchMesComDK.entity.BHBatchHis">
+		select brTr.PhaseDisc,brTr.PMName,brTr.PMDisc,t.* from (
+		select wo.WorkOrderID,wo.FormulaId,his.* from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo where his.BatchID=wo.FormulaId
+		<foreach collection="workOrderIDList" item="workOrderID" open=" and cast(wo.WorkOrderID as char) in (" separator="," close=")">
+		#{workOrderID}
+		</foreach>
+		 and Phase!='') t
+		 left join BatchRecordTr brTr on t.Phase=brTr.PhaseName
+	</select>
 </mapper>

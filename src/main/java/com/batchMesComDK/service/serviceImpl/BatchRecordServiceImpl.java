@@ -82,9 +82,9 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 	@Override
 	public int addMaterialFromBHBatchHis(List<String> workOrderIDList) {
 		// TODO Auto-generated method stub
-		int count=0;
-		List<BHBatchHis> materialList = bHBatchHisDao.getMaterialListByWOIDList(workOrderIDList);
+		int count=0;//his 140
 		BatchRecord batchRecord=null;
+		List<BHBatchHis> materialList = bHBatchHisDao.getMaterialListByWOIDList(workOrderIDList);
 		for (BHBatchHis bhBatchHis : materialList) {
 			batchRecord=new BatchRecord();
 			String workOrderID = bhBatchHis.getWorkOrderID();
@@ -108,6 +108,35 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 			count+=batchRecordDao.add(batchRecord);
 		}
 		
+		return count;
+	}
+
+	@Override
+	public int addPhaseFromBHBatchHis(List<String> workOrderIDList) {
+		// TODO Auto-generated method stub
+		int count=0;//his 3420
+		BatchRecord batchRecord=null;
+		List<BHBatchHis> phaseList = bHBatchHisDao.getPhaseListByWOIDList(workOrderIDList);
+		for (BHBatchHis bhBatchHis : phaseList) {
+			batchRecord=new BatchRecord();
+			String workOrderID = bhBatchHis.getWorkOrderID();
+			String materialName = bhBatchHis.getMaterialName();
+			String eu = bhBatchHis.getEU();
+			String pMDisc = bhBatchHis.getPMDisc();
+			String phaseDisc = bhBatchHis.getPhaseDisc();
+			String recordID = bhBatchHis.getRecordID();
+
+			batchRecord.setWorkOrderID(workOrderID);
+			batchRecord.setPMName(materialName);
+			batchRecord.setRecordEvent("PHASE过程记录");
+			batchRecord.setUnit(eu);
+			batchRecord.setRecordType("8");
+			batchRecord.setPMCName(pMDisc);
+			batchRecord.setPhaseDisc(phaseDisc);
+			batchRecord.setPhaseID(recordID);
+			
+			count+=batchRecordDao.add(batchRecord);
+		}
 		return count;
 	}
 }

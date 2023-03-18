@@ -9,4 +9,6 @@ import com.batchMesComDK.entity.*;
 public interface BHBatchHisMapper {
 	
 	List<BHBatchHis> getMaterialListByWOIDList(@Param("workOrderIDList") List<String> workOrderIDList);
+
+	List<BHBatchHis> getPhaseListByWOIDList(@Param("workOrderIDList") List<String> workOrderIDList);
 }
