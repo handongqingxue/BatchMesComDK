@@ -20,6 +20,8 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 	RecipePMMapper recipePMDao;
 	@Autowired
 	BHBatchHisMapper bHBatchHisDao;
+	@Autowired
+	BHBatchMapper bHBatchDao;
 
 	@Override
 	public int addFromRecordPM(String workOrderID) {
@@ -138,5 +140,24 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 			count+=batchRecordDao.add(batchRecord);
 		}
 		return count;
+	}
+
+	@Override
+	public int addBatchFromBHBatch(List<String> workOrderIDList) {
+		// TODO Auto-generated method stub
+		int count=0;//uniqueid 98
+		BatchRecord batchRecord=null;
+		List<BHBatch> batchList = bHBatchDao.getListByWOIDList(workOrderIDList);
+		for (BHBatch batch : batchList) {
+			batchRecord=new BatchRecord();
+			String workOrderID = batch.getWorkOrderID();
+
+			batchRecord.setWorkOrderID(workOrderID);
+			batchRecord.setRecordEvent("批次过程记录");
+			batchRecord.setRecordType("9");
+			
+			count+=batchRecordDao.add(batchRecord);
+		}
+		return 0;
 	}
 }

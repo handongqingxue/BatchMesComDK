@@ -31,6 +31,7 @@ public class BHBatch {
     private String Recipe;
     private String formulationname;
     private String formulationdescription;
+    private String WorkOrderID;
 
 	public String getUniqueid() {
 		return uniqueid;
@@ -260,6 +261,14 @@ public class BHBatch {
 
 	public void setFormulationdescription(String formulationdescription) {
 		this.formulationdescription = formulationdescription;
+	}
+
+	public String getWorkOrderID() {
+		return WorkOrderID;
+	}
+
+	public void setWorkOrderID(String workOrderID) {
+		WorkOrderID = workOrderID;
 	}
 
 }

@@ -6,4 +6,7 @@
 	<select id="getList" resultType="com.batchMesComDK.entity.BHBatch">
 		select * from BHBatch
 	</select>
+	<select id="getListByWOIDList" resultType="com.batchMesComDK.entity.BHBatch">
+		select b.*,wo.WorkOrderID from [BatchHistoryEx].[dbo].[BHBatch] b,WorkOrder wo where b.batchid=wo.FormulaId and b.completionstate='COMPLETE'
+	</select>
 </mapper>

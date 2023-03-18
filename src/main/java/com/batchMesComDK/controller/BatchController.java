@@ -1894,7 +1894,8 @@ public class BatchController {
 			
 			
 			//int count=batchRecordService.addMaterialFromBHBatchHis(sendToMesWOIDList);
-			int count=batchRecordService.addPhaseFromBHBatchHis(sendToMesWOIDList);
+			//int count=batchRecordService.addPhaseFromBHBatchHis(sendToMesWOIDList);
+			int count=batchRecordService.addBatchFromBHBatch(sendToMesWOIDList);
 			System.out.println("count===="+count);
 			
 			

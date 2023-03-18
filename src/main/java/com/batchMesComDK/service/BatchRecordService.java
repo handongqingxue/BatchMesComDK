@@ -15,4 +15,6 @@ public interface BatchRecordService {
 	int addMaterialFromBHBatchHis(List<String> workOrderIDList);
 
 	int addPhaseFromBHBatchHis(List<String> workOrderIDList);
+
+	int addBatchFromBHBatch(List<String> workOrderIDList);
 }
