@@ -25,6 +25,7 @@
 		<property name="filterChainDefinitions">
 			<value>
 				/batch/**=anon
+				/upload/**=anon
 				/resource/**=anon
 				/**=authc
 			</value>

@@ -4,7 +4,7 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.batchMesComDK.dao.BHBatchMapper">
 	<select id="getList" resultType="com.batchMesComDK.entity.BHBatch">
-		select * from BHBatch
+		select * from [BatchHistoryEx].[dbo].[BHBatch]
 	</select>
 	<select id="getListByWOIDList" resultType="com.batchMesComDK.entity.BHBatch">
 		select b.*,wo.WorkOrderID from [BatchHistoryEx].[dbo].[BHBatch] b,WorkOrder wo where b.batchid=wo.FormulaId and b.completionstate='COMPLETE'
