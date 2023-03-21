@@ -57,8 +57,8 @@
 			<if test="PhaseID!=null">
 				PhaseID,
 			</if>
-			<if test="WMark!=null">
-				WMark,
+			<if test="FeedPort!=null">
+				FeedPort,
 			</if>
 		</trim>
 		values
@@ -114,8 +114,8 @@
 			<if test="PhaseID!=null">
 				#{PhaseID},
 			</if>
-			<if test="WMark!=null">
-				#{WMark},
+			<if test="FeedPort!=null">
+				#{FeedPort},
 			</if>
 		</trim>
 	</insert>

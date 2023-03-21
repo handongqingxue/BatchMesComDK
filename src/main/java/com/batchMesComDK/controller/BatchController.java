@@ -1931,7 +1931,6 @@ public class BatchController {
 					}
 				}
 			}
-			*/
 			
 
 			sendToMesWOList=workOrderService.getFinishedList();
@@ -1939,11 +1938,13 @@ public class BatchController {
 				String sendToMesWOID = sendToMesWO.getWorkOrderID();
 				sendToMesWOIDList.add(sendToMesWOID);
 			}
+			*/
+			sendToMesWOIDList.add("WO48qn5e9go9");
 			
 			
-			//int count=batchRecordService.addMaterialFromBHBatchHis(sendToMesWOIDList);
-			//int count=batchRecordService.addPhaseFromBHBatchHis(sendToMesWOIDList);
-			int count=batchRecordService.addBatchFromBHBatch(sendToMesWOIDList);
+			int count=batchRecordService.addMaterialFromBHBatchHis(sendToMesWOIDList);
+			//count=batchRecordService.addPhaseFromBHBatchHis(sendToMesWOIDList);
+			//count=batchRecordService.addBatchFromBHBatch(sendToMesWOIDList);
 			System.out.println("count===="+count);
 			
 			

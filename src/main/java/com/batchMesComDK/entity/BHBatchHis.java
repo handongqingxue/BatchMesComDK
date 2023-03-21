@@ -237,6 +237,12 @@ public class BHBatchHis {
 	public void setPhaseDisc(String phaseDisc) {
 		PhaseDisc = phaseDisc;
 	}
+	public String getPMCode() {
+		return PMCode;
+	}
+	public void setPMCode(String pMCode) {
+		PMCode = pMCode;
+	}
 	public String getPMName() {
 		return PMName;
 	}
@@ -248,6 +254,12 @@ public class BHBatchHis {
 	}
 	public void setPMDisc(String pMDisc) {
 		PMDisc = pMDisc;
+	}
+	public String getFeedPort() {
+		return FeedPort;
+	}
+	public void setFeedPort(String feedPort) {
+		FeedPort = feedPort;
 	}
 	private String lclTime;
 	private String UniqueID;
@@ -287,6 +299,8 @@ public class BHBatchHis {
 	private String WorkOrderID;
 	private String CName;
 	private String PhaseDisc;
+	private String PMCode;
 	private String PMName;
 	private String PMDisc;
+	private String FeedPort;
 }

@@ -90,22 +90,24 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 		for (BHBatchHis bhBatchHis : materialList) {
 			batchRecord=new BatchRecord();
 			String workOrderID = bhBatchHis.getWorkOrderID();
-			String materialID = bhBatchHis.getMaterialID();
-			String materialName = bhBatchHis.getMaterialName();
-			String lotName = bhBatchHis.getLotName();
+			String pMCode = bhBatchHis.getPMCode();
+			String descript = bhBatchHis.getDescript();
+			String batchID = bhBatchHis.getBatchID();
 			String pValue = bhBatchHis.getPValue();
 			String eu = bhBatchHis.getEU();
-			String cName = bhBatchHis.getCName();
+			String pMDisc = bhBatchHis.getPMDisc();
+			String feedPort = bhBatchHis.getFeedPort();
 			
 			batchRecord.setWorkOrderID(workOrderID);
-			batchRecord.setPMCode(materialID);
-			batchRecord.setPMName(materialName);
-			batchRecord.setLotNo(lotName);
+			batchRecord.setPMCode(pMCode);
+			batchRecord.setPMName(descript);//Descript BatchRecordTr
+			batchRecord.setLotNo(batchID);//pro开头的批次号
 			batchRecord.setRecordEvent("原料进料记录");
-			batchRecord.setRecordContent(pValue);
+			batchRecord.setRecordContent(pValue);//phase batch是时间跨度
 			batchRecord.setUnit(eu);
 			batchRecord.setRecordType("2");
-			batchRecord.setPMCName(cName);
+			batchRecord.setPMCName(pMDisc);
+			batchRecord.setFeedPort(feedPort);
 			
 			count+=batchRecordDao.add(batchRecord);
 		}

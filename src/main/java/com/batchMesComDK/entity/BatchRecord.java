@@ -136,11 +136,11 @@ public class BatchRecord {
 	public void setPhaseID(String phaseID) {
 		PhaseID = phaseID;
 	}
-	public String getWMark() {
-		return WMark;
+	public String getFeedPort() {
+		return FeedPort;
 	}
-	public void setWMark(String wMark) {
-		WMark = wMark;
+	public void setFeedPort(String feedPort) {
+		FeedPort = feedPort;
 	}
 	private String WorkOrderID;
 	private String PMCode;
@@ -159,5 +159,5 @@ public class BatchRecord {
 	private String PMCName;
 	private String PhaseDisc;
 	private String PhaseID;
-	private String WMark;
+	private String FeedPort;//投料口
 }

@@ -4,8 +4,8 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.batchMesComDK.dao.BHBatchHisMapper">
 	<select id="getMaterialListByWOIDList" resultType="com.batchMesComDK.entity.BHBatchHis">
-		select his.*,wo.WorkOrderID WorkOrderID,rPM.CName CName from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo,RecipePM rPM
-		 where his.BatchID=wo.FormulaId and his.MaterialID=rPM.PMCode and his.MaterialName=rPM.PMName
+		select brTr.PMDisc,brTr.PhaseName,wo.WorkOrderID,rPM.PMCode,his.* from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo,BatchRecordTr brTr,RecipePM rPM
+		 where his.BatchID=wo.FormulaId and his.Descript=brTr.PMName and his.Phase=brTr.PhaseName and brTr.PMDisc=rPM.CName
 		<foreach collection="workOrderIDList" item="workOrderID" open=" and cast(wo.WorkOrderID as char) in (" separator="," close=")">
 		#{workOrderID}
 		</foreach>
