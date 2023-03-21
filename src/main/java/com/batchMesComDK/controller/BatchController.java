@@ -104,6 +104,7 @@ public class BatchController {
 		try {
 			List<WorkOrder> woList=workOrderService.getKeepWatchList();
 			System.out.println("woListSize==="+woList.size());
+			String workOrderIDs="";
 			String formulaIds="";
 			String batchCountResultStr = getItem("BatchListCt");
 			System.out.println("batchCountResultStr==="+batchCountResultStr);
@@ -121,16 +122,26 @@ public class BatchController {
 					String formulaId = wo.getFormulaId();
 					String workOrderID = wo.getWorkOrderID();				
 					String recipeID = wo.getRecipeID();
+					String productCode = wo.getProductCode();
+					String productName = wo.getProductName();
 					System.out.println("formulaId==="+formulaId);
 					System.out.println("workOrderID==="+workOrderID);
 					System.out.println("recipeID==="+recipeID);
+					System.out.println("productCode==="+productCode);
+					System.out.println("productName==="+productName);
+					
+					addManFeedFromRecipePM(workOrderID,productCode,productName);//工单创建时，从配方参数表里取数据，放入人工投料表
+					
 					createBatch(formulaId,workOrderID,recipeID);
 					
-					addManFeedFromRecipePM(workOrderID,null,null);//工单创建时，从配方参数表里取数据，放入人工投料表
+					workOrderService.updateStateById(WorkOrder.BCJWB, wo.getID());
+					
+					addWOPreStateInList(WorkOrder.BCJWB,wo.getWorkOrderID());
 					break;
 				case WorkOrder.BQD:
 					//启动执行配方
 					for (int j = 1; j <= batchCount; j++) {
+						String workOrderIDStr = wo.getWorkOrderID().toString();
 						String formulaIdStr = wo.getFormulaId().toString();
 						//String batchIDVal = BLKey_x("BatchID",j);
 						String batchIDVal = getItem("BLBatchID_"+j);
@@ -141,6 +152,7 @@ public class BatchController {
 							createIDVal = createIDVal.substring(0, createIDVal.indexOf(Constant.END_SUCCESS));
 							System.out.println("createIDVal==="+createIDVal);
 							
+							//调用batch环境的启动接口
 							StringBuilder commandBQDSB=new StringBuilder();
 							commandBQDSB.append("[COMMAND(Item,");
 							commandBQDSB.append(Constant.USERID);
@@ -156,12 +168,22 @@ public class BatchController {
 							stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
 							if(BatchTest.RUNNING.equals(stateVal)) {
 								workOrderService.updateStateById(WorkOrder.BYX, wo.getID());
+								
+								StringBuilder qdSB=new StringBuilder();
+								qdSB.append("[{");
+								qdSB.append("\"workOrder\":\"");
+								qdSB.append(wo.getWorkOrderID());
+								qdSB.append("\",\"orderExecuteStatus\":\""+WorkOrder.PRODUCTION+"\",");
+								qdSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
+								changeOrderStatus(qdSB.toString());
+								
+								addWOPreStateInList(WorkOrder.BYX,workOrderIDStr);
 							}
 						}
 					}
 					break;
 				case WorkOrder.BQX:
-				case WorkOrder.BZT:
+				//case WorkOrder.BZT:
 					//调用batch command接口
 					for (int j = 1; j <= batchCount; j++) {
 						String formulaIdStr = wo.getFormulaId().toString();
@@ -189,6 +211,8 @@ public class BatchController {
 							stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
 							if(BatchTest.STOPPED.equals(stateVal)) {
 								workOrderService.updateStateById(WorkOrder.BYWZZ, wo.getID());
+								
+								addWOPreStateInList(WorkOrder.BYWZZ,wo.getWorkOrderID());
 							}
 						}
 					}
@@ -198,13 +222,16 @@ public class BatchController {
 				if(state==WorkOrder.BYX||state==WorkOrder.BQX||state==WorkOrder.BZT) {
 					//把状态大于5的工单的可执行配方id拼接起来，可执行配方id对应batchID
 					formulaIds+=","+wo.getFormulaId();
+					workOrderIDs+=","+wo.getWorkOrderID();
 				}
 			}
 
 			if(StringUtils.isEmpty(formulaIds)) {
 				String[] formulaIdArr = formulaIds.substring(1).split(",");
+				String[] workOrderIDArr = workOrderIDs.substring(1).split(",");
 				for (int i = 0; i < formulaIdArr.length; i++) {
 					String formulaId = formulaIdArr[i];
+					String workOrderID = workOrderIDArr[i];
 					for (int j = 1; j <= batchCount; j++) {
 						//String batchIDVal = BLKey_x("BatchID",j);
 						String batchIDVal = getItem("BLBatchID_"+j);
@@ -215,9 +242,29 @@ public class BatchController {
 							stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
 							if(BatchTest.COMPLETE.equals(stateVal)) {
 								workOrderService.updateStateByFormulaId(WorkOrder.BJS, formulaId);
+								
+								StringBuilder jsSB=new StringBuilder();
+								jsSB.append("[{");
+								jsSB.append("\"workOrder\":\"");
+								jsSB.append(workOrderID);
+								jsSB.append("\",\"orderExecuteStatus\":\""+WorkOrder.COMPLETE+"\",");
+								jsSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
+								changeOrderStatus(jsSB.toString());
+								
+								addWOPreStateInList(WorkOrder.BJS,workOrderID);
 							}
 							else if(BatchTest.STOPPED.equals(stateVal)) {
 								workOrderService.updateStateByFormulaId(WorkOrder.BYWZZ, formulaId);
+
+								StringBuilder jsSB=new StringBuilder();
+								jsSB.append("[{");
+								jsSB.append("\"workOrder\":\"");
+								jsSB.append(workOrderID);
+								jsSB.append("\",\"orderExecuteStatus\":\"PRODUCTBREAK\",");
+								jsSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
+								changeOrderStatus(jsSB.toString());
+								
+								addWOPreStateInList(WorkOrder.BYWZZ,workOrderID);
 							}
 						}
 					}
@@ -271,6 +318,7 @@ public class BatchController {
 					addManFeedFromRecipePM(workOrderID,productCode,productName);//工单创建时，从配方参数表里取数据，放入人工投料表
 					*/
 					
+					//目前没有batch环境，暂时模拟创建batch
 					BatchTest bt=new BatchTest();
 					bt.setRecipe(recipeID);
 					bt.setBatchID(formulaId);
@@ -301,7 +349,7 @@ public class BatchController {
 							String createIDVal = batchTestService.getBLKey_x("CreateID",j);
 							System.out.println("createIDVal==="+createIDVal);
 							
-							batchTestService.updateStateByCreateID(BatchTest.START,Integer.valueOf(createIDVal));
+							batchTestService.updateStateByCreateID(BatchTest.START,Integer.valueOf(createIDVal));//因为目前测试阶段没有batch环境，这里就模拟batch环境启动测试
 							
 							String stateVal = batchTestService.getBLKey_x("State",j);
 							if(BatchTest.RUNNING.equals(stateVal)) {
@@ -380,9 +428,9 @@ public class BatchController {
 								jsSB.append(workOrderID);
 								jsSB.append("\",\"orderExecuteStatus\":\""+WorkOrder.COMPLETE+"\",");
 								jsSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
-								changeOrderStatus(jsSB.toString());
+								changeOrderStatus(jsSB.toString());//当batch环境里的批次完成时，通知mes端工单状态已经改变
 								
-								addWOPreStateInList(WorkOrder.BJS,workOrderID);
+								addWOPreStateInList(WorkOrder.BJS,workOrderID);//把前一个工单状态存入数组里
 							}
 							else if(BatchTest.STOPPED.equals(stateVal)) {
 								workOrderService.updateStateByFormulaId(WorkOrder.BYWZZ, formulaId);
@@ -393,9 +441,9 @@ public class BatchController {
 								jsSB.append(workOrderID);
 								jsSB.append("\",\"orderExecuteStatus\":\"PRODUCTBREAK\",");
 								jsSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
-								changeOrderStatus(jsSB.toString());
+								changeOrderStatus(jsSB.toString());//当batch环境里的批次停止时，通知mes端工单状态已经改变
 								
-								addWOPreStateInList(WorkOrder.BYWZZ,workOrderID);
+								addWOPreStateInList(WorkOrder.BYWZZ,workOrderID);//把前一个工单状态存入数组里
 							}
 						}
 					}
