@@ -203,13 +203,23 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 		for (BHBatch batch : batchList) {
 			batchRecord=new BatchRecord();
 			String workOrderID = batch.getWorkOrderID();
+			String batchid = batch.getBatchid();
+			String starttimebatchlist = batch.getStarttimebatchlist();
+			String endtimebatchlist = batch.getEndtimebatchlist();
+			String recordContent = null;
+			if(!StringUtils.isEmpty(starttimebatchlist)&&!StringUtils.isEmpty(endtimebatchlist))
+				recordContent = DateUtil.getTimeBetween(starttimebatchlist,endtimebatchlist,DateUtil.SECONDS)+"S";
 
 			batchRecord.setWorkOrderID(workOrderID);
+			batchRecord.setLotNo(batchid);
 			batchRecord.setRecordEvent("批次过程记录");
+			batchRecord.setRecordContent(recordContent);
 			batchRecord.setRecordType("9");
+			batchRecord.setRecordStartTime(starttimebatchlist);
+			batchRecord.setRecordEndTime(endtimebatchlist);
 			
 			count+=batchRecordDao.add(batchRecord);
 		}
-		return 0;
+		return count;
 	}
 }
