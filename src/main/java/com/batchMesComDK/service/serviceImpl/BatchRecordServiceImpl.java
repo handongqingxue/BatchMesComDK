@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.batchMesComDK.dao.*;
 import com.batchMesComDK.entity.*;
 import com.batchMesComDK.service.*;
+import com.batchMesComDK.util.DateUtil;
 
 @Service
 public class BatchRecordServiceImpl implements BatchRecordService {
@@ -138,15 +140,16 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 			BHBatchHis phase = phaseList.get(i);
 			for (int j = 0; j < lclTimePhaseList.size(); j++) {
 				BHBatchHis lclTimePhase = lclTimePhaseList.get(j);
-				if(lclTimePhase.getPhase().equals(phase.getPhase())) {
+				
+				if(lclTimePhase.getPhase().equals(phase.getPhase())&&"ADD_PM1_51".equals(phase.getPhase())) {
 					String pValue = lclTimePhase.getPValue();
 					if("START".equals(pValue)) {
 						phase.setLclStartTime(lclTimePhase.getLclTime());
-						break;
+						//break;
 					}
 					else if("COMPLETE".equals(pValue)) {
 						phase.setLclCompleteTime(lclTimePhase.getLclTime());
-						break;
+						//break;
 					}
 				}
 			}
@@ -155,21 +158,27 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 		for (BHBatchHis phase : phaseList) {
 			batchRecord=new BatchRecord();
 			String workOrderID = phase.getWorkOrderID();
+			String batchID = phase.getBatchID();
 			String eu = phase.getEU();
 			String phaseDisc = phase.getPhaseDisc();
 			String phaseID = phase.getPhaseID();
 			String lclStartTime = phase.getLclStartTime();
-			String completeTime = phase.getLclCompleteTime();
+			String lclCompleteTime = phase.getLclCompleteTime();
+			String recordContent = null;
+			if(!StringUtils.isEmpty(lclStartTime)&&!StringUtils.isEmpty(lclCompleteTime))
+				recordContent = DateUtil.getTimeBetween(lclStartTime,lclCompleteTime,DateUtil.SECONDS)+"S";
 
 			batchRecord.setWorkOrderID(workOrderID);
+			batchRecord.setLotNo(batchID);
 			batchRecord.setRecordEvent("PHASE过程记录");
+			batchRecord.setRecordContent(recordContent);
 			batchRecord.setUnit(eu);
 			batchRecord.setRecordType("8");
 			batchRecord.setPhaseDisc(phaseDisc);
 			batchRecord.setPhaseID(phaseID);
 			batchRecord.setRecordStartTime(lclStartTime);
-			batchRecord.setRecordEndTime(completeTime);
-			//count+=batchRecordDao.add(batchRecord);
+			batchRecord.setRecordEndTime(lclCompleteTime);
+			count+=batchRecordDao.add(batchRecord);
 		}
 		return count;
 	}
@@ -183,12 +192,6 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 			}
 		}
 		return exist;
-	}
-	
-	public static void main(String[] args) {
-		String s="103:PRODUCT_PL\\TMS51_UP:1\\LM_OP:1\\ADD_PM1:1-1";
-		System.out.println(s.lastIndexOf("\\")+","+s.lastIndexOf(":"));
-		System.out.println(s.substring(s.lastIndexOf("\\")+1, s.lastIndexOf(":")));
 	}
 
 	@Override
