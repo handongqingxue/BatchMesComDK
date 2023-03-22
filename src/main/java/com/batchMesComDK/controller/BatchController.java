@@ -1942,8 +1942,8 @@ public class BatchController {
 			sendToMesWOIDList.add("WO48qn5e9go9");
 			
 			
-			int count=batchRecordService.addMaterialFromBHBatchHis(sendToMesWOIDList);
-			//count=batchRecordService.addPhaseFromBHBatchHis(sendToMesWOIDList);
+			int count=0;//batchRecordService.addMaterialFromBHBatchHis(sendToMesWOIDList);
+			count=batchRecordService.addPhaseFromBHBatchHis(sendToMesWOIDList);
 			//count=batchRecordService.addBatchFromBHBatch(sendToMesWOIDList);
 			System.out.println("count===="+count);
 			

@@ -261,6 +261,30 @@ public class BHBatchHis {
 	public void setFeedPort(String feedPort) {
 		FeedPort = feedPort;
 	}
+	public String getRecordContent() {
+		return RecordContent;
+	}
+	public void setRecordContent(String recordContent) {
+		RecordContent = recordContent;
+	}
+	public String getPhaseID() {
+		return PhaseID;
+	}
+	public void setPhaseID(String phaseID) {
+		PhaseID = phaseID;
+	}
+	public String getLclStartTime() {
+		return lclStartTime;
+	}
+	public void setLclStartTime(String lclStartTime) {
+		this.lclStartTime = lclStartTime;
+	}
+	public String getLclCompleteTime() {
+		return lclCompleteTime;
+	}
+	public void setLclCompleteTime(String lclCompleteTime) {
+		this.lclCompleteTime = lclCompleteTime;
+	}
 	private String lclTime;
 	private String UniqueID;
 	private String BatchID;
@@ -303,4 +327,8 @@ public class BHBatchHis {
 	private String PMName;
 	private String PMDisc;
 	private String FeedPort;
+	private String RecordContent;
+	private String PhaseID;
+	private String lclStartTime;
+	private String lclCompleteTime;
 }

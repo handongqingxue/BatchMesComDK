@@ -120,28 +120,75 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 		// TODO Auto-generated method stub
 		int count=0;//his 3420
 		BatchRecord batchRecord=null;
-		List<BHBatchHis> phaseList = bHBatchHisDao.getPhaseListByWOIDList(workOrderIDList);
-		for (BHBatchHis bhBatchHis : phaseList) {
+		List<BHBatchHis> phaseList = new ArrayList<>();
+		List<BHBatchHis> bhBatchHisList = bHBatchHisDao.getPhaseListByWOIDList(workOrderIDList);
+		for (BHBatchHis bhBatchHis : bhBatchHisList) {
+			String recipe = bhBatchHis.getRecipe();
+			String phaseID=recipe.substring(recipe.lastIndexOf("\\")+1, recipe.lastIndexOf(":"));
+			if(checkIfExistInList(phaseID,phaseList))
+				continue;
+			else {
+				bhBatchHis.setPhaseID(phaseID);
+				phaseList.add(bhBatchHis);
+			}
+		}
+		
+		List<BHBatchHis> lclTimePhaseList=bHBatchHisDao.getPhaseLclTimeListByWOIDList(workOrderIDList);
+		for (int i = 0; i < phaseList.size(); i++) {
+			BHBatchHis phase = phaseList.get(i);
+			for (int j = 0; j < lclTimePhaseList.size(); j++) {
+				BHBatchHis lclTimePhase = lclTimePhaseList.get(j);
+				if(lclTimePhase.getPhase().equals(phase.getPhase())) {
+					String pValue = lclTimePhase.getPValue();
+					if("START".equals(pValue)) {
+						phase.setLclStartTime(lclTimePhase.getLclTime());
+						break;
+					}
+					else if("COMPLETE".equals(pValue)) {
+						phase.setLclCompleteTime(lclTimePhase.getLclTime());
+						break;
+					}
+				}
+			}
+		}
+		
+		for (BHBatchHis phase : phaseList) {
 			batchRecord=new BatchRecord();
-			String workOrderID = bhBatchHis.getWorkOrderID();
-			String materialName = bhBatchHis.getMaterialName();
-			String eu = bhBatchHis.getEU();
-			String pMDisc = bhBatchHis.getPMDisc();
-			String phaseDisc = bhBatchHis.getPhaseDisc();
-			String recordID = bhBatchHis.getRecordID();
+			String workOrderID = phase.getWorkOrderID();
+			String eu = phase.getEU();
+			String phaseDisc = phase.getPhaseDisc();
+			String phaseID = phase.getPhaseID();
+			String lclStartTime = phase.getLclStartTime();
+			String completeTime = phase.getLclCompleteTime();
 
 			batchRecord.setWorkOrderID(workOrderID);
-			batchRecord.setPMName(materialName);
 			batchRecord.setRecordEvent("PHASE过程记录");
 			batchRecord.setUnit(eu);
 			batchRecord.setRecordType("8");
-			batchRecord.setPMCName(pMDisc);
 			batchRecord.setPhaseDisc(phaseDisc);
-			batchRecord.setPhaseID(recordID);
-			
-			count+=batchRecordDao.add(batchRecord);
+			batchRecord.setPhaseID(phaseID);
+			batchRecord.setRecordStartTime(lclStartTime);
+			batchRecord.setRecordEndTime(completeTime);
+			//count+=batchRecordDao.add(batchRecord);
 		}
 		return count;
+	}
+	
+	private boolean checkIfExistInList(String phaseID, List<BHBatchHis> phaseList) {
+		boolean exist = false;
+		for (BHBatchHis phase : phaseList) {
+			if(phase.getPhaseID().equals(phaseID)) {
+				exist=true;
+				break;
+			}
+		}
+		return exist;
+	}
+	
+	public static void main(String[] args) {
+		String s="103:PRODUCT_PL\\TMS51_UP:1\\LM_OP:1\\ADD_PM1:1-1";
+		System.out.println(s.lastIndexOf("\\")+","+s.lastIndexOf(":"));
+		System.out.println(s.substring(s.lastIndexOf("\\")+1, s.lastIndexOf(":")));
 	}
 
 	@Override

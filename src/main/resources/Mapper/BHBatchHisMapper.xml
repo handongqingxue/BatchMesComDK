@@ -12,12 +12,22 @@
 		 and his.Descript='ADDED_AMOUNT' and his.Event='report'
 	</select>
 	<select id="getPhaseListByWOIDList" resultType="com.batchMesComDK.entity.BHBatchHis">
-		select brTr.PhaseDisc,brTr.PMName,brTr.PMDisc,t.* from (
-		select wo.WorkOrderID,wo.FormulaId,his.* from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo where his.BatchID=wo.FormulaId
+		select brTr.PhaseDisc,his.BatchID,his.Recipe,Phase,EU from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo,BatchRecordTr brTr
+		 where his.BatchID=wo.FormulaId and his.Phase=brTr.PhaseName and EU!=''
 		<foreach collection="workOrderIDList" item="workOrderID" open=" and cast(wo.WorkOrderID as char) in (" separator="," close=")">
 		#{workOrderID}
 		</foreach>
-		 and Phase!='') t
-		 left join BatchRecordTr brTr on t.Phase=brTr.PhaseName
+		 group by brTr.PhaseDisc,his.BatchID,his.Recipe,his.Phase,EU
+	</select>
+	<select id="getPhaseLclTimeListByWOIDList" resultType="com.batchMesComDK.entity.BHBatchHis">
+		select * from (
+		select min(his.lclTime) lclTime,BatchID,WorkOrderID,Phase,PValue from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo,BatchRecordTr brTr where his.BatchID=wo.FormulaId
+    	and PValue='start' and Phase!='' group by his.lclTime,BatchID,WorkOrderID,Phase,PValue
+	    union
+	    select max(his.lclTime) lclTime,BatchID,WorkOrderID,Phase,PValue from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo,BatchRecordTr brTr where his.BatchID=wo.FormulaId
+	    and PValue='complete' and Phase!='' group by his.lclTime,BatchID,WorkOrderID,Phase,PValue)t where 1=1
+		<foreach collection="workOrderIDList" item="workOrderID" open=" and cast(wo.WorkOrderID as char) in (" separator="," close=")">
+		#{workOrderID}
+		</foreach>
 	</select>
 </mapper>
