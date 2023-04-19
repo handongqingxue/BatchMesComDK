@@ -402,7 +402,8 @@ public class BatchController {
 					break;
 				}
 				
-				if(state==WorkOrder.BYX||state==WorkOrder.BQX||state==WorkOrder.BZT) {
+				//if(state==WorkOrder.BYX||state==WorkOrder.BQX||state==WorkOrder.BZT) {
+				if(state==WorkOrder.BYX||state==WorkOrder.BQX) {
 					//把状态大于5的工单的可执行配方id拼接起来，可执行配方id对应batchID
 					formulaIds+=","+wo.getFormulaId();
 					workOrderIDs+=","+wo.getWorkOrderID();
@@ -429,6 +430,8 @@ public class BatchController {
 								jsSB.append("\",\"orderExecuteStatus\":\""+WorkOrder.COMPLETE+"\",");
 								jsSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
 								changeOrderStatus(jsSB.toString());//当batch环境里的批次完成时，通知mes端工单状态已经改变
+								
+								getSendToMesBRData();//检索是否存在给mes端推送批记录的工单
 								
 								addWOPreStateInList(WorkOrder.BJS,workOrderID);//把前一个工单状态存入数组里
 							}
@@ -1915,7 +1918,6 @@ public class BatchController {
 		try {
 			List<String> sendToMesWOIDList=new ArrayList<>();
 			List<WorkOrder> sendToMesWOList=new ArrayList<>();
-			/*
 			List<WorkOrder> woList=workOrderService.getFinishedList();
 			for (int i = 0; i < woList.size(); i++) {
 				WorkOrder wo = woList.get(i);
@@ -1925,7 +1927,8 @@ public class BatchController {
 					Map<String, Object> woPreStateMap = woPreStateList.get(j);
 					String preWorkOrderID = woPreStateMap.get("workOrderID").toString();
 					Integer preState = Integer.valueOf(woPreStateMap.get("state").toString());
-					if(workOrderID.equals(preWorkOrderID)&&state==preState) {
+					if(workOrderID.equals(preWorkOrderID)&&state!=preState) {
+						System.out.println("给mes端推送批记录.......");
 						sendToMesWOIDList.add(workOrderID);
 						sendToMesWOList.add(wo);
 					}
@@ -1933,19 +1936,22 @@ public class BatchController {
 			}
 			
 
+			/*
 			sendToMesWOList=workOrderService.getFinishedList();
 			for (WorkOrder sendToMesWO : sendToMesWOList) {
 				String sendToMesWOID = sendToMesWO.getWorkOrderID();
 				sendToMesWOIDList.add(sendToMesWOID);
 			}
 			*/
-			sendToMesWOIDList.add("WO48qn5e9go9");
+			//sendToMesWOIDList.add("WO48qn5e9go9");
 			
 			
+			/*
 			int count=batchRecordService.addMaterialFromBHBatchHis(sendToMesWOIDList);
 			count=batchRecordService.addPhaseFromBHBatchHis(sendToMesWOIDList);
 			count=batchRecordService.addBatchFromBHBatch(sendToMesWOIDList);
 			System.out.println("count===="+count);
+			*/
 			
 			
 			
@@ -1974,16 +1980,16 @@ public class BatchController {
 					bodyParamBRJO.put("workcenterId", workcenterId);
 					bodyParamBRJO.put("recordType", "batchRecord");
 					
-					JSONObject bodyParamProJO=new JSONObject();
-					bodyParamProJO.put("id", id);
-					bodyParamProJO.put("workOrder", workOrderID);
-					bodyParamProJO.put("procuctCode", productCode);
-					bodyParamProJO.put("procuctName", productName);
-					bodyParamProJO.put("lotNo", lotNo);
-					bodyParamProJO.put("formulaId", recipeID);
-					bodyParamProJO.put("formulaName", productName);
-					bodyParamProJO.put("workcenterId", workcenterId);
-					bodyParamProJO.put("recordType", "materialRecord");
+					JSONObject bodyParamMaterJO=new JSONObject();
+					bodyParamMaterJO.put("id", id);
+					bodyParamMaterJO.put("workOrder", workOrderID);
+					bodyParamMaterJO.put("procuctCode", productCode);
+					bodyParamMaterJO.put("procuctName", productName);
+					bodyParamMaterJO.put("lotNo", lotNo);
+					bodyParamMaterJO.put("formulaId", recipeID);
+					bodyParamMaterJO.put("formulaName", productName);
+					bodyParamMaterJO.put("workcenterId", workcenterId);
+					bodyParamMaterJO.put("recordType", "materialRecord");
 
 					JSONArray electtonBatchRecordBRJA=new JSONArray();
 					JSONArray electtonBatchRecordMaterJA=new JSONArray();
@@ -2032,11 +2038,11 @@ public class BatchController {
 					}
 					
 					bodyParamBRJO.put("electtonBatchRecord", electtonBatchRecordBRJA);
-					//System.out.println("bodyParamBRJOStr==="+bodyParamBRJO.toString());
+					System.out.println("bodyParamBRJOStr==="+bodyParamBRJO.toString());
 					//APIUtil.doHttpMes("electronicBatchRecord",bodyParamBRJO);
 					
-					bodyParamProJO.put("electtonBatchRecord", electtonBatchRecordMaterJA);
-					//System.out.println("bodyParamMaterJOStr==="+bodyParamMaterJO.toString());
+					bodyParamMaterJO.put("electtonBatchRecord", electtonBatchRecordMaterJA);
+					System.out.println("bodyParamMaterJOStr==="+bodyParamMaterJO.toString());
 					//APIUtil.doHttpMes("electronicBatchRecord",bodyParamMaterJO);
 				}
 				//System.out.println("brListSize==="+brList.size());

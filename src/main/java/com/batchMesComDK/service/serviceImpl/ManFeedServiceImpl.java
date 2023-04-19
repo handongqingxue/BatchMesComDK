@@ -45,7 +45,7 @@ public class ManFeedServiceImpl implements ManFeedService {
 		  	mf.setMaterialName(rPM.getPMName());
 		  	mf.setUnit(rPM.getUnit());
 		  	mf.setFeedPort(rPM.getFeedPort());
-		  	mf.setMarkBit("0");
+		  	mf.setMarkBit(ManFeed.WJS+"");
 		  	mf.setMaterialSV(rPM.getDosage());
 		  	mf.setDev1(dev1);
 		  	mf.setDev2(dev2);
