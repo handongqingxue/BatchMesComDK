@@ -129,8 +129,11 @@ public class BatchController {
 					System.out.println("recipeID==="+recipeID);
 					System.out.println("productCode==="+productCode);
 					System.out.println("productName==="+productName);
-					
+
+					/*
+					 * 内部测试先屏蔽掉这个逻辑
 					addManFeedFromRecipePM(workOrderID,productCode,productName);//工单创建时，从配方参数表里取数据，放入人工投料表
+					*/
 					
 					createBatch(formulaId,workOrderID,recipeID);
 					
@@ -226,7 +229,8 @@ public class BatchController {
 				}
 			}
 
-			if(StringUtils.isEmpty(formulaIds)) {
+			System.out.println("formulaIds==="+formulaIds);
+			if(!StringUtils.isEmpty(formulaIds)) {
 				String[] formulaIdArr = formulaIds.substring(1).split(",");
 				String[] workOrderIDArr = workOrderIDs.substring(1).split(",");
 				for (int i = 0; i < formulaIdArr.length; i++) {
@@ -250,6 +254,8 @@ public class BatchController {
 								jsSB.append("\",\"orderExecuteStatus\":\""+WorkOrder.COMPLETE+"\",");
 								jsSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
 								changeOrderStatus(jsSB.toString());
+								
+								getSendToMesBRData();//检索是否存在给mes端推送批记录的工单
 								
 								addWOPreStateInList(WorkOrder.BJS,workOrderID);
 							}
