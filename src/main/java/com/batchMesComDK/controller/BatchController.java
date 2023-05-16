@@ -158,12 +158,17 @@ public class BatchController {
 						String workOrderIDStr = wo.getWorkOrderID().toString();
 						String formulaIdStr = wo.getFormulaId().toString();
 						//String batchIDVal = BLKey_x("BatchID",j);
-						String batchIDVal = getItem("BLBatchID_"+j);
-						batchIDVal = batchIDVal.substring(0, batchIDVal.indexOf(Constant.END_SUCCESS));
+						String batchIDResultJOStr = getItem("BLBatchID_"+j);
+						JSONObject batchIDResultJO = new JSONObject(batchIDResultJOStr);
+						String batchIDVal = batchIDResultJO.getString("data");
+						System.out.println("batchIDVal==="+batchIDVal);
+						//batchIDVal = batchIDVal.substring(0, batchIDVal.indexOf(Constant.END_SUCCESS));
 						if(formulaIdStr.equals(batchIDVal)) {
 							//String createIDVal = BLKey_x("CreateID",j);
-							String createIDVal = getItem("BLCreateID_"+j);
-							createIDVal = createIDVal.substring(0, createIDVal.indexOf(Constant.END_SUCCESS));
+							String createIDResultJOStr = getItem("BLCreateID_"+j);
+							JSONObject createIDResultJO = new JSONObject(createIDResultJOStr);
+							String createIDVal = createIDResultJO.getString("data");
+							//createIDVal = createIDVal.substring(0, createIDVal.indexOf(Constant.END_SUCCESS));
 							System.out.println("createIDVal==="+createIDVal);
 							
 							//调用batch环境的启动接口
@@ -178,8 +183,10 @@ public class BatchController {
 							execute(commandBQDSB.toString());
 							
 							//String stateVal = BLKey_x("State",j);
-							String stateVal = getItem("BLState_"+j);
-							stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
+							String stateResultJOStr = getItem("BLState_"+j);
+							JSONObject stateResultJO = new JSONObject(stateResultJOStr);
+							String stateVal = stateResultJO.getString("data");
+							//stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
 							if(BatchTest.RUNNING.equals(stateVal)) {
 								workOrderService.updateStateById(WorkOrder.BYX, wo.getID());
 								
@@ -202,12 +209,16 @@ public class BatchController {
 					for (int j = 1; j <= batchCount; j++) {
 						String formulaIdStr = wo.getFormulaId().toString();
 						//String batchIDVal = BLKey_x("BatchID",j);
-						String batchIDVal = getItem("BLBatchID_"+j);
-						batchIDVal = batchIDVal.substring(0, batchIDVal.indexOf(Constant.END_SUCCESS));
+						String batchIDResultJOStr = getItem("BLBatchID_"+j);
+						JSONObject batchIDResultJO = new JSONObject(batchIDResultJOStr);
+						String batchIDVal = batchIDResultJO.getString("data");
+						//batchIDVal = batchIDVal.substring(0, batchIDVal.indexOf(Constant.END_SUCCESS));
 						if(formulaIdStr.equals(batchIDVal)) {
 							//String createIDVal = BLKey_x("CreateID",j);
-							String createIDVal = getItem("BLCreateID_"+j);
-							createIDVal = createIDVal.substring(0, createIDVal.indexOf(Constant.END_SUCCESS));
+							String createIDResultJOStr = getItem("BLCreateID_"+j);
+							JSONObject createIDResultJO = new JSONObject(createIDResultJOStr);
+							String createIDVal = createIDResultJO.getString("data");
+							//createIDVal = createIDVal.substring(0, createIDVal.indexOf(Constant.END_SUCCESS));
 							System.out.println("createIDVal==="+createIDVal);
 							
 							StringBuilder commandQXZTSB=new StringBuilder();
@@ -221,8 +232,10 @@ public class BatchController {
 							execute(commandQXZTSB.toString());
 
 							//String stateVal = BLKey_x("State",j);
-							String stateVal = getItem("BLState_"+j);
-							stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
+							String stateResultJOStr = getItem("BLState_"+j);
+							JSONObject stateResultJO = new JSONObject(stateResultJOStr);
+							String stateVal = stateResultJO.getString("data");
+							//stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
 							if(BatchTest.STOPPED.equals(stateVal)) {
 								workOrderService.updateStateById(WorkOrder.BYWZZ, wo.getID());
 								
@@ -249,12 +262,16 @@ public class BatchController {
 					String workOrderID = workOrderIDArr[i];
 					for (int j = 1; j <= batchCount; j++) {
 						//String batchIDVal = BLKey_x("BatchID",j);
-						String batchIDVal = getItem("BLBatchID_"+j);
-						batchIDVal = batchIDVal.substring(0, batchIDVal.indexOf(Constant.END_SUCCESS));
+						String batchIDResultJOStr = getItem("BLBatchID_"+j);
+						JSONObject batchIDResultJO = new JSONObject(batchIDResultJOStr);
+						String batchIDVal = batchIDResultJO.getString("data");
+						//batchIDVal = batchIDVal.substring(0, batchIDVal.indexOf(Constant.END_SUCCESS));
 						if(formulaId.equals(batchIDVal)) {
 							//String stateVal = BLKey_x("State",j);
-							String stateVal = getItem("BLState_"+j);
-							stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
+							String stateResultJOStr = getItem("BLState_"+j);
+							JSONObject stateResultJO = new JSONObject(stateResultJOStr);
+							String stateVal = stateResultJO.getString("data");
+							//stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
 							if(BatchTest.COMPLETE.equals(stateVal)) {
 								workOrderService.updateStateByFormulaId(WorkOrder.BJS, formulaId);
 								
@@ -1554,7 +1571,6 @@ public class BatchController {
 
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		try {
-			//bodyEnc=new String(bodyEnc.getBytes("ISO-8859-1"), "UTF-8");
 			System.out.println("bodyEnc==="+bodyEnc);
 			String bodyDec = bodyEnc;
 			//String bodyDec = DesUtil.decrypt(bodyEnc,DesUtil.SECRET_KEY);

@@ -26,7 +26,7 @@ public interface WorkOrderMapper {
 
 	int updateZGIDByWorkOrderID(@Param("zGID") String zGID, @Param("workOrderID") String workOrderID);
 
-	Integer getMaxFormulaIdNumByFormulaIdDate(@Param("formulaIdDate") String formulaIdDate);
+	String getMaxFormulaIdNumByFormulaIdDate(@Param("formulaIdDate") String formulaIdDate);
 
 	String getFormulaIdByWOID(@Param("workOrderID") String workOrderID);
 

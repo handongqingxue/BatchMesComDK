@@ -154,7 +154,7 @@
 	<update id="updateZGIDByWorkOrderID">
 		update WorkOrder set ZGID=#{zGID} where WorkOrderID=#{workOrderID}
 	</update>
-	<select id="getMaxFormulaIdNumByFormulaIdDate" resultType="java.lang.Integer">
+	<select id="getMaxFormulaIdNumByFormulaIdDate" resultType="java.lang.String">
 		select substring(MAX(FormulaId),19,3) from WorkOrder where FormulaId like #{formulaIdDate}+'%'
 	</select>
 	<select id="getFormulaIdByWOID" resultType="java.lang.String">

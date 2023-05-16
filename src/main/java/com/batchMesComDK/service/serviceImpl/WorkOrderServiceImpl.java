@@ -100,9 +100,15 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			identifierPre=identifier.substring(0, 3);
 		}
 		String formulaIdDate = identifierPre+"_BATCH"+formulaIdSDF.format(new Date());
-		Integer count=workOrderDao.getMaxFormulaIdNumByFormulaIdDate(formulaIdDate);
-		if(count==null)
+		String countStr = workOrderDao.getMaxFormulaIdNumByFormulaIdDate(formulaIdDate);
+		System.out.println("countStr==="+countStr);
+		Integer count;
+		if(StringUtils.isEmpty(countStr)) {
 			count=0;
+		}
+		else
+			count=Integer.valueOf(countStr);
+		
 		String formulaIdXhStr=null;
 		int formulaIdXh=count+1;
 		if(formulaIdXh<10)
