@@ -136,6 +136,12 @@ public class WorkOrder {
 	public void setRecipeID(String recipeID) {
 		RecipeID = recipeID;
 	}
+	public String getIdentifier() {
+		return Identifier;
+	}
+	public void setIdentifier(String identifier) {
+		Identifier = identifier;
+	}
 	public String getFormulaId() {
 		return FormulaId;
 	}
@@ -185,6 +191,7 @@ public class WorkOrder {
 	private String MfgCode;
 	private String MfgVersion;
 	private String RecipeID;
+	private String Identifier;
 	private String FormulaId;
 	private Integer State;
 	private String CreateTime;

@@ -95,12 +95,23 @@ public class BatchController {
 		return MODULE_NAME+"/test";
 	}
 
+	@RequestMapping(value="/createBatchTest", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> createBatchTest(String formulaId, String workOrderID, String identifier) {
+		
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
+		
+		createBatch(formulaId,workOrderID,identifier);
+		
+		return jsonMap;
+	}
+
 	/**
 	 * 巡回检索工单状态变化
 	 */
 	@RequestMapping(value="/keepWatchOnWorkOrder")
 	public void keepWatchOnWorkOrder() {
-		
+
 		try {
 			List<WorkOrder> woList=workOrderService.getKeepWatchList();
 			System.out.println("woListSize==="+woList.size());
@@ -121,12 +132,12 @@ public class BatchController {
 					//调用创建batch接口创建batch
 					String formulaId = wo.getFormulaId();
 					String workOrderID = wo.getWorkOrderID();				
-					String recipeID = wo.getRecipeID();
+					String identifier = wo.getIdentifier();
 					String productCode = wo.getProductCode();
 					String productName = wo.getProductName();
 					System.out.println("formulaId==="+formulaId);
 					System.out.println("workOrderID==="+workOrderID);
-					System.out.println("recipeID==="+recipeID);
+					System.out.println("identifier==="+identifier);
 					System.out.println("productCode==="+productCode);
 					System.out.println("productName==="+productName);
 
@@ -135,7 +146,7 @@ public class BatchController {
 					addManFeedFromRecipePM(workOrderID,productCode,productName);//工单创建时，从配方参数表里取数据，放入人工投料表
 					*/
 					
-					createBatch(formulaId,workOrderID,recipeID);
+					createBatch(formulaId,workOrderID,identifier);
 					
 					workOrderService.updateStateById(WorkOrder.BCJWB, wo.getID());
 					
@@ -575,11 +586,14 @@ public class BatchController {
 	}
 	
 	private void createBatch(String batchID, String workOrderID, String recipeID) {
+		System.out.println("recipeID2==="+recipeID.trim().length());
 		StringBuilder commandSB=new StringBuilder();
 		commandSB.append("[BATCH(Item,");
 		commandSB.append(Constant.USERID);
 		commandSB.append(",");
-		commandSB.append(recipeID);
+		commandSB.append(recipeID.trim());
+		//commandSB.append("TM61_PL_20230422.BPC");
+		commandSB.append(".BPC");
 		commandSB.append(",");
 		commandSB.append(batchID);
 		commandSB.append("");
@@ -1539,47 +1553,55 @@ public class BatchController {
 	public Map<String, Object> workOrderDown(@RequestBody String bodyEnc) {
 
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
-		System.out.println("bodyEnc==="+bodyEnc);
-		String bodyDec = bodyEnc;
-		//String bodyDec = DesUtil.decrypt(bodyEnc,DesUtil.SECRET_KEY);
-		/*
-		List<WorkOrderBody> wobList=new ArrayList<WorkOrderBody>();
-		net.sf.json.JSONArray wobJA = net.sf.json.JSONArray.fromObject(bodyDec);
-		for (int i = 0; i < wobJA.size(); i++) {
-			net.sf.json.JSONObject wobJO = (net.sf.json.JSONObject)wobJA.get(i);
-			WorkOrderBody wob=(WorkOrderBody)net.sf.json.JSONObject.toBean(wobJO, WorkOrderBody.class);
-			System.out.println("id==="+wob.getId());
-			wobList.add(wob);
-		}
-		int c=workOrderBodyService.add(wobList.get(0));
-		*/
-
-		WorkOrder wo = convertMesWorkOrderDownToJava(bodyEnc);
-		int c=workOrderService.add(wo);
-		if(c>0) {
-			String workOrderID = wo.getWorkOrderID();
-			String productCode = wo.getProductCode();
-			String productName = wo.getProductName();
-			//c=recipePMService.addFromTMP(workOrderID, productCode, productName);
-			c=recipePMService.addFromWORecipePMList(workOrderID, wo.getRecipePMList());
-			if(c>0) {
-				/*
-				 * 为了测试这块先屏蔽掉
-				 */
-				//c=recipePMService.updateDosageByPMParam(wo.getRecipePMList());
-				c=workOrderService.updateStateByWorkOrderID(WorkOrder.WLQTWB,workOrderID);
+		try {
+			//bodyEnc=new String(bodyEnc.getBytes("ISO-8859-1"), "UTF-8");
+			System.out.println("bodyEnc==="+bodyEnc);
+			String bodyDec = bodyEnc;
+			//String bodyDec = DesUtil.decrypt(bodyEnc,DesUtil.SECRET_KEY);
+			/*
+			List<WorkOrderBody> wobList=new ArrayList<WorkOrderBody>();
+			net.sf.json.JSONArray wobJA = net.sf.json.JSONArray.fromObject(bodyDec);
+			for (int i = 0; i < wobJA.size(); i++) {
+				net.sf.json.JSONObject wobJO = (net.sf.json.JSONObject)wobJA.get(i);
+				WorkOrderBody wob=(WorkOrderBody)net.sf.json.JSONObject.toBean(wobJO, WorkOrderBody.class);
+				System.out.println("id==="+wob.getId());
+				wobList.add(wob);
 			}
-			
-			jsonMap.put("success", "true");
-			jsonMap.put("state", "001");
-			jsonMap.put("msg", "正常");
+			int c=workOrderBodyService.add(wobList.get(0));
+			*/
+
+			WorkOrder wo = convertMesWorkOrderDownToJava(bodyEnc);
+			int c=workOrderService.add(wo);
+			if(c>0) {
+				String workOrderID = wo.getWorkOrderID();
+				String productCode = wo.getProductCode();
+				String productName = wo.getProductName();
+				//c=recipePMService.addFromTMP(workOrderID, productCode, productName);
+				c=recipePMService.addFromWORecipePMList(workOrderID, wo.getRecipePMList());
+				if(c>0) {
+					/*
+					 * 为了测试这块先屏蔽掉
+					 */
+					//c=recipePMService.updateDosageByPMParam(wo.getRecipePMList());
+					c=workOrderService.updateStateByWorkOrderID(WorkOrder.WLQTWB,workOrderID);
+				}
+				
+				jsonMap.put("success", "true");
+				jsonMap.put("state", "001");
+				jsonMap.put("msg", "正常");
+			}
+			else {
+				jsonMap.put("success", "true");
+				jsonMap.put("state", "002");
+				jsonMap.put("msg", "数据格式有误");
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		else {
-			jsonMap.put("success", "true");
-			jsonMap.put("state", "002");
-			jsonMap.put("msg", "数据格式有误");
+		finally {
+			return jsonMap;
 		}
-		return jsonMap;
 	}
 	
 	private WorkOrder convertMesWorkOrderDownToJava(String mesBody) {
@@ -1600,7 +1622,11 @@ public class BatchController {
 		List<RecipePM> recipePMList=convertMesMaterialListStrToRecipePMList(materialListStr);
 		
 		WorkOrder wo=new WorkOrder();
-		String formulaId=workOrderService.createFormulaIdByDateYMD(productcode,productName);
+		String idenFormulaId=workOrderService.createFormulaIdByDateYMD(productcode,productName);
+		String[] idenForArr = idenFormulaId.split("-");
+		String identifier=idenForArr[0];
+		String formulaId=idenForArr[1];
+		wo.setIdentifier(identifier);
 		wo.setFormulaId(formulaId);
 		wo.setRecipeID(recipeID);
 		//wo.setID(Integer.valueOf(id));

@@ -30,6 +30,9 @@
 			<if test="RecipeID!=null">
 				RecipeID,
 			</if>
+			<if test="Identifier!=null">
+				Identifier,
+			</if>
 			<if test="FormulaId!=null">
 				FormulaId,
 			</if>
@@ -69,6 +72,9 @@
 			</if>
 			<if test="RecipeID!=null">
 				#{RecipeID},
+			</if>
+			<if test="Identifier!=null">
+				#{Identifier},
 			</if>
 			<if test="FormulaId!=null">
 				#{FormulaId},

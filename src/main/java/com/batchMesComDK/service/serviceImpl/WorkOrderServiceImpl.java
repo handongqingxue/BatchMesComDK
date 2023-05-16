@@ -109,7 +109,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			formulaIdXhStr="00"+formulaIdXh;
 		else if(formulaIdXh<100)
 			formulaIdXhStr="0"+formulaIdXh;
-		return formulaIdDate+formulaIdXhStr;
+		return identifier+"-"+formulaIdDate+formulaIdXhStr;
 	}
 
 	@Override
