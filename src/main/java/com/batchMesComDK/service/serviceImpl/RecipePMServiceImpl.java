@@ -60,6 +60,17 @@ public class RecipePMServiceImpl implements RecipePMService {
 				RecipePM recipePM = recipePMList.get(i);
 				rPM=new RecipePM();
 				String pMCode = recipePM.getPMCode();
+				
+				String pMName1=null;
+				String cName = recipePM.getCName();
+				if("山梨醇进料量".equals(cName))
+					pMName1="AM_SL";
+				else if("摩擦型SIO2进料量".equals(cName))
+					pMName1="AM_SIO22";
+				else if("PM1真空度".equals(cName))
+					pMName1="VD_PM1";
+				recipePM.setPMName(pMName1);
+				
 				String pMName = recipePM.getPMName();
 				rPM.setPMCode(pMCode);
 				rPM.setPMName(pMName);
@@ -109,6 +120,7 @@ public class RecipePMServiceImpl implements RecipePMService {
 				rPM.setPMType(pMType);
 				rPM.setWorkOrderID(workOrderID);
 				
+				/*
 				String cName=null;
 				if("SIO2".equals(pMName))
 					cName="二氧化硅进料量";
@@ -128,8 +140,8 @@ public class RecipePMServiceImpl implements RecipePMService {
 					cName="香精";
 				else
 					cName=pMName;
+				*/
 				rPM.setCName(cName);
-				System.out.println("11111111111111");
 				
 				count+=recipePMDao.add(rPM);
 			}
@@ -155,14 +167,21 @@ public class RecipePMServiceImpl implements RecipePMService {
 	}
 
 	@Override
-	public int updateDosageByPMParam(List<RecipePM> recipePMList) {
+	public int updateDosageByPMParam(String workOrderID, List<RecipePM> wodRecipePMList) {
 		// TODO Auto-generated method stub
 		int count=0;
+		List<RecipePM> recipePMList = recipePMDao.getListByWorkOrderID(workOrderID);
 		for (RecipePM recipePM : recipePMList) {
 			String pMCode = recipePM.getPMCode();
-			String pMName = recipePM.getPMName();
-			String dosage = recipePM.getDosage();
-			count+=recipePMDao.updateDosageByPMParam(pMCode,pMName,dosage);
+			float dosage = Float.valueOf(recipePM.getDosage());
+			for (RecipePM wodRecipePM : wodRecipePMList) {
+				String wodPMCode = wodRecipePM.getPMCode();
+				float wodDosage = Float.valueOf(wodRecipePM.getDosage());
+				if(pMCode.equals(wodPMCode)&&dosage!=wodDosage) {
+					count+=recipePMDao.updateDosageByPMParam(wodPMCode,wodDosage);
+					break;
+				}
+			}
 		}
 		return count;
 	}

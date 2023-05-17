@@ -76,7 +76,7 @@ public class WorkOrder {
 	/**
 	 * BATCH结束名称
 	 */
-	public static final String BJS_TEXT="BATCH结束";//0
+	public static final String BJS_TEXT="BATCH结束";//10
 	
 	/**
 	 * 生产中
@@ -136,12 +136,6 @@ public class WorkOrder {
 	public void setRecipeID(String recipeID) {
 		RecipeID = recipeID;
 	}
-	public String getIdentifier() {
-		return Identifier;
-	}
-	public void setIdentifier(String identifier) {
-		Identifier = identifier;
-	}
 	public String getFormulaId() {
 		return FormulaId;
 	}
@@ -184,6 +178,12 @@ public class WorkOrder {
 	public void setWorkcenterId(String workcenterId) {
 		WorkcenterId = workcenterId;
 	}
+	public String getIdentifier() {
+		return Identifier;
+	}
+	public void setIdentifier(String identifier) {
+		Identifier = identifier;
+	}
 	private String WorkOrderID;
 	private String ProductCode;
 	private String ProductName;
@@ -191,7 +191,6 @@ public class WorkOrder {
 	private String MfgCode;
 	private String MfgVersion;
 	private String RecipeID;
-	private String Identifier;
 	private String FormulaId;
 	private Integer State;
 	private String CreateTime;
@@ -199,6 +198,7 @@ public class WorkOrder {
 	private String ZGID;
 	private String LotNo;
 	private String WorkcenterId;
+	private String Identifier;
 	private List<RecipePM> recipePMList;
 	public List<RecipePM> getRecipePMList() {
 		return recipePMList;

@@ -24,9 +24,10 @@ import com.batchMesComDK.entity.*;
 public class APIUtil {
 
 	public static final String SERVICE_URL="http://localhost:8080/ZnczLfyl/gkj/";
-	public static final String SERVICE_URL_MES="https://385n683i90.imdo.co/mesPlatform/api/remote/batch/";
+	//public static final String SERVICE_URL_MES="https://385n683i90.imdo.co/mesPlatform/api/remote/batch/";
+	public static final String SERVICE_URL_MES="http://10.0.3.136:19888/mesPlatform/api/remote/batch/";
 	public static final String ITEM_RESULT="item";
-	public static final String LIST_RESULT="list";;
+	public static final String LIST_RESULT="list";
 
 	//https://www.cnblogs.com/aeolian/p/7746158.html
 	//https://www.cnblogs.com/bobc/p/8809761.html

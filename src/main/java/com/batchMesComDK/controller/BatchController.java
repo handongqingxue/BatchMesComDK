@@ -1592,13 +1592,13 @@ public class BatchController {
 				String workOrderID = wo.getWorkOrderID();
 				String productCode = wo.getProductCode();
 				String productName = wo.getProductName();
-				//c=recipePMService.addFromTMP(workOrderID, productCode, productName);
-				c=recipePMService.addFromWORecipePMList(workOrderID, wo.getRecipePMList());
+				c=recipePMService.addFromTMP(workOrderID, productCode, productName);
+				//c=recipePMService.addFromWORecipePMList(workOrderID, wo.getRecipePMList());
 				if(c>0) {
 					/*
 					 * 为了测试这块先屏蔽掉
 					 */
-					//c=recipePMService.updateDosageByPMParam(wo.getRecipePMList());
+					c=recipePMService.updateDosageByPMParam(workOrderID, wo.getRecipePMList());
 					c=workOrderService.updateStateByWorkOrderID(WorkOrder.WLQTWB,workOrderID);
 				}
 				
@@ -1671,7 +1671,8 @@ public class BatchController {
 			
 			recipePM=new RecipePM();
 			recipePM.setPMCode(materialCode);
-			recipePM.setPMName(materialName);
+			//recipePM.setPMName(materialName);
+			recipePM.setCName(materialName);
 			recipePM.setDosage(qty);
 			
 			recipePMList.add(recipePM);

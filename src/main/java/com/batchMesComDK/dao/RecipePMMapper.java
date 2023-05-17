@@ -16,5 +16,5 @@ public interface RecipePMMapper {
 	
 	List<RecipePM> getManFeedListByWorkOrderID(@Param("workOrderID") String workOrderID);
 
-	int updateDosageByPMParam(@Param("pMCode") String pMCode, @Param("pMName") String pMName, @Param("dosage") String dosage);
+	int updateDosageByPMParam(@Param("pMCode") String pMCode, @Param("dosage") Float dosage);
 }
