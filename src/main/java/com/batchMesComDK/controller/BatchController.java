@@ -617,21 +617,26 @@ public class BatchController {
 		commandSB.append(",100,FRENCHVANILLA PREMIUM -CLASSBASED,FREEZER,4,MIXER,2,PARMS,");
 		//commandSB.append("CREAM_AMOUNT,2001,EGG_AMOUNT,200,FLAVOR_AMOUNT,50,MILK_AMOUNT,1999,SUGAR_AMOUNT, 750");
 		
-		List<RecipePM> rPMList=recipePMService.getListByWorkOrderID(workOrderID);
-		StringBuilder rPMSB=new StringBuilder();
-		for (int i = 0; i < rPMList.size(); i++) {
-			RecipePM rPM = rPMList.get(i);
-			String pMName = rPM.getPMName();
-			String dosage = rPM.getDosage();
-			rPMSB.append(",");
-			rPMSB.append(pMName);
-			rPMSB.append(",");
-			rPMSB.append(dosage);
+		List<RecipePM> rPMList=recipePMService.getDLListByWorkOrderID(workOrderID);
+		if(rPMList.size()>0) {
+			StringBuilder rPMSB=new StringBuilder();
+			for (int i = 0; i < rPMList.size(); i++) {
+				RecipePM rPM = rPMList.get(i);
+				String pMName = rPM.getPMName();
+				String dosage = rPM.getDosage();
+				rPMSB.append(",");
+				rPMSB.append(pMName);
+				rPMSB.append(",");
+				rPMSB.append(dosage);
+			}
+			String rPMStr = rPMSB.toString();
+			rPMStr=rPMStr.substring(1);
+			commandSB.append(rPMStr);
 		}
-		String rPMStr = rPMSB.toString();
-		rPMStr=rPMStr.substring(1);
+		else {
+			commandSB.append("null");
+		}
 		
-		commandSB.append(rPMStr);
 		commandSB.append(")]");
 		String commandSBStr=commandSB.toString();
 		System.out.println("commandSBStr==="+commandSBStr);
