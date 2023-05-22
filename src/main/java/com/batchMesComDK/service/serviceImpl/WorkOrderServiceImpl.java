@@ -92,10 +92,9 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	}
 
 	@Override
-	public String createFormulaIdByDateYMD(String productCode, String productName) {
+	public String createFormulaIdByDateYMD(String identifier) {
 		// TODO Auto-generated method stub
 		String identifierPre = "";
-		String identifier = recipeHeaderDao.getIdentifierByProductParam(productCode, productName);
 		if(!StringUtils.isEmpty(identifier)) {
 			identifierPre=identifier.substring(0, 3);
 		}
@@ -115,7 +114,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 			formulaIdXhStr="00"+formulaIdXh;
 		else if(formulaIdXh<100)
 			formulaIdXhStr="0"+formulaIdXh;
-		return identifier+"-"+formulaIdDate+formulaIdXhStr;
+		return formulaIdDate+formulaIdXhStr;
 	}
 
 	@Override

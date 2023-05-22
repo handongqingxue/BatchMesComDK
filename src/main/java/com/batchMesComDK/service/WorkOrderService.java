@@ -26,7 +26,7 @@ public interface WorkOrderService {
 
 	int updateZGIDByWorkOrder(String zGID, String workOrder);
 
-	String createFormulaIdByDateYMD(String productCode, String productName);
+	String createFormulaIdByDateYMD(String identifier);
 
 	String getFormulaIdByWOID(String workOrderID);
 

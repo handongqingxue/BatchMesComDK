@@ -40,6 +40,9 @@
 				State,
 			</if>
 				CreateTime,
+			<if test="UnitID!=null">
+				UnitID,
+			</if>
 			<if test="LotNo!=null">
 				LotNo,
 			</if>
@@ -83,6 +86,9 @@
 				#{State},
 			</if>
 				GETDATE(),
+			<if test="UnitID!=null">
+				#{UnitID},
+			</if>
 			<if test="LotNo!=null">
 				#{LotNo},
 			</if>

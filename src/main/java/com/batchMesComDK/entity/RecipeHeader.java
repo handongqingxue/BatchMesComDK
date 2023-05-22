@@ -86,6 +86,12 @@ public class RecipeHeader {
 	public void setName_pre(String name_pre) {
 		Name_pre = name_pre;
 	}
+	public String getUnitID() {
+		return UnitID;
+	}
+	public void setUnitID(String unitID) {
+		UnitID = unitID;
+	}
 	private Integer ID;
 	private String RecipeID;
 	private String Identifier;
@@ -100,4 +106,5 @@ public class RecipeHeader {
 	private String Dev1;
 	private String Dev2;
 	private String Name_pre;
+	private String UnitID;
 }

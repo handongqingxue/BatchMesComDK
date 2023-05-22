@@ -70,6 +70,8 @@ public class BatchController {
 	@Autowired
 	private SignoffDataService signoffDataService;
 	@Autowired
+	private RecipeHeaderService recipeHeaderService;
+	@Autowired
 	private TestLogService testLogService;
 	@Autowired
 	private MaterialCheckOverIssusBodyService materialCheckOverIssusBodyService;
@@ -1643,10 +1645,9 @@ public class BatchController {
 		List<RecipePM> recipePMList=convertMesMaterialListStrToRecipePMList(materialListStr);
 		
 		WorkOrder wo=new WorkOrder();
-		String idenFormulaId=workOrderService.createFormulaIdByDateYMD(productcode,productName);
-		String[] idenForArr = idenFormulaId.split("-");
-		String identifier=idenForArr[0];
-		String formulaId=idenForArr[1];
+		RecipeHeader recipeHeader=recipeHeaderService.getByProductParam(productcode, productName);
+		String identifier=recipeHeader.getIdentifier();
+		String formulaId=workOrderService.createFormulaIdByDateYMD(identifier);
 		wo.setIdentifier(identifier);
 		wo.setFormulaId(formulaId);
 		wo.setRecipeID(recipeID);
@@ -1659,6 +1660,9 @@ public class BatchController {
 		wo.setRecipePMList(recipePMList);
 		wo.setLotNo(lotNo);
 		wo.setWorkcenterId(workcenterId);
+		
+		String unitID = recipeHeader.getUnitID();
+		wo.setUnitID(unitID);
 		
 		return wo;
 	}
