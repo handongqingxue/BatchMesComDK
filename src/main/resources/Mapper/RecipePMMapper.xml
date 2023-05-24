@@ -48,6 +48,12 @@
 			<if test="LL!=null">
 				LL,
 			</if>
+			<if test="PMSort!=null">
+				PMSort,
+			</if>
+			<if test="Step!=null">
+				Step,
+			</if>
 		</trim>
 		values
 		<trim prefix="(" suffix=")" suffixOverrides=",">
@@ -93,6 +99,12 @@
 			<if test="LL!=null">
 				#{LL},
 			</if>
+			<if test="PMSort!=null">
+				#{PMSort},
+			</if>
+			<if test="Step!=null">
+				#{Step},
+			</if>
 		</trim>
 	</insert>
 	<delete id="deleteByList">
@@ -102,7 +114,7 @@
 		</foreach>
 	</delete>
 	<select id="getListByWorkOrderID" resultType="com.batchMesComDK.entity.RecipePM">
-		select * from RecipePM where WorkOrderID=#{workOrderID}
+		select * from RecipePM where WorkOrderID=#{workOrderID} order by PMSort
 	</select>
 	<select id="getManFeedListByWorkOrderID" resultType="com.batchMesComDK.entity.RecipePM">
 		select * from RecipePM where PMType=${@com.batchMesComDK.entity.RecipePM@RGTLCS} and WorkOrderID=#{workOrderID}

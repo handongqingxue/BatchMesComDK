@@ -44,6 +44,8 @@ public class RecipePMServiceImpl implements RecipePMService {
 			rPM.setMaterialSV(rPMTmp.getMaterialSV());
 			rPM.setHH(rPMTmp.getHH());
 			rPM.setLL(rPMTmp.getLL());
+			rPM.setPMSort(rPMTmp.getPMSort());
+			rPM.setStep(rPMTmp.getStep());
 			
 			count+=recipePMDao.add(rPM);
 		}

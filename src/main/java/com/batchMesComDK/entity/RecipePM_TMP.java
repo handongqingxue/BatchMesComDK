@@ -106,6 +106,18 @@ public class RecipePM_TMP {
 	public void setLL(String lL) {
 		LL = lL;
 	}
+	public Integer getPMSort() {
+		return PMSort;
+	}
+	public void setPMSort(Integer pMSort) {
+		PMSort = pMSort;
+	}
+	public Integer getStep() {
+		return Step;
+	}
+	public void setStep(Integer step) {
+		Step = step;
+	}
 	private String PMCode;
   	private String PMName;
   	private String Lot;
@@ -120,4 +132,6 @@ public class RecipePM_TMP {
   	private String MaterialSV;
 	private String HH;
 	private String LL;
+	private Integer PMSort;
+	private Integer Step;
 }
