@@ -35,4 +35,22 @@ public interface WorkOrderService {
 	Integer getCountByByWOIDs(String workOrders);
 
 	List<Integer> getStateListByWOIDs(String workOrders);
+
+	/**
+	 * 根据状态和主机id检查是否存在其他工单
+	 * @param state
+	 * @param workOrderID
+	 * @param unitID
+	 * @return
+	 */
+	boolean checkExistOtherByStateUnitID(int state, String workOrderID, String unitID);
+
+	/**
+	 * 根据主机id修改本机上其他工单状态
+	 * @param state
+	 * @param workOrderID
+	 * @param unitID
+	 * @return
+	 */
+	int updateOtherStateByUnitID(int state, String workOrderID, String unitID);
 }

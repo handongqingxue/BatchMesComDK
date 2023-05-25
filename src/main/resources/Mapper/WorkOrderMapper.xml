@@ -184,4 +184,13 @@
 		#{workOrderID}
 		</foreach>
 	</select>
+	<select id="getOtherCountByStateUnitID" resultType="java.lang.Integer">
+		select count(*) from WorkOrder where State=#{state} and workOrderID!=#{workOrderID} and unitID=#{unitID}
+	</select>
+	<select id="updateOtherStateByUnitID">
+		update WorkOrder set State=${state} where workOrderID!=#{workOrderID} and unitID=#{unitID}
+		<if test="state==@com.batchMesComDK.entity.WorkOrder@BQD">
+			and State=${@com.batchMesComDK.entity.WorkOrder@BCJWB}
+		</if>
+	</select>
 </mapper>

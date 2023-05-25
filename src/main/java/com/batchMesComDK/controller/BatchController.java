@@ -78,6 +78,7 @@ public class BatchController {
 	public static final String MODULE_NAME="batch";
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private List<Map<String, Object>> woPreStateList=new ArrayList<>();
+	private boolean existRunWO;
 	
 	//http://localhost:8080/BatchMesComDK/batch/test
 	@RequestMapping(value="/test")
@@ -155,52 +156,60 @@ public class BatchController {
 					addWOPreStateInList(WorkOrder.BCJWB,wo.getWorkOrderID());
 					break;
 				case WorkOrder.BQD:
-					//启动执行配方
-					for (int j = 1; j <= batchCount; j++) {
-						String workOrderIDStr = wo.getWorkOrderID().toString();
-						String formulaIdStr = wo.getFormulaId().toString();
-						//String batchIDVal = BLKey_x("BatchID",j);
-						String batchIDResultJOStr = getItem("BLBatchID_"+j);
-						JSONObject batchIDResultJO = new JSONObject(batchIDResultJOStr);
-						String batchIDVal = batchIDResultJO.getString("data");
-						System.out.println("batchIDVal==="+batchIDVal);
-						//batchIDVal = batchIDVal.substring(0, batchIDVal.indexOf(Constant.END_SUCCESS));
-						if(formulaIdStr.equals(batchIDVal)) {
-							//String createIDVal = BLKey_x("CreateID",j);
-							String createIDResultJOStr = getItem("BLCreateID_"+j);
-							JSONObject createIDResultJO = new JSONObject(createIDResultJOStr);
-							String createIDVal = createIDResultJO.getString("data");
-							//createIDVal = createIDVal.substring(0, createIDVal.indexOf(Constant.END_SUCCESS));
-							System.out.println("createIDVal==="+createIDVal);
-							
-							//调用batch环境的启动接口
-							StringBuilder commandBQDSB=new StringBuilder();
-							commandBQDSB.append("[COMMAND(Item,");
-							commandBQDSB.append(Constant.USERID);
-							commandBQDSB.append(",");
-							commandBQDSB.append(createIDVal);
-							commandBQDSB.append(",");
-							commandBQDSB.append(BatchTest.START);
-							commandBQDSB.append(")]");
-							execute(commandBQDSB.toString());
-							
-							//String stateVal = BLKey_x("State",j);
-							String stateResultJOStr = getItem("BLState_"+j);
-							JSONObject stateResultJO = new JSONObject(stateResultJOStr);
-							String stateVal = stateResultJO.getString("data");
-							//stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
-							if(BatchTest.RUNNING.equals(stateVal)) {
-								workOrderService.updateStateById(WorkOrder.BYX, wo.getID());
+					if(!existRunWO) {
+						boolean existCjwb=workOrderService.checkExistOtherByStateUnitID(WorkOrder.BCJWB,wo.getWorkOrderID(),wo.getUnitID());
+						if(existCjwb) {
+							workOrderService.updateOtherStateByUnitID(WorkOrder.BQD,wo.getWorkOrderID(),wo.getUnitID());
+						}
+						//启动执行配方
+						for (int j = 1; j <= batchCount; j++) {
+							String workOrderIDStr = wo.getWorkOrderID().toString();
+							String formulaIdStr = wo.getFormulaId().toString();
+							//String batchIDVal = BLKey_x("BatchID",j);
+							String batchIDResultJOStr = getItem("BLBatchID_"+j);
+							JSONObject batchIDResultJO = new JSONObject(batchIDResultJOStr);
+							String batchIDVal = batchIDResultJO.getString("data");
+							System.out.println("batchIDVal==="+batchIDVal);
+							//batchIDVal = batchIDVal.substring(0, batchIDVal.indexOf(Constant.END_SUCCESS));
+							if(formulaIdStr.equals(batchIDVal)) {
+								//String createIDVal = BLKey_x("CreateID",j);
+								String createIDResultJOStr = getItem("BLCreateID_"+j);
+								JSONObject createIDResultJO = new JSONObject(createIDResultJOStr);
+								String createIDVal = createIDResultJO.getString("data");
+								//createIDVal = createIDVal.substring(0, createIDVal.indexOf(Constant.END_SUCCESS));
+								System.out.println("createIDVal==="+createIDVal);
 								
-								StringBuilder qdSB=new StringBuilder();
-								qdSB.append("[{");
-								qdSB.append("\"workOrder\":\"");
-								qdSB.append(wo.getWorkOrderID());
-								qdSB.append("\",\"orderExecuteStatus\":\""+WorkOrder.PRODUCTION+"\",");
-								qdSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
-								changeOrderStatus(qdSB.toString());
+								//调用batch环境的启动接口
+								StringBuilder commandBQDSB=new StringBuilder();
+								commandBQDSB.append("[COMMAND(Item,");
+								commandBQDSB.append(Constant.USERID);
+								commandBQDSB.append(",");
+								commandBQDSB.append(createIDVal);
+								commandBQDSB.append(",");
+								commandBQDSB.append(BatchTest.START);
+								commandBQDSB.append(")]");
+								execute(commandBQDSB.toString());
 								
-								addWOPreStateInList(WorkOrder.BYX,workOrderIDStr);
+								//String stateVal = BLKey_x("State",j);
+								String stateResultJOStr = getItem("BLState_"+j);
+								JSONObject stateResultJO = new JSONObject(stateResultJOStr);
+								String stateVal = stateResultJO.getString("data");
+								//stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
+								if(BatchTest.RUNNING.equals(stateVal)) {
+									workOrderService.updateStateById(WorkOrder.BYX, wo.getID());
+									
+									existRunWO=true;
+									
+									StringBuilder qdSB=new StringBuilder();
+									qdSB.append("[{");
+									qdSB.append("\"workOrder\":\"");
+									qdSB.append(wo.getWorkOrderID());
+									qdSB.append("\",\"orderExecuteStatus\":\""+WorkOrder.PRODUCTION+"\",");
+									qdSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
+									changeOrderStatus(qdSB.toString());
+									
+									addWOPreStateInList(WorkOrder.BYX,workOrderIDStr);
+								}
 							}
 						}
 					}
@@ -276,6 +285,8 @@ public class BatchController {
 							//stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
 							if(BatchTest.COMPLETE.equals(stateVal)) {
 								workOrderService.updateStateByFormulaId(WorkOrder.BJS, formulaId);
+								
+								existRunWO=false;
 								
 								StringBuilder jsSB=new StringBuilder();
 								jsSB.append("[{");
