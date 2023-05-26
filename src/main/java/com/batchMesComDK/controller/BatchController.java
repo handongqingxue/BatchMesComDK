@@ -78,7 +78,7 @@ public class BatchController {
 	public static final String MODULE_NAME="batch";
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private List<Map<String, Object>> woPreStateList=new ArrayList<Map<String, Object>>();
-	private Map<String,Map<String, Object>> unitIDWOMap;
+	private Map<String,Map<String, Object>> unitIDWOMap;//根据主机id存储工单里的某几个状态(是否运行、是否存在于batch列表)
 	
 	//http://localhost:8080/BatchMesComDK/batch/test
 	@RequestMapping(value="/test")
@@ -109,6 +109,9 @@ public class BatchController {
 		return jsonMap;
 	}
 	
+	/**
+	 * 初始化主机id工单map
+	 */
 	public void initUnitIDWOMap() {
 		Map<String, Object> wOMap=new HashMap<String, Object>();
 		wOMap.put("existRunWO", false);
@@ -129,7 +132,7 @@ public class BatchController {
 	public void keepWatchOnWorkOrder() {
 
 		try {
-			if(unitIDWOMap==null)
+			if(unitIDWOMap==null)//一开始判断主机id工单map是否存在，不存在就初始化
 				initUnitIDWOMap();
 			
 			List<WorkOrder> woList=workOrderService.getKeepWatchList();
@@ -149,7 +152,7 @@ public class BatchController {
 				Integer state = wo.getState();
 				System.out.println("state==="+state);
 				String unitID = wo.getUnitID();
-				Map<String, Object> woMap=unitIDWOMap.get(unitID);
+				Map<String, Object> woMap=unitIDWOMap.get(unitID);//根据主机id获取工单状态map
 				switch (state) {
 				case WorkOrder.CSQRWB:
 					//调用创建batch接口创建batch
@@ -176,9 +179,9 @@ public class BatchController {
 					addWOPreStateInList(WorkOrder.BCJWB,wo.getWorkOrderID());
 					break;
 				case WorkOrder.BQD:
-					boolean existRunWO=Boolean.valueOf(woMap.get("existRunWO").toString());
+					boolean existRunWO=Boolean.valueOf(woMap.get("existRunWO").toString());//是否正在运行状态
 					System.out.println("existRunWO===="+existRunWO);
-					if(!existRunWO) {
+					if(!existRunWO) {//没有正在运行的工单，则运行下一个时间点的工单
 						boolean existCjwb=workOrderService.checkExistOtherByStateUnitID(WorkOrder.BCJWB,wo.getWorkOrderID(),wo.getUnitID());
 						if(existCjwb) {
 							workOrderService.updateOtherStateByUnitID(WorkOrder.BQD,wo.getWorkOrderID(),wo.getUnitID());
@@ -220,7 +223,7 @@ public class BatchController {
 								if(BatchTest.RUNNING.equals(stateVal)) {
 									workOrderService.updateStateById(WorkOrder.BYX, wo.getID());
 									
-									woMap.put("existRunWO", true);
+									woMap.put("existRunWO", true);//工单运行了，就把存在运行中的状态值1，其他启动了的工单就无法运行了，直到状态置0才能运行下一个时间点的工单
 									
 									StringBuilder qdSB=new StringBuilder();
 									qdSB.append("[{");
