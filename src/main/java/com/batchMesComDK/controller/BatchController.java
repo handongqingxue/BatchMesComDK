@@ -77,8 +77,8 @@ public class BatchController {
 	private MaterialCheckOverIssusBodyService materialCheckOverIssusBodyService;
 	public static final String MODULE_NAME="batch";
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	private List<Map<String, Object>> woPreStateList=new ArrayList<>();
-	private boolean existRunWO;
+	private List<Map<String, Object>> woPreStateList=new ArrayList<Map<String, Object>>();
+	private Map<String,Map<String, Object>> unitIDWOMap;
 	
 	//http://localhost:8080/BatchMesComDK/batch/test
 	@RequestMapping(value="/test")
@@ -108,6 +108,19 @@ public class BatchController {
 		
 		return jsonMap;
 	}
+	
+	public void initUnitIDWOMap() {
+		Map<String, Object> wOMap=new HashMap<String, Object>();
+		wOMap.put("existRunWO", false);
+		wOMap.put("existInBatchList", false);
+		
+		String[] unitIDArr=new String[] {"09","10"};
+		
+		unitIDWOMap=new HashMap<String,Map<String, Object>>();
+		for (String unitID : unitIDArr) {
+			unitIDWOMap.put(unitID, wOMap);
+		}
+	}
 
 	/**
 	 * 巡回检索工单状态变化
@@ -116,10 +129,15 @@ public class BatchController {
 	public void keepWatchOnWorkOrder() {
 
 		try {
+			if(unitIDWOMap==null)
+				initUnitIDWOMap();
+			
 			List<WorkOrder> woList=workOrderService.getKeepWatchList();
 			System.out.println("woListSize==="+woList.size());
 			String workOrderIDs="";
 			String formulaIds="";
+			String unitIDs="";
+			
 			String batchCountResultStr = getItem("BatchListCt");
 			System.out.println("batchCountResultStr==="+batchCountResultStr);
 			JSONObject batchCountResultJO = new JSONObject(batchCountResultStr);
@@ -130,6 +148,8 @@ public class BatchController {
 				WorkOrder wo = woList.get(i);
 				Integer state = wo.getState();
 				System.out.println("state==="+state);
+				String unitID = wo.getUnitID();
+				Map<String, Object> woMap=unitIDWOMap.get(unitID);
 				switch (state) {
 				case WorkOrder.CSQRWB:
 					//调用创建batch接口创建batch
@@ -156,6 +176,8 @@ public class BatchController {
 					addWOPreStateInList(WorkOrder.BCJWB,wo.getWorkOrderID());
 					break;
 				case WorkOrder.BQD:
+					boolean existRunWO=Boolean.valueOf(woMap.get("existRunWO").toString());
+					System.out.println("existRunWO===="+existRunWO);
 					if(!existRunWO) {
 						boolean existCjwb=workOrderService.checkExistOtherByStateUnitID(WorkOrder.BCJWB,wo.getWorkOrderID(),wo.getUnitID());
 						if(existCjwb) {
@@ -198,7 +220,7 @@ public class BatchController {
 								if(BatchTest.RUNNING.equals(stateVal)) {
 									workOrderService.updateStateById(WorkOrder.BYX, wo.getID());
 									
-									existRunWO=true;
+									woMap.put("existRunWO", true);
 									
 									StringBuilder qdSB=new StringBuilder();
 									qdSB.append("[{");
@@ -257,10 +279,11 @@ public class BatchController {
 					break;
 				}
 				
-				if(state==WorkOrder.BYX||state==WorkOrder.BQX||state==WorkOrder.BZT) {
+				if(state==WorkOrder.BYX||state==WorkOrder.BQX) {
 					//把状态大于5的工单的可执行配方id拼接起来，可执行配方id对应batchID
 					formulaIds+=","+wo.getFormulaId();
 					workOrderIDs+=","+wo.getWorkOrderID();
+					unitIDs+=","+wo.getUnitID();
 				}
 			}
 
@@ -268,52 +291,74 @@ public class BatchController {
 			if(!StringUtils.isEmpty(formulaIds)) {
 				String[] formulaIdArr = formulaIds.substring(1).split(",");
 				String[] workOrderIDArr = workOrderIDs.substring(1).split(",");
+				String[] unitIDArr = unitIDs.substring(1).split(",");
 				for (int i = 0; i < formulaIdArr.length; i++) {
 					String formulaId = formulaIdArr[i];
 					String workOrderID = workOrderIDArr[i];
-					for (int j = 1; j <= batchCount; j++) {
-						//String batchIDVal = BLKey_x("BatchID",j);
-						String batchIDResultJOStr = getItem("BLBatchID_"+j);
-						JSONObject batchIDResultJO = new JSONObject(batchIDResultJOStr);
-						String batchIDVal = batchIDResultJO.getString("data");
-						//batchIDVal = batchIDVal.substring(0, batchIDVal.indexOf(Constant.END_SUCCESS));
-						if(formulaId.equals(batchIDVal)) {
-							//String stateVal = BLKey_x("State",j);
-							String stateResultJOStr = getItem("BLState_"+j);
-							JSONObject stateResultJO = new JSONObject(stateResultJOStr);
-							String stateVal = stateResultJO.getString("data");
-							//stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
-							if(BatchTest.COMPLETE.equals(stateVal)) {
-								workOrderService.updateStateByFormulaId(WorkOrder.BJS, formulaId);
+					String unitID = unitIDArr[i];
+					Map<String, Object> woMap = unitIDWOMap.get(unitID);
+					if(batchCount==0) {
+						woMap.put("existInBatchList", false);
+					}
+					else {
+						for (int j = 1; j <= batchCount; j++) {
+							//String batchIDVal = BLKey_x("BatchID",j);
+							String batchIDResultJOStr = getItem("BLBatchID_"+j);
+							JSONObject batchIDResultJO = new JSONObject(batchIDResultJOStr);
+							String batchIDVal = batchIDResultJO.getString("data");
+							//batchIDVal = batchIDVal.substring(0, batchIDVal.indexOf(Constant.END_SUCCESS));
+							if(formulaId.equals(batchIDVal)) {
+								woMap.put("existInBatchList", true);
 								
-								existRunWO=false;
-								
-								StringBuilder jsSB=new StringBuilder();
-								jsSB.append("[{");
-								jsSB.append("\"workOrder\":\"");
-								jsSB.append(workOrderID);
-								jsSB.append("\",\"orderExecuteStatus\":\""+WorkOrder.COMPLETE+"\",");
-								jsSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
-								changeOrderStatus(jsSB.toString());
-								
-								getSendToMesBRData();//检索是否存在给mes端推送批记录的工单
-								
-								addWOPreStateInList(WorkOrder.BJS,workOrderID);
-							}
-							else if(BatchTest.STOPPED.equals(stateVal)) {
-								workOrderService.updateStateByFormulaId(WorkOrder.BYWZZ, formulaId);
-
-								StringBuilder jsSB=new StringBuilder();
-								jsSB.append("[{");
-								jsSB.append("\"workOrder\":\"");
-								jsSB.append(workOrderID);
-								jsSB.append("\",\"orderExecuteStatus\":\"PRODUCTBREAK\",");
-								jsSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
-								changeOrderStatus(jsSB.toString());
-								
-								addWOPreStateInList(WorkOrder.BYWZZ,workOrderID);
+								//String stateVal = BLKey_x("State",j);
+								String stateResultJOStr = getItem("BLState_"+j);
+								JSONObject stateResultJO = new JSONObject(stateResultJOStr);
+								String stateVal = stateResultJO.getString("data");
+								//stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
+								if(BatchTest.COMPLETE.equals(stateVal)) {
+									workOrderService.updateStateByFormulaId(WorkOrder.BJS, formulaId);
+									
+									woMap.put("existRunWO", false);
+									
+									StringBuilder jsSB=new StringBuilder();
+									jsSB.append("[{");
+									jsSB.append("\"workOrder\":\"");
+									jsSB.append(workOrderID);
+									jsSB.append("\",\"orderExecuteStatus\":\""+WorkOrder.COMPLETE+"\",");
+									jsSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
+									changeOrderStatus(jsSB.toString());
+									
+									getSendToMesBRData();//检索是否存在给mes端推送批记录的工单
+									
+									addWOPreStateInList(WorkOrder.BJS,workOrderID);
+								}
+								else if(BatchTest.STOPPED.equals(stateVal)) {
+									workOrderService.updateStateByFormulaId(WorkOrder.BYWZZ, formulaId);
+	
+									StringBuilder jsSB=new StringBuilder();
+									jsSB.append("[{");
+									jsSB.append("\"workOrder\":\"");
+									jsSB.append(workOrderID);
+									jsSB.append("\",\"orderExecuteStatus\":\"PRODUCTBREAK\",");
+									jsSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
+									changeOrderStatus(jsSB.toString());
+									
+									addWOPreStateInList(WorkOrder.BYWZZ,workOrderID);
+								}
+								else if(BatchTest.ABORTED.equals(stateVal)) {
+									workOrderService.updateStateByFormulaId(WorkOrder.BYWZZ, formulaId);
+									
+									woMap.put("existRunWO", false);
+								}
+								break;
 							}
 						}
+					}
+					
+					boolean existInBatchList=Boolean.valueOf(woMap.get("existInBatchList").toString());
+					System.out.println("existInBatchList==="+existInBatchList);
+					if(!existInBatchList) {
+						woMap.put("existRunWO", false);
 					}
 				}
 			}
