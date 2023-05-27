@@ -14,8 +14,6 @@
 <script type="text/javascript">
 var path='<%=basePath %>';
 $(function(){
-	//addDataToDB();
-	//getFormulaCodeMaterialDosage();
 	//keepWatchOnWorkOrder();
 	initUwosStateSel();
 	initUbtsStateSel();
@@ -30,20 +28,6 @@ function keepWatchOnWorkOrderTest(){
 	$.post(path+"batch/keepWatchOnWorkOrderTest",
 		function(data){
 			
-		}
-	,"json");
-}
-
-function getFormulaCodeMaterialDosage(){
-	$.post(path+"batch/getFormulaCodeMaterialDosage",
-		function(data){
-			if(data.message){
-				var codeDosageList=data.codeDosageList;
-				for(var i=0;i<codeDosageList.length;i++){
-					var codeDosage=codeDosageList[i];
-					console.log("code==="+codeDosage.code+",dosage==="+codeDosage.dosage);
-				}
-			}
 		}
 	,"json");
 }
@@ -569,16 +553,6 @@ function initUbtsStateSel(){
 	stateSel.append("<option value=\""+stopState+"\">"+stopState+"</option>");
 	stateSel.append("<option value=\""+stoppedState+"\">"+stoppedState+"</option>");
 	stateSel.append("<option value=\""+completeState+"\">"+completeState+"</option>");
-}
-
-function addDataToDB(){
-	var tabName="FormulaDto";
-	$.post(path+"batch/addDataToDB",
-		{tabName:tabName,resultType:"list"},
-		function(data){
-			alert(data.info);
-		}
-	,"json");
 }
 
 function getItem(){

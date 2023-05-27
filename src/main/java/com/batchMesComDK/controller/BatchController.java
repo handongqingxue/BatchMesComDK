@@ -38,19 +38,7 @@ import com.thingworx.sdk.batch.BatchComBridge;
 public class BatchController {
 
 	@Autowired
-	private FormulaDtoService formulaDtoService;
-	@Autowired
-	private FormulaMaterialDtoService formulaMaterialDtoService;
-	@Autowired
 	private BHBatchService bHBatchService;
-	@Autowired
-	private FeedIssusBodyService feedIssusBodyService;
-	@Autowired
-	private OrderMateriaBodyService orderMateriaBodyService;
-	@Autowired
-	private PasteWorkingNumBodyService pasteWorkingNumBodyService;
-	@Autowired
-	private WorkOrderBodyService workOrderBodyService;
 	@Autowired
 	private WorkOrderService workOrderService;
 	@Autowired
@@ -64,8 +52,6 @@ public class BatchController {
 	@Autowired
 	private BatchTestService batchTestService;
 	@Autowired
-	private TranslateService translateService;
-	@Autowired
 	private SignoffTemplateService signoffTemplateService;
 	@Autowired
 	private SignoffDataService signoffDataService;
@@ -73,8 +59,6 @@ public class BatchController {
 	private RecipeHeaderService recipeHeaderService;
 	@Autowired
 	private TestLogService testLogService;
-	@Autowired
-	private MaterialCheckOverIssusBodyService materialCheckOverIssusBodyService;
 	public static final String MODULE_NAME="batch";
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private List<Map<String, Object>> woPreStateList=new ArrayList<Map<String, Object>>();
@@ -84,8 +68,6 @@ public class BatchController {
 	@RequestMapping(value="/test")
 	public String goTest(HttpServletRequest request) {
 		
-		//List<FormulaDto> fdList=formulaDtoService.getList();
-		//System.out.println("size==="+fdList.size());
 		//List<FormulaMaterialDto> fmdList=formulaMaterialDtoService.getList();
 		//System.out.println("size==="+fmdList.size());
 		//ActiveXTest.printVersion("BatchViewHMI.BatchesList");
@@ -300,63 +282,58 @@ public class BatchController {
 					String workOrderID = workOrderIDArr[i];
 					String unitID = unitIDArr[i];
 					Map<String, Object> woMap = unitIDWOMap.get(unitID);
-					if(batchCount==0) {
-						woMap.put("existInBatchList", false);
-					}
-					else {
-						for (int j = 1; j <= batchCount; j++) {
-							//String batchIDVal = BLKey_x("BatchID",j);
-							String batchIDResultJOStr = getItem("BLBatchID_"+j);
-							JSONObject batchIDResultJO = new JSONObject(batchIDResultJOStr);
-							String batchIDVal = batchIDResultJO.getString("data");
-							//batchIDVal = batchIDVal.substring(0, batchIDVal.indexOf(Constant.END_SUCCESS));
-							if(formulaId.equals(batchIDVal)) {
-								woMap.put("existInBatchList", true);
+					woMap.put("existInBatchList", false);
+					for (int j = 1; j <= batchCount; j++) {
+						//String batchIDVal = BLKey_x("BatchID",j);
+						String batchIDResultJOStr = getItem("BLBatchID_"+j);
+						JSONObject batchIDResultJO = new JSONObject(batchIDResultJOStr);
+						String batchIDVal = batchIDResultJO.getString("data");
+						//batchIDVal = batchIDVal.substring(0, batchIDVal.indexOf(Constant.END_SUCCESS));
+						if(formulaId.equals(batchIDVal)) {
+							woMap.put("existInBatchList", true);
+							
+							//String stateVal = BLKey_x("State",j);
+							String stateResultJOStr = getItem("BLState_"+j);
+							JSONObject stateResultJO = new JSONObject(stateResultJOStr);
+							String stateVal = stateResultJO.getString("data");
+							//stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
+							if(BatchTest.COMPLETE.equals(stateVal)) {
+								workOrderService.updateStateByFormulaId(WorkOrder.BJS, formulaId);
 								
-								//String stateVal = BLKey_x("State",j);
-								String stateResultJOStr = getItem("BLState_"+j);
-								JSONObject stateResultJO = new JSONObject(stateResultJOStr);
-								String stateVal = stateResultJO.getString("data");
-								//stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
-								if(BatchTest.COMPLETE.equals(stateVal)) {
-									workOrderService.updateStateByFormulaId(WorkOrder.BJS, formulaId);
-									
-									woMap.put("existRunWO", false);
-									
-									StringBuilder jsSB=new StringBuilder();
-									jsSB.append("[{");
-									jsSB.append("\"workOrder\":\"");
-									jsSB.append(workOrderID);
-									jsSB.append("\",\"orderExecuteStatus\":\""+WorkOrder.COMPLETE+"\",");
-									jsSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
-									changeOrderStatus(jsSB.toString());
-									
-									getSendToMesBRData();//检索是否存在给mes端推送批记录的工单
-									
-									addWOPreStateInList(WorkOrder.BJS,workOrderID);
-								}
-								else if(BatchTest.STOPPED.equals(stateVal)) {
-									workOrderService.updateStateByFormulaId(WorkOrder.BYWZZ, formulaId);
-	
-									StringBuilder jsSB=new StringBuilder();
-									jsSB.append("[{");
-									jsSB.append("\"workOrder\":\"");
-									jsSB.append(workOrderID);
-									jsSB.append("\",\"orderExecuteStatus\":\"PRODUCTBREAK\",");
-									jsSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
-									changeOrderStatus(jsSB.toString());
-									
-									addWOPreStateInList(WorkOrder.BYWZZ,workOrderID);
-								}
-								else if(BatchTest.ABORTED.equals(stateVal)) {
-									workOrderService.updateStateByFormulaId(WorkOrder.BYWZZ, formulaId);
-									
-									woMap.put("existRunWO", false);
-								}
-								break;
+								woMap.put("existRunWO", false);
+								
+								StringBuilder jsSB=new StringBuilder();
+								jsSB.append("[{");
+								jsSB.append("\"workOrder\":\"");
+								jsSB.append(workOrderID);
+								jsSB.append("\",\"orderExecuteStatus\":\""+WorkOrder.COMPLETE+"\",");
+								jsSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
+								changeOrderStatus(jsSB.toString());
+								
+								getSendToMesBRData();//检索是否存在给mes端推送批记录的工单
+								
+								addWOPreStateInList(WorkOrder.BJS,workOrderID);
 							}
+							else if(BatchTest.STOPPED.equals(stateVal)) {
+								workOrderService.updateStateByFormulaId(WorkOrder.BYWZZ, formulaId);
+
+								StringBuilder jsSB=new StringBuilder();
+								jsSB.append("[{");
+								jsSB.append("\"workOrder\":\"");
+								jsSB.append(workOrderID);
+								jsSB.append("\",\"orderExecuteStatus\":\"PRODUCTBREAK\",");
+								jsSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
+								changeOrderStatus(jsSB.toString());
+								
+								addWOPreStateInList(WorkOrder.BYWZZ,workOrderID);
+							}
+							else if(BatchTest.ABORTED.equals(stateVal)) {
+								workOrderService.updateStateByFormulaId(WorkOrder.BYWZZ, formulaId);
+								
+								woMap.put("existRunWO", false);
+							}
+							break;
 						}
-						woMap.put("existInBatchList", false);
 					}
 					
 					boolean existInBatchList=Boolean.valueOf(woMap.get("existInBatchList").toString());
@@ -1295,151 +1272,6 @@ public class BatchController {
 		}
 	}
 	
-	@RequestMapping(value="/addDataToDB")
-	@ResponseBody
-	public Map<String, Object> addDataToDB(String tabName,String resultType) {
-
-		Map<String, Object> jsonMap = new HashMap<String, Object>();
-
-		try {
-			boolean success=false;
-			int count=0;
-			if("FeedIssusBody".equals(tabName)) {
-				JSONObject jo = APIUtil.getTabTestItem(tabName);
-				FeedIssusBody fib=(FeedIssusBody)jo.get("FeedIssusBody");
-				count=feedIssusBodyService.add(fib);
-				if(count>0)
-					success=true;
-			}
-			else if("FormulaDto".equals(tabName)) {
-				JSONObject jo =null;
-				List<Translate> translateList=new ArrayList<Translate>();
-				if(APIUtil.ITEM_RESULT.equals(resultType)) {
-					jo = APIUtil.getTabTestItem(tabName);
-					FormulaDto fd=(FormulaDto)jo.get("FormulaDto");
-					
-					String nameChinese = fd.getName();
-					String namePinYin = PinyinUtil.getPinYinString(nameChinese);
-					fd.setName(namePinYin);
-					
-					String productNameChinese = fd.getProductName();
-					String productNamePinYin = PinyinUtil.getPinYinString(productNameChinese);
-					fd.setProductName(productNamePinYin);
-					
-					count=formulaDtoService.add(fd);
-					
-					Translate translate=new Translate();
-					translate.setTabName(tabName);
-					translate.setColName("name");
-					translate.setChinese(nameChinese);
-					translate.setPinYin(namePinYin);
-					translate.setForeignKey(fd.getId());
-					translateList.add(translate);
-					
-					translate=new Translate();
-					translate.setTabName(tabName);
-					translate.setColName("productName");
-					translate.setChinese(productNameChinese);
-					translate.setPinYin(productNamePinYin);
-					translate.setForeignKey(fd.getId());
-					translateList.add(translate);
-					
-					if(count>0)
-						success=true;
-				}
-				else if(APIUtil.LIST_RESULT.equals(resultType)) {
-					jo =APIUtil.getTabTestList(tabName);
-					List<FormulaDto> fdList=(List<FormulaDto>)jo.get("FormulaDtoList");
-					int fdListSize = fdList.size();
-					for(int i=0;i<fdListSize;i++) {
-						FormulaDto fd=fdList.get(i);
-						
-						String nameChinese = fd.getName();
-						String namePinYin = PinyinUtil.getPinYinString(nameChinese);
-						fd.setName(namePinYin);
-						
-						String productNameChinese = fd.getProductName();
-						String productNamePinYin = PinyinUtil.getPinYinString(productNameChinese);
-						fd.setProductName(productNamePinYin);
-						
-						count+=formulaDtoService.add(fd);
-						
-						Translate translate=new Translate();
-						translate.setTabName(tabName);
-						translate.setColName("name");
-						translate.setChinese(nameChinese);
-						translate.setPinYin(namePinYin);
-						translate.setForeignKey(fd.getId());
-						translateList.add(translate);
-						
-						translate=new Translate();
-						translate.setTabName(tabName);
-						translate.setColName("productName");
-						translate.setChinese(productNameChinese);
-						translate.setPinYin(productNamePinYin);
-						translate.setForeignKey(fd.getId());
-						translateList.add(translate);
-					}
-					if(count==fdListSize)
-						success=true;
-				}
-				
-				for (int i = 0; i < translateList.size(); i++) {
-					Translate translate = translateList.get(i);
-					translateService.add(translate);
-				}
-			}
-			else if("FormulaMaterialDto".equals(tabName)) {
-				JSONObject jo = null;
-				if(APIUtil.ITEM_RESULT.equals(resultType)) {
-					jo = APIUtil.getTabTestItem(tabName);
-					FormulaMaterialDto fmd=(FormulaMaterialDto)jo.get("FormulaMaterialDto");
-					count=formulaMaterialDtoService.add(fmd);
-					if(count>0)
-						success=true;
-				}
-				else if(APIUtil.LIST_RESULT.equals(resultType)) {
-					jo =APIUtil.getTabTestList(tabName);
-					List<FormulaMaterialDto> fmdList=(List<FormulaMaterialDto>)jo.get("FormulaMaterialDtoList");
-					int fmdListSize = fmdList.size();
-					for(int i=0;i<fmdListSize;i++) {
-						count+=formulaMaterialDtoService.add(fmdList.get(i));
-					}
-					if(count==fmdListSize)
-						success=true;
-				}
-			}
-			else if("OrderMateriaBody".equals(tabName)) {
-				JSONObject jo = APIUtil.getTabTestItem(tabName);
-				OrderMateriaBody omb=(OrderMateriaBody)jo.get("OrderMateriaBody");
-				count=orderMateriaBodyService.add(omb);
-			}
-			else if("PasteWorkingNumBody".equals(tabName)) {
-				JSONObject jo = APIUtil.getTabTestItem(tabName);
-				PasteWorkingNumBody pwnb=(PasteWorkingNumBody)jo.get("PasteWorkingNumBody");
-				count=pasteWorkingNumBodyService.add(pwnb);
-			}
-			else if("WorkOrderBody".equals(tabName)) {
-				JSONObject jo = APIUtil.getTabTestItem(tabName);
-				WorkOrderBody wob=(WorkOrderBody)jo.get("WorkOrderBody");
-				count=workOrderBodyService.add(wob);
-			}
-			
-			if(success) {
-				jsonMap.put("message", "ok");
-				jsonMap.put("info", "������ݳɹ���");
-			}
-			else {
-				jsonMap.put("message", "no");
-				jsonMap.put("info", "�������ʧ�ܣ�");
-			}
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return jsonMap;
-	}
-	
 	/**
 	 * @param item
 	 * @return
@@ -1490,25 +1322,6 @@ public class BatchController {
 			e.printStackTrace();
 		}
 		return json;
-	}
-
-	@RequestMapping(value="/getFormulaCodeMaterialDosage")
-	@ResponseBody
-	public Map<String, Object> getFormulaCodeMaterialDosage() {
-		
-		Map<String, Object> jsonMap = new HashMap<String, Object>();
-
-		List<Map<String,Object>> codeDosageList=formulaDtoService.getCodeMaterialDosage();
-		
-		if(codeDosageList.size()>0) {
-			jsonMap.put("message", "ok");
-			jsonMap.put("codeDosageList", codeDosageList);
-		}
-		else {
-			jsonMap.put("message", "no");
-			jsonMap.put("info", "������Ϣ��");
-		}
-		return jsonMap;
 	}
 
 	/**
@@ -2005,30 +1818,6 @@ public class BatchController {
 		return jsonMap;
 	}
 	
-	@RequestMapping(value="/materialCheckOverIssusDown", method = RequestMethod.POST)
-	@ResponseBody
-	public PlanResult materialCheckOverIssusDown(@RequestBody String bodyEnc) {
-
-		PlanResult plan=new PlanResult();
-		
-		System.out.println("bodyEnc==="+bodyEnc);
-		String bodyDec = DesUtil.decrypt(bodyEnc,DesUtil.SECRET_KEY);
-		net.sf.json.JSONObject mcoibJO = net.sf.json.JSONObject.fromObject(bodyDec);
-		MaterialCheckOverIssusBody mcoib=(MaterialCheckOverIssusBody)net.sf.json.JSONObject.toBean(mcoibJO, MaterialCheckOverIssusBody.class);
-		int c=materialCheckOverIssusBodyService.add(mcoib);
-		if(c>0) {
-			plan.setSuccess(true);
-			plan.setStatus(1);
-			plan.setMsg("成功");
-		}
-		else {
-			plan.setSuccess(false);
-			plan.setStatus(0);
-			plan.setMsg("失败");
-		}
-		return plan;
-	}
-
 	@RequestMapping(value="/getSendToMesBRData", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> getSendToMesBRData() {
