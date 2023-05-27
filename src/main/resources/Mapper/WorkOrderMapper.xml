@@ -111,6 +111,7 @@
 		<foreach collection="stateList" item="state" open=" and cast(state as char) in (" separator="," close=")">
 		#{state}
 		</foreach>
+		order by CreateTime
 	</select>
 	<update id="edit" parameterType="com.batchMesComDK.entity.WorkOrder">
 		update WorkOrder set 
@@ -184,13 +185,4 @@
 		#{workOrderID}
 		</foreach>
 	</select>
-	<select id="getOtherCountByStateUnitID" resultType="java.lang.Integer">
-		select count(*) from WorkOrder where State=#{state} and workOrderID!=#{workOrderID} and unitID=#{unitID}
-	</select>
-	<update id="updateOtherStateByUnitID">
-		update WorkOrder set State=${state} where workOrderID!=#{workOrderID} and unitID=#{unitID}
-		<if test="state==@com.batchMesComDK.entity.WorkOrder@BQD">
-			and State=${@com.batchMesComDK.entity.WorkOrder@BCJWB}
-		</if>
-	</update>
 </mapper>

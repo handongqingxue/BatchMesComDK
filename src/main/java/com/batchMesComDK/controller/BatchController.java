@@ -129,7 +129,10 @@ public class BatchController {
 	 * 巡回检索工单状态变化
 	 */
 	@RequestMapping(value="/keepWatchOnWorkOrder")
-	public void keepWatchOnWorkOrder() {
+	@ResponseBody
+	public Map<String, Object> keepWatchOnWorkOrder() {
+		
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
 
 		try {
 			if(unitIDWOMap==null)//一开始判断主机id工单map是否存在，不存在就初始化
@@ -152,6 +155,7 @@ public class BatchController {
 				Integer state = wo.getState();
 				System.out.println("state==="+state);
 				String unitID = wo.getUnitID();
+				System.out.println("workOrderID==="+wo.getWorkOrderID());
 				Map<String, Object> woMap=unitIDWOMap.get(unitID);//根据主机id获取工单状态map
 				switch (state) {
 				case WorkOrder.CSQRWB:
@@ -182,10 +186,6 @@ public class BatchController {
 					boolean existRunWO=Boolean.valueOf(woMap.get("existRunWO").toString());//是否正在运行状态
 					System.out.println("existRunWO===="+existRunWO);
 					if(!existRunWO) {//没有正在运行的工单，则运行下一个时间点的工单
-						boolean existCjwb=workOrderService.checkExistOtherByStateUnitID(WorkOrder.BCJWB,wo.getWorkOrderID(),wo.getUnitID());
-						if(existCjwb) {
-							workOrderService.updateOtherStateByUnitID(WorkOrder.BQD,wo.getWorkOrderID(),wo.getUnitID());
-						}
 						//启动执行配方
 						for (int j = 1; j <= batchCount; j++) {
 							String workOrderIDStr = wo.getWorkOrderID().toString();
@@ -356,11 +356,12 @@ public class BatchController {
 								break;
 							}
 						}
+						woMap.put("existInBatchList", false);
 					}
 					
 					boolean existInBatchList=Boolean.valueOf(woMap.get("existInBatchList").toString());
 					System.out.println("existInBatchList==="+existInBatchList);
-					if(!existInBatchList) {
+					if(!existInBatchList) {//若工单不存在与batch列表里，说明batch view那边此工单已删除，就把该主机的存在运行中工单状态置0，便于下一个时间点的工单顺利运行
 						woMap.put("existRunWO", false);
 					}
 				}
@@ -368,6 +369,9 @@ public class BatchController {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+		finally {
+			return jsonMap;
 		}
 		
 	}

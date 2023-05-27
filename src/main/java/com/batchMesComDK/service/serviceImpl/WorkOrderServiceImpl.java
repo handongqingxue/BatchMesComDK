@@ -146,17 +146,4 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		List<String> workOrderIDList = Arrays.asList(workOrderArr);
 		return workOrderDao.getStateListByWOIDList(workOrderIDList);
 	}
-
-	@Override
-	public boolean checkExistOtherByStateUnitID(int state, String workOrderID, String unitID) {
-		// TODO Auto-generated method stub
-		int count=workOrderDao.getOtherCountByStateUnitID(state,workOrderID,unitID);
-		return count==0?false:true;
-	}
-
-	@Override
-	public int updateOtherStateByUnitID(int state, String workOrderID, String unitID) {
-		// TODO Auto-generated method stub
-		return workOrderDao.updateOtherStateByUnitID(state,workOrderID,unitID);
-	}
 }
