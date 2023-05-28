@@ -68,10 +68,6 @@ public class BatchController {
 	@RequestMapping(value="/test")
 	public String goTest(HttpServletRequest request) {
 		
-		//List<FormulaMaterialDto> fmdList=formulaMaterialDtoService.getList();
-		//System.out.println("size==="+fmdList.size());
-		//ActiveXTest.printVersion("BatchViewHMI.BatchesList");
-		
 		//List<BHBatch> bhbList=bHBatchService.getList();
 		//System.out.println("size==="+bhbList.size());
 		Constant.setWorkOrderStateInRequest(request);
@@ -155,8 +151,8 @@ public class BatchController {
 
 					/*
 					 * 内部测试先屏蔽掉这个逻辑
-					addManFeedFromRecipePM(workOrderID,productCode,productName);//工单创建时，从配方参数表里取数据，放入人工投料表
 					*/
+					addManFeedFromRecipePM(workOrderID,productCode,productName);//工单创建时，从配方参数表里取数据，放入人工投料表
 					
 					createBatch(formulaId,workOrderID,identifier);
 					
@@ -1754,9 +1750,9 @@ public class BatchController {
 		
 		/*
 		 * 为了测试暂时屏蔽掉
-		int c=manFeedService.editByWorkOrderIDFeedPortList(mfList);
 		*/
-		int c=manFeedService.addTestFromList(mfList);
+		int c=manFeedService.editByWorkOrderIDFeedPortList(mfList);
+		//int c=manFeedService.addTestFromList(mfList);
 		if(c>0) {
 			jsonMap.put("success", "true");
 			jsonMap.put("state", "001");
