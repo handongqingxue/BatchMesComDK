@@ -103,7 +103,7 @@
 			</if>
 				MarkBit=${@com.batchMesComDK.entity.ManFeed@YJS}
 		</trim>
-		 where WorkOrderID=#{workOrderID} and FeedPort=#{feedPort} and materialCode=#{materialCode} and materialName=#{materialName} and MarkBit=${@com.batchMesComDK.entity.ManFeed@WJS}
+		 where WorkOrderID=#{workOrderID} and FeedPort=#{feedPort} and materialCode=#{materialCode} and MarkBit=${@com.batchMesComDK.entity.ManFeed@WJS}
 	</update>
 	<select id="getByWorkOrderIDFeedPort" resultType="com.batchMesComDK.entity.ManFeed">
 		select * from ManFeed where WorkOrderID=#{workOrderID} and FeedPort=#{feedPort} and MarkBit=0

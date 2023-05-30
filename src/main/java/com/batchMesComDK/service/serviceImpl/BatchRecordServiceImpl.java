@@ -140,10 +140,16 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 			BHBatchHis phase = phaseList.get(i);
 			for (int j = 0; j < lclTimePhaseList.size(); j++) {
 				BHBatchHis lclTimePhase = lclTimePhaseList.get(j);
+				System.out.println("Phase==="+lclTimePhase.getPhase());
+				System.out.println("Descript==="+lclTimePhase.getDescript());
+				System.out.println("11==="+(lclTimePhase.getPhase().equals(phase.getPhase())));
+				System.out.println("222==="+lclTimePhase.getDescript());
+				System.out.println("333==="+("State Changed:".equals(lclTimePhase.getDescript())));
+				System.out.println("444==="+lclTimePhase.getDescript().startsWith("State Changed:"));
 				
-				if(lclTimePhase.getPhase().equals(phase.getPhase())&&"ADD_PM1_51".equals(phase.getPhase())) {
+				if(lclTimePhase.getPhase().equals(phase.getPhase())&&lclTimePhase.getDescript().startsWith("State Changed:")) {
 					String pValue = lclTimePhase.getPValue();
-					if("START".equals(pValue)) {
+					if("STARTING".equals(pValue)) {
 						phase.setLclStartTime(lclTimePhase.getLclTime());
 						//break;
 					}

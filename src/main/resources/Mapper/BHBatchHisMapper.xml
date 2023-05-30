@@ -13,7 +13,7 @@
 	</select>
 	<select id="getPhaseListByWOIDList" resultType="com.batchMesComDK.entity.BHBatchHis">
 		select brTr.PhaseDisc,wo.WorkOrderID,his.BatchID,his.Recipe,Phase,EU from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo,BatchRecordTr brTr
-		 where his.BatchID=wo.FormulaId and his.Phase=brTr.PhaseName and EU!=''
+		 where his.BatchID=wo.FormulaId collate chinese_prc_ci_as and his.Phase=brTr.PhaseName collate chinese_prc_ci_as and EU!=''
 		<foreach collection="workOrderIDList" item="workOrderID" open=" and cast(wo.WorkOrderID as char) in (" separator="," close=")">
 		#{workOrderID}
 		</foreach>
@@ -21,11 +21,11 @@
 	</select>
 	<select id="getPhaseLclTimeListByWOIDList" resultType="com.batchMesComDK.entity.BHBatchHis">
 		select * from (
-		select min(his.lclTime) lclTime,BatchID,WorkOrderID,Phase,PValue from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo,BatchRecordTr brTr where his.BatchID=wo.FormulaId
-    	and PValue='start' and Phase!='' group by his.lclTime,BatchID,WorkOrderID,Phase,PValue
+		select min(his.lclTime) lclTime,Descript,BatchID,WorkOrderID,Phase,PValue from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo,BatchRecordTr brTr where his.BatchID=wo.FormulaId collate chinese_prc_ci_as
+    	and PValue='starting' and Phase!='' group by his.lclTime,Descript,BatchID,WorkOrderID,Phase,PValue
 	    union
-	    select max(his.lclTime) lclTime,BatchID,WorkOrderID,Phase,PValue from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo,BatchRecordTr brTr where his.BatchID=wo.FormulaId
-	    and PValue='complete' and Phase!='' group by his.lclTime,BatchID,WorkOrderID,Phase,PValue)t where 1=1
+	    select max(his.lclTime) lclTime,Descript,BatchID,WorkOrderID,Phase,PValue from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo,BatchRecordTr brTr where his.BatchID=wo.FormulaId collate chinese_prc_ci_as
+	    and PValue='complete' and Phase!='' group by his.lclTime,Descript,BatchID,WorkOrderID,Phase,PValue)t where 1=1
 		<foreach collection="workOrderIDList" item="workOrderID" open=" and cast(t.WorkOrderID as char) in (" separator="," close=")">
 		#{workOrderID}
 		</foreach>

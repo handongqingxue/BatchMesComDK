@@ -641,7 +641,6 @@ public class BatchController {
 	}
 	
 	private void createBatch(String batchID, String workOrderID, String recipeID) {
-		System.out.println("recipeID2==="+recipeID.trim().length());
 		StringBuilder commandSB=new StringBuilder();
 		commandSB.append("[BATCH(Item,");
 		commandSB.append(Constant.USERID);
@@ -1432,7 +1431,7 @@ public class BatchController {
 			jsonMap.put("msg", "正常");
 		}
 		else {
-			jsonMap.put("success", "true");
+			jsonMap.put("success", "false");
 			jsonMap.put("state", "002");
 			jsonMap.put("msg", "数据格式有误");
 		}
@@ -1486,13 +1485,16 @@ public class BatchController {
 				jsonMap.put("msg", "正常");
 			}
 			else {
-				jsonMap.put("success", "true");
+				jsonMap.put("success", "false");
 				jsonMap.put("state", "002");
 				jsonMap.put("msg", "数据格式有误");
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			jsonMap.put("success", "false");
+			jsonMap.put("state", "002");
+			jsonMap.put("msg", "数据格式有误");
 		}
 		finally {
 			return jsonMap;
@@ -1759,7 +1761,7 @@ public class BatchController {
 			jsonMap.put("msg", "正常");
 		}
 		else {
-			jsonMap.put("success", "true");
+			jsonMap.put("success", "false");
 			jsonMap.put("state", "002");
 			jsonMap.put("msg", "数据格式有误");
 		}
@@ -1807,7 +1809,7 @@ public class BatchController {
 			jsonMap.put("msg", "正常");
 		}
 		else {
-			jsonMap.put("success", "true");
+			jsonMap.put("success", "false");
 			jsonMap.put("state", "002");
 			jsonMap.put("msg", "数据格式有误");
 		}
@@ -1850,15 +1852,16 @@ public class BatchController {
 			}
 			*/
 			
-			//sendToMesWOIDList.add("2023041910050002");
+			sendToMesWOIDList.add("WOt153wfmcii");
 			
 			
+			int count=0;
 			/*
-			int count=batchRecordService.addMaterialFromBHBatchHis(sendToMesWOIDList);
-			count=batchRecordService.addPhaseFromBHBatchHis(sendToMesWOIDList);
-			count=batchRecordService.addBatchFromBHBatch(sendToMesWOIDList);
 			System.out.println("count===="+count);
+			count=batchRecordService.addMaterialFromBHBatchHis(sendToMesWOIDList);
 			*/
+			count=batchRecordService.addPhaseFromBHBatchHis(sendToMesWOIDList);
+			//count=batchRecordService.addBatchFromBHBatch(sendToMesWOIDList);
 			
 			
 			
