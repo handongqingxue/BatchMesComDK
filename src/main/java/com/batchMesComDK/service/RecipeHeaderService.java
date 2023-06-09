@@ -6,4 +6,6 @@ public interface RecipeHeaderService {
 
 	RecipeHeader getByProductParam(String productCode, String productName);
 
+	RecipeHeader getByRecipeID(String recipeID);
+
 }

@@ -18,4 +18,10 @@ public class RecipeHeaderServiceImpl implements RecipeHeaderService {
 		// TODO Auto-generated method stub
 		return recipeHeaderDao.getByProductParam(productCode, productName);
 	}
+
+	@Override
+	public RecipeHeader getByRecipeID(String recipeID) {
+		// TODO Auto-generated method stub
+		return recipeHeaderDao.getByRecipeID(recipeID);
+	}
 }

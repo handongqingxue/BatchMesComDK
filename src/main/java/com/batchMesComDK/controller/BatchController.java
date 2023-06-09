@@ -61,6 +61,7 @@ public class BatchController {
 	private TestLogService testLogService;
 	public static final String MODULE_NAME="batch";
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private SimpleDateFormat woIdSDF = new SimpleDateFormat("yyyyMMddHHmmss");
 	private List<Map<String, Object>> woPreStateList=new ArrayList<Map<String, Object>>();
 	private Map<String,Map<String, Object>> unitIDWOMap;//根据主机id存储工单里的某几个状态(是否运行、是否存在于batch列表)
 	
@@ -353,6 +354,30 @@ public class BatchController {
 							break;
 						}
 					}
+					break;
+				case WorkOrder.GDSGCJ:
+					Integer id = wo.getID();
+					String recipeID = wo.getRecipeID();
+					RecipeHeader recipeHeader=recipeHeaderService.getByRecipeID(recipeID);
+					String workOrderIDSGCJ = woIdSDF.format(new Date());
+					String productCodeSGCJ = recipeHeader.getProductCode();
+					String productNameSGCJ = recipeHeader.getProductName();
+					String identifierSGCJ = recipeHeader.getIdentifier();
+					String formulaIdSGCJ=workOrderService.createFormulaIdByDateYMD(identifierSGCJ);
+					
+					WorkOrder woSGCJ=new WorkOrder();
+					woSGCJ.setID(id);
+					woSGCJ.setWorkOrderID(workOrderIDSGCJ);
+					woSGCJ.setProductCode(productCodeSGCJ);
+					woSGCJ.setProductName(productNameSGCJ);
+					woSGCJ.setFormulaId(formulaIdSGCJ);
+					
+					int sgcjEditCount=workOrderService.edit(woSGCJ);
+					if(sgcjEditCount>0) {
+						recipePMService.addFromTMP(workOrderIDSGCJ, productCodeSGCJ, productNameSGCJ);
+						workOrderService.updateStateByWorkOrderID(WorkOrder.WLQTWB,workOrderIDSGCJ);
+					}
+					
 					break;
 				}
 				
