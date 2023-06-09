@@ -16,7 +16,7 @@ public interface WorkOrderService {
 
 	List<WorkOrder> getKeepWatchList();
 
-	List<WorkOrder> getFinishedList();
+	List<WorkOrder> getSendToMesList();
 
 	int edit(WorkOrder wo);
 

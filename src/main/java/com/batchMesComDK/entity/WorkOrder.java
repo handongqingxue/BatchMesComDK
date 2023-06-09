@@ -40,6 +40,14 @@ public class WorkOrder {
 	 * BATCH结束标识
 	 */
 	public static final int BJS=10;
+	/**
+	 * 工单连续执行取消
+	 */
+	public static final int GDLXZXQX=12;
+	/**
+	 * 工单手工创建
+	 */
+	public static final int GDSGCJ=13;
 	
 	/**
 	 * 物料齐套完毕名称

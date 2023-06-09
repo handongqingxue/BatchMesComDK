@@ -57,12 +57,12 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	}
 
 	@Override
-	public List<WorkOrder> getFinishedList() {
+	public List<WorkOrder> getSendToMesList() {
 		// TODO Auto-generated method stub
-		String states = WorkOrder.BJS+"";
+		String states = WorkOrder.BYWZZ+""+WorkOrder.BJS;
 		String[] stateArr = states.split(",");
 		List<String> stateList = Arrays.asList(stateArr);
-		return workOrderDao.getListByStateList(stateList);
+		return workOrderDao.getSendToMesListByStateList(stateList);
 	}
 
 	@Override
