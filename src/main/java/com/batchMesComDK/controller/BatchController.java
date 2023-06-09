@@ -1852,7 +1852,7 @@ public class BatchController {
 			}
 			*/
 			
-			sendToMesWOIDList.add("WOt153wfmcii");
+			//sendToMesWOIDList.add("WOt153wfmcii");
 			
 			
 			int count=0;
