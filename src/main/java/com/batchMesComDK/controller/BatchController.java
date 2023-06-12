@@ -507,6 +507,8 @@ public class BatchController {
 					}
 				}
 			}
+			
+			jsonMap.put("success", "true");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
