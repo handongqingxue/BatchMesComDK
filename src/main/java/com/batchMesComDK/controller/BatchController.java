@@ -2022,14 +2022,14 @@ public class BatchController {
 			}
 			*/
 			
-			//sendToMesWOIDList.add("WOt153wfmcii");
+			//sendToMesWOIDList.add("WOd2kou9vbfk");
 			
 			
 			int count=0;
 			/*
 			System.out.println("count===="+count);
-			count=batchRecordService.addMaterialFromBHBatchHis(sendToMesWOIDList);
 			*/
+			//count=batchRecordService.addMaterialFromBHBatchHis(sendToMesWOIDList);
 			count=batchRecordService.addPhaseFromBHBatchHis(sendToMesWOIDList);
 			//count=batchRecordService.addBatchFromBHBatch(sendToMesWOIDList);
 			
