@@ -226,7 +226,7 @@ public class BatchController {
 									qdSB.append("\"workOrder\":\"");
 									qdSB.append(wo.getWorkOrderID());
 									qdSB.append("\",\"orderExecuteStatus\":\""+WorkOrder.PRODUCTION+"\",");
-									qdSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
+									qdSB.append("\"updateTime\":\""+sdf.format(new Date())+"\",\"updateBy\":\"OPR2\"}]");
 									changeOrderStatus(qdSB.toString());
 									
 									addWOPreStateInList(WorkOrder.BYX,workOrderID);
@@ -287,7 +287,7 @@ public class BatchController {
 									qdSB.append("\"workOrder\":\"");
 									qdSB.append(wo.getWorkOrderID());
 									qdSB.append("\",\"orderExecuteStatus\":\""+WorkOrder.PRODUCTION+"\",");
-									qdSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
+									qdSB.append("\"updateTime\":\""+sdf.format(new Date())+"\",\"updateBy\":\"OPR2\"}]");
 									changeOrderStatus(qdSB.toString());
 									
 									addWOPreStateInList(WorkOrder.BYX,workOrderIDStr);
@@ -466,7 +466,7 @@ public class BatchController {
 								jsSB.append("\"workOrder\":\"");
 								jsSB.append(workOrderID);
 								jsSB.append("\",\"orderExecuteStatus\":\""+WorkOrder.COMPLETE+"\",");
-								jsSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
+								jsSB.append("\"updateTime\":\""+sdf.format(new Date())+"\",\"updateBy\":\"OPR2\"}]");
 								changeOrderStatus(jsSB.toString());
 								
 								getSendToMesBRData();//检索是否存在给mes端推送批记录的工单
@@ -480,13 +480,13 @@ public class BatchController {
 							}
 							else if(BatchTest.STOPPED.equals(stateVal)) {
 								workOrderService.updateStateByFormulaId(WorkOrder.BYWZZ, formulaId);
-
+								
 								StringBuilder jsSB=new StringBuilder();
 								jsSB.append("[{");
 								jsSB.append("\"workOrder\":\"");
 								jsSB.append(workOrderID);
 								jsSB.append("\",\"orderExecuteStatus\":\"PRODUCTBREAK\",");
-								jsSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
+								jsSB.append("\"updateTime\":\""+sdf.format(new Date())+"\",\"updateBy\":\"OPR2\"}]");
 								changeOrderStatus(jsSB.toString());
 								
 								addWOPreStateInList(WorkOrder.BYWZZ,workOrderID);
@@ -2015,21 +2015,21 @@ public class BatchController {
 			
 
 			/*
+			*/
 			sendToMesWOList=workOrderService.getSendToMesList();
 			for (WorkOrder sendToMesWO : sendToMesWOList) {
 				String sendToMesWOID = sendToMesWO.getWorkOrderID();
 				sendToMesWOIDList.add(sendToMesWOID);
 			}
-			*/
 			
-			//sendToMesWOIDList.add("WOd2kou9vbfk");
+			//sendToMesWOIDList.add("WOwiioorqan5");
 			
 			
 			int count=0;
 			/*
 			System.out.println("count===="+count);
 			*/
-			//count=batchRecordService.addMaterialFromBHBatchHis(sendToMesWOIDList);
+			count=batchRecordService.addMaterialFromBHBatchHis(sendToMesWOIDList);
 			count=batchRecordService.addPhaseFromBHBatchHis(sendToMesWOIDList);
 			//count=batchRecordService.addBatchFromBHBatch(sendToMesWOIDList);
 			

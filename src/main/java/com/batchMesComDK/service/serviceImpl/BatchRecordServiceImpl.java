@@ -92,6 +92,7 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 		for (BHBatchHis bhBatchHis : materialList) {
 			batchRecord=new BatchRecord();
 			String workOrderID = bhBatchHis.getWorkOrderID();
+			String lclTime = bhBatchHis.getLclTime();
 			String pMCode = bhBatchHis.getPMCode();
 			String descript = bhBatchHis.getDescript();
 			String batchID = bhBatchHis.getBatchID();
@@ -107,6 +108,8 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 			batchRecord.setRecordEvent("原料进料记录");
 			batchRecord.setRecordContent(pValue);//phase batch是时间跨度
 			batchRecord.setUnit(eu);
+			batchRecord.setRecordStartTime(lclTime);
+			batchRecord.setRecordEndTime(lclTime);
 			batchRecord.setRecordType("2");
 			batchRecord.setPMCName(pMDisc);
 			batchRecord.setFeedPort(feedPort);
@@ -127,12 +130,12 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 		for (BHBatchHis bhBatchHis : bhBatchHisList) {
 			String recipe = bhBatchHis.getRecipe();
 			String phaseID=recipe.substring(recipe.lastIndexOf("\\")+1, recipe.lastIndexOf(":"));
-			if(checkIfExistInList(phaseID,phaseList))
-				continue;
-			else {
+			//if(checkIfExistInList(phaseID,phaseList))
+				//continue;
+			//else {
 				bhBatchHis.setPhaseID(phaseID);
 				phaseList.add(bhBatchHis);
-			}
+			//}
 		}
 		
 		List<BHBatchHis> lclTimePhaseList=bHBatchHisDao.getPhaseLclTimeListByWOIDList(workOrderIDList);
@@ -141,7 +144,9 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 			for (int j = 0; j < lclTimePhaseList.size(); j++) {
 				BHBatchHis lclTimePhase = lclTimePhaseList.get(j);
 				
-				if(lclTimePhase.getPhase().equals(phase.getPhase())&&lclTimePhase.getDescript().startsWith("State Changed:")) {
+				if(lclTimePhase.getRecipe().equals(phase.getRecipe())
+				 &&lclTimePhase.getPhase().equals(phase.getPhase())
+				 &&lclTimePhase.getDescript().startsWith("State Changed:")) {
 					String pValue = lclTimePhase.getPValue();
 					if("STARTING".equals(pValue)) {
 						phase.setLclStartTime(lclTimePhase.getLclTime());
@@ -164,6 +169,7 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 			String phaseID = phase.getPhaseID();
 			String lclStartTime = phase.getLclStartTime();
 			String lclCompleteTime = phase.getLclCompleteTime();
+			String recipe = phase.getRecipe();
 			String recordContent = null;
 			if(!StringUtils.isEmpty(lclStartTime)&&!StringUtils.isEmpty(lclCompleteTime))
 				recordContent = DateUtil.getTimeBetween(lclStartTime,lclCompleteTime,DateUtil.SECONDS)+"S";
@@ -174,13 +180,23 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 			batchRecord.setRecordContent(recordContent);
 			batchRecord.setUnit(eu);
 			batchRecord.setRecordType("8");
-			batchRecord.setPhaseDisc(phaseDisc);
+			if(phaseID.startsWith("TB"))
+				batchRecord.setPhaseDisc(phaseDisc+recipe.substring(recipe.lastIndexOf(":")+1, recipe.lastIndexOf("-")));
+			else
+				batchRecord.setPhaseDisc(phaseDisc);
 			batchRecord.setPhaseID(phaseID);
 			batchRecord.setRecordStartTime(lclStartTime);
 			batchRecord.setRecordEndTime(lclCompleteTime);
 			count+=batchRecordDao.add(batchRecord);
 		}
 		return count;
+	}
+	
+	public static void main(String[] args) {
+		String s="147:SF02\\TM51_OP:1\\TM51_UP:1\\TB2:6-1";
+		int b = s.lastIndexOf(":")+1;
+		int e = s.lastIndexOf("-");
+		System.out.println(s.substring(b, e));
 	}
 	
 	private boolean checkIfExistInList(String phaseID, List<BHBatchHis> phaseList) {

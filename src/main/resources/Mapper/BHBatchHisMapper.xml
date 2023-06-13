@@ -4,8 +4,8 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.batchMesComDK.dao.BHBatchHisMapper">
 	<select id="getMaterialListByWOIDList" resultType="com.batchMesComDK.entity.BHBatchHis">
-		select brTr.PMDisc,brTr.PhaseName,wo.WorkOrderID,rPM.PMCode,his.* from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo,BatchRecordTr brTr
-		 where his.BatchID=wo.FormulaId collate chinese_prc_ci_as and his.Descript=brTr.PMName collate chinese_prc_ci_as and his.Phase=brTr.PhaseName collate chinese_prc_ci_as
+		select brTr.PMDisc,brTr.PhaseName,wo.WorkOrderID,rPM.PMCode,his.* from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo,BatchRecordTr brTr,RecipePM rPM
+		 where his.BatchID=wo.FormulaId collate chinese_prc_ci_as and his.Descript=brTr.PMName collate chinese_prc_ci_as and his.Phase=brTr.PhaseName collate chinese_prc_ci_as and brTr.PMDisc=rPM.CName collate chinese_prc_ci_as
 		<foreach collection="workOrderIDList" item="workOrderID" open=" and cast(wo.WorkOrderID as char) in (" separator="," close=")">
 		#{workOrderID}
 		</foreach>
@@ -21,11 +21,11 @@
 	</select>
 	<select id="getPhaseLclTimeListByWOIDList" resultType="com.batchMesComDK.entity.BHBatchHis">
 		select * from (
-		select min(his.lclTime) lclTime,Descript,BatchID,WorkOrderID,Phase,PValue from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo,BatchRecordTr brTr where his.BatchID=wo.FormulaId collate chinese_prc_ci_as
-    	and PValue='starting' and Phase!='' group by his.lclTime,Descript,BatchID,WorkOrderID,Phase,PValue
+		select min(his.lclTime) lclTime,Descript,BatchID,WorkOrderID,Recipe,Phase,PValue from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo,BatchRecordTr brTr where his.BatchID=wo.FormulaId collate chinese_prc_ci_as
+    	and PValue='starting' and Phase!='' group by his.lclTime,Descript,BatchID,WorkOrderID,Recipe,Phase,PValue
 	    union
-	    select max(his.lclTime) lclTime,Descript,BatchID,WorkOrderID,Phase,PValue from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo,BatchRecordTr brTr where his.BatchID=wo.FormulaId collate chinese_prc_ci_as
-	    and PValue='complete' and Phase!='' group by his.lclTime,Descript,BatchID,WorkOrderID,Phase,PValue)t where 1=1
+	    select max(his.lclTime) lclTime,Descript,BatchID,WorkOrderID,Recipe,Phase,PValue from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo,BatchRecordTr brTr where his.BatchID=wo.FormulaId collate chinese_prc_ci_as
+	    and PValue='complete' and Phase!='' group by his.lclTime,Descript,BatchID,WorkOrderID,Recipe,Phase,PValue)t where 1=1
 		<foreach collection="workOrderIDList" item="workOrderID" open=" and cast(t.WorkOrderID as char) in (" separator="," close=")">
 		#{workOrderID}
 		</foreach>
