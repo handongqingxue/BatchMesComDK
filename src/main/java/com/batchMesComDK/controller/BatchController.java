@@ -2015,14 +2015,14 @@ public class BatchController {
 			
 
 			/*
-			*/
 			sendToMesWOList=workOrderService.getSendToMesList();
 			for (WorkOrder sendToMesWO : sendToMesWOList) {
 				String sendToMesWOID = sendToMesWO.getWorkOrderID();
 				sendToMesWOIDList.add(sendToMesWOID);
 			}
+			*/
 			
-			//sendToMesWOIDList.add("WOwiioorqan5");
+			//sendToMesWOIDList.add("WOwiioorqan7");
 			
 			
 			int count=0;
@@ -2121,6 +2121,8 @@ public class BatchController {
 								bodyParamDevJO.put("workOrder", workOrderID);
 								bodyParamDevJO.put("productCode", productCode);
 								bodyParamDevJO.put("productName", productName);
+								bodyParamDevJO.put("deviationCode", sendToMesBR.getPMCode());
+								bodyParamDevJO.put("deviationName", sendToMesBR.getPMName());
 								bodyParamDevJO.put("remark", "");
 
 								System.out.println("bodyParamDevJOStr==="+bodyParamDevJO.toString());

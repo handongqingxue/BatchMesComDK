@@ -135,4 +135,7 @@
 		</foreach>
 		order by RecordType
 	</select>
+	<update id="updateDevPMCode">
+		update BatchRecord set PMCode=#{pMCode} where PMName=#{pMName} and WorkOrderID=#{workOrderID} and RecordType='3'
+	</update>
 </mapper>

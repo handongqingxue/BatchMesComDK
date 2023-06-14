@@ -80,7 +80,23 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 		String recordTypes = BatchRecord.WLCSJL+","+BatchRecord.PCJL+","+BatchRecord.PGCJL+","+BatchRecord.PCGCJL;
 		String[] recordTypeArr = recordTypes.split(",");
 		List<String> recordTypeList = Arrays.asList(recordTypeArr);
-		return batchRecordDao.getListByWorkOrderIDList(workOrderIDList,recordTypeList);
+		List<RecipePM> recipePMList = recipePMDao.getListByWorkOrderIDList(workOrderIDList);
+		List<BatchRecord> batchRecordList = batchRecordDao.getListByWorkOrderIDList(workOrderIDList,recordTypeList);
+		for (BatchRecord batchRecord : batchRecordList) {
+			String brWorkOrderID = batchRecord.getWorkOrderID();
+			String brPMName=batchRecord.getPMName();
+			for (RecipePM recipePM : recipePMList) {
+				String rPMWorkOrderID = recipePM.getWorkOrderID();
+				String pMCode = recipePM.getPMCode();
+				String pMName = recipePM.getPMName();
+				if(brWorkOrderID.equals(rPMWorkOrderID)&&brPMName.equals(pMName)&&String.valueOf(BatchRecord.PCJL).equals(batchRecord.getRecordType())) {
+					batchRecordDao.updateDevPMCode(pMCode,pMName,rPMWorkOrderID);
+					batchRecord.setPMCode(pMCode);
+					break;
+				}
+			}
+		}
+		return batchRecordList;
 	}
 
 	@Override
@@ -190,13 +206,6 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 			count+=batchRecordDao.add(batchRecord);
 		}
 		return count;
-	}
-	
-	public static void main(String[] args) {
-		String s="147:SF02\\TM51_OP:1\\TM51_UP:1\\TB2:6-1";
-		int b = s.lastIndexOf(":")+1;
-		int e = s.lastIndexOf("-");
-		System.out.println(s.substring(b, e));
 	}
 	
 	private boolean checkIfExistInList(String phaseID, List<BHBatchHis> phaseList) {

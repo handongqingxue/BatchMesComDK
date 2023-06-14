@@ -13,6 +13,8 @@ public interface RecipePMMapper {
 	int deleteByList(@Param("idList") List<String> idList);
 	
 	List<RecipePM> getListByWorkOrderID(@Param("workOrderID") String workOrderID);
+
+	List<RecipePM> getListByWorkOrderIDList(@Param("workOrderIDList") List<String> workOrderIDList);
 	
 	List<RecipePM> getManFeedListByWorkOrderID(@Param("workOrderID") String workOrderID);
 

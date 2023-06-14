@@ -116,6 +116,13 @@
 	<select id="getListByWorkOrderID" resultType="com.batchMesComDK.entity.RecipePM">
 		select * from RecipePM where WorkOrderID=#{workOrderID} order by PMSort
 	</select>
+	<select id="getListByWorkOrderIDList" resultType="com.batchMesComDK.entity.RecipePM">
+		select * from RecipePM where 1=1
+		<foreach collection="workOrderIDList" item="workOrderID" open=" and cast(workOrderID as char) in (" separator="," close=")">
+		#{workOrderID}
+		</foreach>
+		 order by PMSort
+	</select>
 	<select id="getManFeedListByWorkOrderID" resultType="com.batchMesComDK.entity.RecipePM">
 		select * from RecipePM where PMType=${@com.batchMesComDK.entity.RecipePM@RGTLCS} and WorkOrderID=#{workOrderID}
 	</select>
