@@ -126,7 +126,7 @@
 	<select id="getManFeedListByWorkOrderID" resultType="com.batchMesComDK.entity.RecipePM">
 		select * from RecipePM where PMType=${@com.batchMesComDK.entity.RecipePM@RGTLCS} and WorkOrderID=#{workOrderID}
 	</select>
-	<update id="updateDosageByPMParam">
-		update RecipePM set Dosage=#{dosage} where PMCode=#{pMCode}
+	<update id="updateDosageByID">
+		update RecipePM set Dosage=#{dosage} where ID=#{id}
 	</update>
 </mapper>

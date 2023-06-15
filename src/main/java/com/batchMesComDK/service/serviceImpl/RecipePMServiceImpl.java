@@ -2,7 +2,9 @@ package com.batchMesComDK.service.serviceImpl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -187,18 +189,82 @@ public class RecipePMServiceImpl implements RecipePMService {
 		// TODO Auto-generated method stub
 		int count=0;
 		List<RecipePM> recipePMList = recipePMDao.getListByWorkOrderID(workOrderID);
+		Map<String, HashMap<String, Object>> recPMCountMap=initRecPMCountMap(recipePMList);
 		for (RecipePM recipePM : recipePMList) {
+			int id = recipePM.getID();
 			String pMCode = recipePM.getPMCode();
-			float dosage = Float.valueOf(recipePM.getDosage());
+			String dosage = recipePM.getDosage();
+			String pMName = recipePM.getPMName();
 			for (RecipePM wodRecipePM : wodRecipePMList) {
 				String wodPMCode = wodRecipePM.getPMCode();
-				float wodDosage = Float.valueOf(wodRecipePM.getDosage());
-				if(pMCode.equals(wodPMCode)&&dosage!=wodDosage) {
-					count+=recipePMDao.updateDosageByPMParam(wodPMCode,wodDosage);
-					break;
+				String wodDosage = wodRecipePM.getDosage();
+				if(pMCode.equals(wodPMCode)) {
+					if(pMName.startsWith("AM_")) {
+						HashMap<String, Object> recPMMap = recPMCountMap.get(wodPMCode);
+						int rPMcount=Integer.valueOf(recPMMap.get("count").toString());
+						if(rPMcount==1) {
+							if(dosage!=wodDosage) {
+								count+=recipePMDao.updateDosageByID(id,wodDosage);
+								recPMMap.put("update", true);
+								break;
+							}
+						}
+						else {
+							float dosageSum=Float.valueOf(recPMMap.get("dosage").toString());
+							if(dosageSum!=Float.valueOf(wodDosage)) {
+								boolean update = Boolean.valueOf(recPMMap.get("update").toString());
+								if(!update) {
+									int firstId=Integer.valueOf(recPMMap.get("firstId").toString());
+									count+=recipePMDao.updateDosageByID(firstId,wodDosage+"x");
+									recPMMap.put("update", true);
+									break;
+								}
+							}
+						}
+					}
+					else {
+						if(dosage!=wodDosage)
+							count+=recipePMDao.updateDosageByID(id,wodDosage);
+					}
 				}
 			}
 		}
 		return count;
+	}
+	
+	private Map<String, HashMap<String, Object>> initRecPMCountMap(List<RecipePM> recipePMList) {
+		Map<String, HashMap<String, Object>> recPMCountMap=new HashMap<String, HashMap<String, Object>>();
+		HashMap<String, Object> recPMMap=null;
+		for (RecipePM recipePM : recipePMList) {
+			String pMName = recipePM.getPMName();
+			if(!pMName.startsWith("AM_"))
+				continue;
+			String pMCode = recipePM.getPMCode();
+			float dosage = Float.valueOf(recipePM.getDosage());
+			HashMap<String, Object> pMCodeMap = recPMCountMap.get(pMCode);
+			if(pMCodeMap==null) {
+				Integer id = recipePM.getID();
+				
+				recPMMap=new HashMap<String, Object>();
+				recPMMap.put("firstId", id);
+				recPMMap.put("count", 1);
+				recPMMap.put("dosage", dosage);
+				recPMMap.put("update", false);
+				
+				recPMCountMap.put(pMCode, recPMMap);
+			}
+			else {
+				int count=Integer.valueOf(pMCodeMap.get("count").toString());
+				//System.out.println("count==="+count);
+				count++;
+				pMCodeMap.put("count", count);
+				
+				float preDosage=Float.valueOf(pMCodeMap.get("dosage").toString());
+				//System.out.println("dosage==="+dosage);
+				preDosage+=dosage;
+				pMCodeMap.put("dosage", preDosage);
+			}
+		}
+		return recPMCountMap;
 	}
 }
