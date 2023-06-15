@@ -2014,15 +2014,15 @@ public class BatchController {
 			}
 			
 
-			sendToMesWOList=workOrderService.getSendToMesList();
 			/*
+			sendToMesWOList=workOrderService.getSendToMesList();
 			for (WorkOrder sendToMesWO : sendToMesWOList) {
 				String sendToMesWOID = sendToMesWO.getWorkOrderID();
 				sendToMesWOIDList.add(sendToMesWOID);
 			}
 			*/
 			
-			sendToMesWOIDList.add("WOo8qrwtgrnd");
+			//sendToMesWOIDList.add("WOo8qrwtgrnd");
 			
 			
 			int count=0;
