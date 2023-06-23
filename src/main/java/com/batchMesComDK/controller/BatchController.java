@@ -481,6 +481,8 @@ public class BatchController {
 							else if(BatchTest.STOPPED.equals(stateVal)) {
 								workOrderService.updateStateByFormulaId(WorkOrder.BYWZZ, formulaId);
 								
+								woMap.put("existRunWO", false);
+								
 								StringBuilder jsSB=new StringBuilder();
 								jsSB.append("[{");
 								jsSB.append("\"workOrder\":\"");
@@ -1620,20 +1622,7 @@ public class BatchController {
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		try {
 			System.out.println("bodyEnc==="+bodyEnc);
-			String bodyDec = bodyEnc;
-			//String bodyDec = DesUtil.decrypt(bodyEnc,DesUtil.SECRET_KEY);
-			/*
-			List<WorkOrderBody> wobList=new ArrayList<WorkOrderBody>();
-			net.sf.json.JSONArray wobJA = net.sf.json.JSONArray.fromObject(bodyDec);
-			for (int i = 0; i < wobJA.size(); i++) {
-				net.sf.json.JSONObject wobJO = (net.sf.json.JSONObject)wobJA.get(i);
-				WorkOrderBody wob=(WorkOrderBody)net.sf.json.JSONObject.toBean(wobJO, WorkOrderBody.class);
-				System.out.println("id==="+wob.getId());
-				wobList.add(wob);
-			}
-			int c=workOrderBodyService.add(wobList.get(0));
-			*/
-
+			
 			WorkOrder wo = convertMesWorkOrderDownToJava(bodyEnc);
 			int c=workOrderService.add(wo);
 			if(c>0) {
@@ -1646,7 +1635,8 @@ public class BatchController {
 					/*
 					 * 为了测试这块先屏蔽掉
 					 */
-					c=recipePMService.updateDosageByPMParam(workOrderID, wo.getRecipePMList());
+					//c=recipePMService.updateDosageXByPMParam(workOrderID, wo.getRecipePMList());
+					c=recipePMService.updateDosageLastByPMParam(workOrderID, wo.getRecipePMList());
 					c=workOrderService.updateStateByWorkOrderID(WorkOrder.WLQTWB,workOrderID);
 				}
 				

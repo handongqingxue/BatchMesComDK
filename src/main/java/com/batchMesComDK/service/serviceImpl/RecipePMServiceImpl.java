@@ -3,8 +3,10 @@ package com.batchMesComDK.service.serviceImpl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -185,11 +187,11 @@ public class RecipePMServiceImpl implements RecipePMService {
 	}
 
 	@Override
-	public int updateDosageByPMParam(String workOrderID, List<RecipePM> wodRecipePMList) {
+	public int updateDosageXByPMParam(String workOrderID, List<RecipePM> wodRecipePMList) {
 		// TODO Auto-generated method stub
 		int count=0;
 		List<RecipePM> recipePMList = recipePMDao.getListByWorkOrderID(workOrderID);
-		Map<String, HashMap<String, Object>> recPMCountMap=initRecPMCountMap(recipePMList);
+		Map<String, HashMap<String, Object>> recPMCodeMap=initRecPMCodeMap(recipePMList);
 		for (RecipePM recipePM : recipePMList) {
 			int id = recipePM.getID();
 			String pMCode = recipePM.getPMCode();
@@ -200,7 +202,7 @@ public class RecipePMServiceImpl implements RecipePMService {
 				String wodDosage = wodRecipePM.getDosage();
 				if(pMCode.equals(wodPMCode)) {
 					if(pMName.startsWith("AM_")) {
-						HashMap<String, Object> recPMMap = recPMCountMap.get(wodPMCode);
+						HashMap<String, Object> recPMMap = recPMCodeMap.get(wodPMCode);
 						int rPMcount=Integer.valueOf(recPMMap.get("count").toString());
 						if(rPMcount==1) {
 							if(dosage!=wodDosage) {
@@ -231,8 +233,90 @@ public class RecipePMServiceImpl implements RecipePMService {
 		}
 		return count;
 	}
+
+	@Override
+	public int updateDosageLastByPMParam(String workOrderID, List<RecipePM> wodRecipePMList) {
+		// TODO Auto-generated method stub
+		int count=0;
+		List<RecipePM> recipePMList = recipePMDao.getListByWorkOrderID(workOrderID);
+		Map<String, HashMap<String, Object>> recPMCodeMap=initRecPMCodeMap(recipePMList);
+		
+		Map<String,Integer> recPMCurAddCountMap=initCurAddCountMap(recPMCodeMap);
+		Map<String,Float> preDosageSumMap=initPreDosageSumMap(recPMCodeMap);
+		
+		for (RecipePM recipePM : recipePMList) {
+			int id = recipePM.getID();
+			String pMCode = recipePM.getPMCode();
+			String dosage = recipePM.getDosage();
+			String pMName = recipePM.getPMName();
+			for (RecipePM wodRecipePM : wodRecipePMList) {
+				String wodPMCode = wodRecipePM.getPMCode();
+				String wodDosage = wodRecipePM.getDosage();
+				if(pMCode.equals(wodPMCode)) {
+					if(pMName.startsWith("AM_")) {
+						HashMap<String, Object> recPMMap = recPMCodeMap.get(wodPMCode);
+						int rPMcount=Integer.valueOf(recPMMap.get("count").toString());
+						if(rPMcount==1) {
+							if(dosage!=wodDosage) {
+								count+=recipePMDao.updateDosageByID(id,wodDosage);
+								break;
+							}
+						}
+						else {
+							float dosageSum=Float.valueOf(recPMMap.get("dosage").toString());
+							if(dosageSum!=Float.valueOf(wodDosage)) {
+								int recPMCurAddCount = recPMCurAddCountMap.get(wodPMCode);
+								recPMCurAddCount++;
+								float preDosageSum = preDosageSumMap.get(wodPMCode);
+								if(recPMCurAddCount==rPMcount) {
+									float lastDosage = Float.valueOf(wodDosage)-preDosageSum;
+									System.out.println("lastDosage==="+lastDosage);
+									count+=recipePMDao.updateDosageByID(id,lastDosage+"");
+								}
+								else {
+									preDosageSum+=Float.valueOf(dosage);
+									preDosageSumMap.put(wodPMCode, preDosageSum);
+								}
+								recPMCurAddCountMap.put(wodPMCode, recPMCurAddCount);
+								break;
+							}
+						}
+					}
+					else {
+						if(dosage!=wodDosage)
+							count+=recipePMDao.updateDosageByID(id,wodDosage);
+					}
+				}
+			}
+		}
+		return count;
+	}
 	
-	private Map<String, HashMap<String, Object>> initRecPMCountMap(List<RecipePM> recipePMList) {
+	public Map<String,Float> initPreDosageSumMap(Map<String, HashMap<String, Object>> recPMCodeMap) {
+		Map<String,Float> preDosageSumMap=new HashMap<String, Float>();
+		Set<String> recPMKeySet = recPMCodeMap.keySet();
+		for (String recPMKey : recPMKeySet) {
+			preDosageSumMap.put(recPMKey, (float)0.0);
+		}
+		return preDosageSumMap;
+	}
+	
+	public Map<String,Integer> initCurAddCountMap(Map<String, HashMap<String, Object>> recPMCodeMap) {
+		Map<String,Integer> recPMCurAddCountMap=new HashMap<String, Integer>();
+		Set<String> recPMKeySet = recPMCodeMap.keySet();
+		for (String recPMKey : recPMKeySet) {
+			System.out.println("recPMKey==="+recPMKey);
+			recPMCurAddCountMap.put(recPMKey, 0);
+		}
+		return recPMCurAddCountMap;
+	}
+	
+	/**
+	 * 初始化同一个工单里每种物料的数量、重量之和
+	 * @param recipePMList
+	 * @return
+	 */
+	private Map<String, HashMap<String, Object>> initRecPMCodeMap(List<RecipePM> recipePMList) {
 		Map<String, HashMap<String, Object>> recPMCountMap=new HashMap<String, HashMap<String, Object>>();
 		HashMap<String, Object> recPMMap=null;
 		for (RecipePM recipePM : recipePMList) {

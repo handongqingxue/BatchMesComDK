@@ -22,5 +22,7 @@ public interface RecipePMService {
 
 	List<RecipePM> getDLListByWorkOrderID(String workOrderID);
 
-	int updateDosageByPMParam(String workOrderID, List<RecipePM> wodRecipePMList);
+	int updateDosageXByPMParam(String workOrderID, List<RecipePM> wodRecipePMList);
+
+	int updateDosageLastByPMParam(String workOrderID, List<RecipePM> wodRecipePMList);
 }
