@@ -241,8 +241,10 @@ public class RecipePMServiceImpl implements RecipePMService {
 		List<RecipePM> recipePMList = recipePMDao.getListByWorkOrderID(workOrderID);
 		Map<String, HashMap<String, Object>> recPMCodeMap=initRecPMCodeMap(recipePMList);
 		
+		Map<String,HashMap<String,Integer>> recPMAddCountIdMap=initAddCountIdMap(recipePMList);
 		Map<String,Integer> recPMCurAddCountMap=initCurAddCountMap(recPMCodeMap);
 		Map<String,Float> preDosageSumMap=initPreDosageSumMap(recPMCodeMap);
+		Map<String,Boolean> addFinishMap=initAddFinishMap(recPMCodeMap);
 		
 		for (RecipePM recipePM : recipePMList) {
 			int id = recipePM.getID();
@@ -265,9 +267,29 @@ public class RecipePMServiceImpl implements RecipePMService {
 						else {
 							float dosageSum=Float.valueOf(recPMMap.get("dosage").toString());
 							if(dosageSum!=Float.valueOf(wodDosage)) {
+								Boolean addFinish = addFinishMap.get(pMCode);
+								if(addFinish)
+									continue;
 								int recPMCurAddCount = recPMCurAddCountMap.get(wodPMCode);
 								recPMCurAddCount++;
 								float preDosageSum = preDosageSumMap.get(wodPMCode);
+								float nxtDosageSum = preDosageSum+Float.valueOf(dosage);
+								if(Float.valueOf(wodDosage)>preDosageSum&&Float.valueOf(wodDosage)<=nxtDosageSum) {
+									if(Float.valueOf(wodDosage)<nxtDosageSum) {
+										float lastDosage = Float.valueOf(wodDosage)-preDosageSum;
+										count+=recipePMDao.updateDosageByID(id,lastDosage+"");
+									}
+									if(recPMCurAddCount<rPMcount) {
+										clearAfterDosage(recPMCurAddCount,rPMcount,pMCode,recPMAddCountIdMap);
+									}
+									addFinishMap.put(pMCode, true);
+								}
+								else {
+									preDosageSumMap.put(wodPMCode, nxtDosageSum);
+								}
+								
+								
+								/*
 								if(recPMCurAddCount==rPMcount) {
 									float lastDosage = Float.valueOf(wodDosage)-preDosageSum;
 									System.out.println("lastDosage==="+lastDosage);
@@ -277,6 +299,7 @@ public class RecipePMServiceImpl implements RecipePMService {
 									preDosageSum+=Float.valueOf(dosage);
 									preDosageSumMap.put(wodPMCode, preDosageSum);
 								}
+								*/
 								recPMCurAddCountMap.put(wodPMCode, recPMCurAddCount);
 								break;
 							}
@@ -291,7 +314,17 @@ public class RecipePMServiceImpl implements RecipePMService {
 		}
 		return count;
 	}
-	
+
+	private void clearAfterDosage(int recPMCurAddCount, int rPMcount, String pMCode, Map<String, HashMap<String, Integer>> recPMAddCountIdMap) {
+		List<Integer> addCountIdList=new ArrayList<Integer>();
+		HashMap<String, Integer> pMCodeMap = recPMAddCountIdMap.get(pMCode);
+		for (int i = recPMCurAddCount+1; i <= rPMcount; i++) {
+			Integer addCountId = pMCodeMap.get("addCountId"+i);
+			addCountIdList.add(addCountId);
+		}
+		int i=recipePMDao.clearDosageByIdList(addCountIdList);
+	}
+
 	public Map<String,Float> initPreDosageSumMap(Map<String, HashMap<String, Object>> recPMCodeMap) {
 		Map<String,Float> preDosageSumMap=new HashMap<String, Float>();
 		Set<String> recPMKeySet = recPMCodeMap.keySet();
@@ -299,6 +332,42 @@ public class RecipePMServiceImpl implements RecipePMService {
 			preDosageSumMap.put(recPMKey, (float)0.0);
 		}
 		return preDosageSumMap;
+	}
+	
+	private Map<String, Boolean> initAddFinishMap(Map<String, HashMap<String, Object>> recPMCodeMap) {
+		// TODO Auto-generated method stub
+		Map<String,Boolean> addFinishMap=new HashMap<String, Boolean>();
+		Set<String> recPMKeySet = recPMCodeMap.keySet();
+		for (String recPMKey : recPMKeySet) {
+			addFinishMap.put(recPMKey, false);
+		}
+		return addFinishMap;
+	}
+	
+	private Map<String, HashMap<String, Integer>> initAddCountIdMap(List<RecipePM> recipePMList) {
+		// TODO Auto-generated method stub
+		Map<String, HashMap<String, Integer>> recPMAddCountIdMap=new HashMap<String, HashMap<String, Integer>>();
+		HashMap<String, Integer> addCountIdMap=null;
+		for (RecipePM recipePM : recipePMList) {
+			String pMCode = recipePM.getPMCode();
+			HashMap<String, Integer> pMCodeMap = recPMAddCountIdMap.get(pMCode);
+			if(pMCodeMap==null) {
+				addCountIdMap=new HashMap<String, Integer>();
+				addCountIdMap.put("addCount", 1);
+				addCountIdMap.put("addCountId1", recipePM.getID());
+
+				recPMAddCountIdMap.put(pMCode, addCountIdMap);
+			}
+			else {
+				int addCount=Integer.valueOf(pMCodeMap.get("addCount").toString());
+				//System.out.println("addCount==="+addCount);
+				addCount++;
+				pMCodeMap.put("addCount", addCount);
+				
+				pMCodeMap.put("addCountId"+addCount, recipePM.getID());
+			}
+		}
+		return recPMAddCountIdMap;
 	}
 	
 	public Map<String,Integer> initCurAddCountMap(Map<String, HashMap<String, Object>> recPMCodeMap) {

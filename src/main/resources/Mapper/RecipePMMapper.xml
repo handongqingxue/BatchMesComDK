@@ -129,4 +129,10 @@
 	<update id="updateDosageByID">
 		update RecipePM set Dosage=#{dosage} where ID=#{id}
 	</update>
+	<update id="clearDosageByIdList">
+		update RecipePM set Dosage=0 where 1=1
+		<foreach collection="idList" item="id" open=" and cast(id as char) in (" separator="," close=")">
+		#{id}
+		</foreach>
+	</update>
 </mapper>
