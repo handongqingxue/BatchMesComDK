@@ -257,46 +257,46 @@ public class RecipePMServiceImpl implements RecipePMService {
 				if(pMCode.equals(wodPMCode)) {
 					if(pMName.startsWith("AM_")) {
 						HashMap<String, Object> recPMMap = recPMCodeMap.get(wodPMCode);
-						int rPMcount=Integer.valueOf(recPMMap.get("count").toString());
-						if(rPMcount==1) {
+						int rPMcount=Integer.valueOf(recPMMap.get("count").toString());//判断每种物料的加料次数
+						if(rPMcount==1) {//只加一次直接更新重量
 							if(dosage!=wodDosage) {
 								count+=recipePMDao.updateDosageByID(id,wodDosage);
 								break;
 							}
 						}
-						else {
-							float dosageSum=Float.valueOf(recPMMap.get("dosage").toString());
-							if(dosageSum!=Float.valueOf(wodDosage)) {
-								Boolean addFinish = addFinishMap.get(pMCode);
-								if(addFinish)
+						else {//加多次情况下执行下面逻辑
+							float dosageSum=Float.valueOf(recPMMap.get("dosage").toString());//获取标准配方里组态的加料总量
+							if(dosageSum!=Float.valueOf(wodDosage)) {//与下单时该物料的总量对比，有变化的话走这里的逻辑
+								Boolean addFinish = addFinishMap.get(pMCode);//根据物料编码获取是否更新数量完成
+								if(addFinish)//若已更新过最后一次加料的数量，就不往下执行，直接进入下一轮循环
 									continue;
 								
-								int recPMCurAddCount = recPMCurAddCountMap.get(wodPMCode);
+								int recPMCurAddCount = recPMCurAddCountMap.get(wodPMCode);//根据物料编码，获取当前加料次数
 								recPMCurAddCount++;
-								float preDosageSum = preDosageSumMap.get(wodPMCode);
-								if(recPMCurAddCount==rPMcount) {
-									float lastDosage = Float.valueOf(wodDosage)-preDosageSum;
+								float preDosageSum = preDosageSumMap.get(wodPMCode);//获取该物料当前已加了多少总量
+								if(recPMCurAddCount==rPMcount) {//若当前加料次数等于需要加的总次数，说明是最后一次加料，就把剩余需要加的重量更新在最后一次的重量里
+									float lastDosage = Float.valueOf(wodDosage)-preDosageSum;//下单里的总量-前面几次加的总量和就是最后一次需要更新的重量
 									System.out.println("lastDosage==="+lastDosage);
 									count+=recipePMDao.updateDosageByID(id,lastDosage+"");
 								}
-								else {
-									float nxtDosageSum = preDosageSum+Float.valueOf(dosage);
-									if(Float.valueOf(wodDosage)>preDosageSum&&Float.valueOf(wodDosage)<=nxtDosageSum) {
+								else {//在未循环到最后一次加料的情况下，执行下面逻辑
+									float nxtDosageSum = preDosageSum+Float.valueOf(dosage);//之前的总量+这次要加的重量=这次的总量
+									if(Float.valueOf(wodDosage)>preDosageSum&&Float.valueOf(wodDosage)<=nxtDosageSum) {//若下单里的物料总量>之前的总量,<这次的总量,说明加到这次就加完了
 										if(Float.valueOf(wodDosage)<nxtDosageSum) {
 											float lastDosage = Float.valueOf(wodDosage)-preDosageSum;
 											count+=recipePMDao.updateDosageByID(id,lastDosage+"");
 										}
-										if(recPMCurAddCount<rPMcount) {
+										if(recPMCurAddCount<rPMcount) {//若当前的投料次数<加料总次数,说明这次不是最后一次加料。但料已加完,后面就不加了,后面的重量都为0
 											clearAfterDosage(recPMCurAddCount,rPMcount,pMCode,recPMAddCountIdMap);
 										}
-										addFinishMap.put(pMCode, true);
+										addFinishMap.put(pMCode, true);//加完料就更新加料完成标识，下次循环到该物料就不执行加料逻辑了
 									}
 									else {
 										preDosageSumMap.put(wodPMCode, nxtDosageSum);
 									}
 								}
 								
-								recPMCurAddCountMap.put(wodPMCode, recPMCurAddCount);
+								recPMCurAddCountMap.put(wodPMCode, recPMCurAddCount);//更新当前是第几次加料
 								break;
 							}
 						}
