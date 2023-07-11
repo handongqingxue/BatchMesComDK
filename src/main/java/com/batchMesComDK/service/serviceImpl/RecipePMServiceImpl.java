@@ -321,6 +321,11 @@ public class RecipePMServiceImpl implements RecipePMService {
 		int i=recipePMDao.clearDosageByIdList(addCountIdList);
 	}
 
+	/**
+	 * 初始化同一个工单里每种物料的加料总量(初始化是0，每次加料时总量会发生变化)
+	 * @param recPMCodeMap
+	 * @return
+	 */
 	public Map<String,Float> initPreDosageSumMap(Map<String, HashMap<String, Object>> recPMCodeMap) {
 		Map<String,Float> preDosageSumMap=new HashMap<String, Float>();
 		Set<String> recPMKeySet = recPMCodeMap.keySet();
@@ -330,6 +335,11 @@ public class RecipePMServiceImpl implements RecipePMService {
 		return preDosageSumMap;
 	}
 	
+	/**
+	 * 初始化同一个工单里每种物料是否添加完成的Map
+	 * @param recPMCodeMap
+	 * @return
+	 */
 	private Map<String, Boolean> initAddFinishMap(Map<String, HashMap<String, Object>> recPMCodeMap) {
 		// TODO Auto-generated method stub
 		Map<String,Boolean> addFinishMap=new HashMap<String, Boolean>();
@@ -340,6 +350,11 @@ public class RecipePMServiceImpl implements RecipePMService {
 		return addFinishMap;
 	}
 	
+	/**
+	 * 初始化同一个工单里每种物料每次添加时对应的参数记录id
+	 * @param recipePMList
+	 * @return
+	 */
 	private Map<String, HashMap<String, Integer>> initAddCountIdMap(List<RecipePM> recipePMList) {
 		// TODO Auto-generated method stub
 		Map<String, HashMap<String, Integer>> recPMAddCountIdMap=new HashMap<String, HashMap<String, Integer>>();
@@ -366,6 +381,11 @@ public class RecipePMServiceImpl implements RecipePMService {
 		return recPMAddCountIdMap;
 	}
 	
+	/**
+	 * 初始化同一个工单里每种物料的当前添加次数(最初是0，用到的时候才记录是第几次添加)
+	 * @param recPMCodeMap
+	 * @return
+	 */
 	public Map<String,Integer> initCurAddCountMap(Map<String, HashMap<String, Object>> recPMCodeMap) {
 		Map<String,Integer> recPMCurAddCountMap=new HashMap<String, Integer>();
 		Set<String> recPMKeySet = recPMCodeMap.keySet();
