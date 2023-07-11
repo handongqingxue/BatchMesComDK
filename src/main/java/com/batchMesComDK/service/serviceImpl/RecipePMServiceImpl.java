@@ -270,36 +270,32 @@ public class RecipePMServiceImpl implements RecipePMService {
 								Boolean addFinish = addFinishMap.get(pMCode);
 								if(addFinish)
 									continue;
+								
 								int recPMCurAddCount = recPMCurAddCountMap.get(wodPMCode);
 								recPMCurAddCount++;
 								float preDosageSum = preDosageSumMap.get(wodPMCode);
-								float nxtDosageSum = preDosageSum+Float.valueOf(dosage);
-								if(Float.valueOf(wodDosage)>preDosageSum&&Float.valueOf(wodDosage)<=nxtDosageSum) {
-									if(Float.valueOf(wodDosage)<nxtDosageSum) {
-										float lastDosage = Float.valueOf(wodDosage)-preDosageSum;
-										count+=recipePMDao.updateDosageByID(id,lastDosage+"");
-									}
-									if(recPMCurAddCount<rPMcount) {
-										clearAfterDosage(recPMCurAddCount,rPMcount,pMCode,recPMAddCountIdMap);
-									}
-									addFinishMap.put(pMCode, true);
-								}
-								else {
-									preDosageSumMap.put(wodPMCode, nxtDosageSum);
-								}
-								
-								
-								/*
 								if(recPMCurAddCount==rPMcount) {
 									float lastDosage = Float.valueOf(wodDosage)-preDosageSum;
 									System.out.println("lastDosage==="+lastDosage);
 									count+=recipePMDao.updateDosageByID(id,lastDosage+"");
 								}
 								else {
-									preDosageSum+=Float.valueOf(dosage);
-									preDosageSumMap.put(wodPMCode, preDosageSum);
+									float nxtDosageSum = preDosageSum+Float.valueOf(dosage);
+									if(Float.valueOf(wodDosage)>preDosageSum&&Float.valueOf(wodDosage)<=nxtDosageSum) {
+										if(Float.valueOf(wodDosage)<nxtDosageSum) {
+											float lastDosage = Float.valueOf(wodDosage)-preDosageSum;
+											count+=recipePMDao.updateDosageByID(id,lastDosage+"");
+										}
+										if(recPMCurAddCount<rPMcount) {
+											clearAfterDosage(recPMCurAddCount,rPMcount,pMCode,recPMAddCountIdMap);
+										}
+										addFinishMap.put(pMCode, true);
+									}
+									else {
+										preDosageSumMap.put(wodPMCode, nxtDosageSum);
+									}
 								}
-								*/
+								
 								recPMCurAddCountMap.put(wodPMCode, recPMCurAddCount);
 								break;
 							}
