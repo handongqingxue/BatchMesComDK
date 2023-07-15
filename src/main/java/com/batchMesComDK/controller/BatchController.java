@@ -2075,6 +2075,10 @@ public class BatchController {
 							}
 							else {
 								JSONObject electtonBatchRecordJO=new JSONObject();
+								electtonBatchRecordJO.put("materialCode",sendToMesBR.getPMCode());
+								electtonBatchRecordJO.put("materialName",sendToMesBR.getPMCName());
+								electtonBatchRecordJO.put("recordType", sendToMesBR.getRecordType());
+								electtonBatchRecordJO.put("recordEvent", sendToMesBR.getRecordEvent());
 								electtonBatchRecordJO.put("recordContent", sendToMesBR.getRecordContent());
 								electtonBatchRecordJO.put("isOver", "是");
 								electtonBatchRecordJO.put("isDeviation", "否");
