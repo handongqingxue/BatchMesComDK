@@ -693,6 +693,11 @@ public class BatchController {
 		}
 	}
 	
+	/**
+	 * 添加上次工单状态到集合里
+	 * @param state
+	 * @param workOrderID
+	 */
 	private void addWOPreStateInList(Integer state, String workOrderID) {
 		System.out.println("addWOPreStateInList...."+workOrderID);
 		boolean exist=checkWOIfExistInPreStateList(workOrderID);
@@ -714,6 +719,11 @@ public class BatchController {
 		}
 	}
 	
+	/**
+	 * 根据工单号获取工单上一次状态
+	 * @param workOrderID
+	 * @return
+	 */
 	private int getWOPreStateByWOID(String workOrderID) {
 		int state = 0;
 		for (int j = 0; j < woPreStateList.size(); j++) {
@@ -729,6 +739,11 @@ public class BatchController {
 		return state;
 	}
 	
+	/**
+	 * 检查工单是否存在于工单上一次状态的集合里
+	 * @param workOrderID
+	 * @return
+	 */
 	private boolean checkWOIfExistInPreStateList(String workOrderID) {
 		boolean exist=false;
 		for (Map<String, Object> woPreStateMap : woPreStateList) {
@@ -795,6 +810,12 @@ public class BatchController {
 		}
 	}
 	
+	/**
+	 * 创建batch
+	 * @param batchID
+	 * @param workOrderID
+	 * @param recipeID
+	 */
 	private void createBatch(String batchID, String workOrderID, String recipeID) {
 		StringBuilder commandSB=new StringBuilder();
 		commandSB.append("[BATCH(Item,");
@@ -836,6 +857,11 @@ public class BatchController {
 		execute(commandSBStr);
 	}
 	
+	/**
+	 * 改变batch状态
+	 * @param createID
+	 * @param cmd
+	 */
 	private void commandBatch(String createID, String cmd) {
 		StringBuilder commandSB=new StringBuilder();
 		commandSB.append("[COMMAND(Item,");
