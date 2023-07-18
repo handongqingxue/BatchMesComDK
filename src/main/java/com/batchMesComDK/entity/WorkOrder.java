@@ -94,6 +94,10 @@ public class WorkOrder {
 	 * 完工
 	 */
 	public static final String COMPLETE="COMPLETE";
+	/**
+	 * 生产终止
+	 */
+	public static final String PRODUCTBREAK="PRODUCTBREAK";
 
 	private Integer ID;
 	public Integer getID() {

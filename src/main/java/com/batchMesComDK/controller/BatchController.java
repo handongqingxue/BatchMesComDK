@@ -171,13 +171,8 @@ public class BatchController {
 						boolean existRunWO=Boolean.valueOf(woMap.get("existRunWO").toString());//是否正在运行状态
 	
 						boolean allowRestoreStart=false;
-						for (int j = 0; j < woPreStateList.size(); j++) {
-							Map<String, Object> woPreStateMap = woPreStateList.get(j);
-							String preWorkOrderID = woPreStateMap.get("workOrderID").toString();
-							Integer preState = Integer.valueOf(woPreStateMap.get("state").toString());
-							if(workOrderID.equals(preWorkOrderID)&&WorkOrder.GDLXZXQX==preState) {
-								allowRestoreStart=true;
-							}
+						if(WorkOrder.GDLXZXQX==getWOPreStateByWOID(workOrderID)) {
+							allowRestoreStart=true;
 						}
 						
 						if(allowRestoreStart) {
@@ -203,15 +198,7 @@ public class BatchController {
 									System.out.println("createIDVal==="+createIDVal);
 									
 									//调用batch环境的启动接口
-									StringBuilder commandBQDSB=new StringBuilder();
-									commandBQDSB.append("[COMMAND(Item,");
-									commandBQDSB.append(Constant.USERID);
-									commandBQDSB.append(",");
-									commandBQDSB.append(createIDVal);
-									commandBQDSB.append(",");
-									commandBQDSB.append(BatchTest.START);
-									commandBQDSB.append(")]");
-									execute(commandBQDSB.toString());
+									commandBatch(createIDVal,BatchTest.START);
 									
 									//String stateVal = BLKey_x("State",j);
 									String stateResultJOStr = getItem("BLState_"+j);
@@ -233,19 +220,21 @@ public class BatchController {
 										
 										addWOPreStateInList(WorkOrder.BYX,workOrderID);
 									}
+									else if(BatchTest.HELD.equals(stateVal)) {
+										workOrderService.updateStateById(WorkOrder.BZT, id);
+										
+										woMap.put("existRunWO", true);
+
+										addWOPreStateInList(WorkOrder.BZT,workOrderID);
+									}
 								}
 							}
 						}
 						break;
 					case WorkOrder.BYX:
 						boolean allowRestoreRun=false;
-						for (int j = 0; j < woPreStateList.size(); j++) {
-							Map<String, Object> woPreStateMap = woPreStateList.get(j);
-							String preWorkOrderID = woPreStateMap.get("workOrderID").toString();
-							Integer preState = Integer.valueOf(woPreStateMap.get("state").toString());
-							if(workOrderID.equals(preWorkOrderID)&&WorkOrder.BZT==preState) {
-								allowRestoreRun=true;
-							}
+						if(WorkOrder.BZT==getWOPreStateByWOID(workOrderID)) {
+							allowRestoreRun=true;
 						}
 						
 						if(allowRestoreRun) {
@@ -267,16 +256,8 @@ public class BatchController {
 									//createIDVal = createIDVal.substring(0, createIDVal.indexOf(Constant.END_SUCCESS));
 									System.out.println("createIDVal==="+createIDVal);
 									
-									//调用batch环境的启动接口
-									StringBuilder commandBQDSB=new StringBuilder();
-									commandBQDSB.append("[COMMAND(Item,");
-									commandBQDSB.append(Constant.USERID);
-									commandBQDSB.append(",");
-									commandBQDSB.append(createIDVal);
-									commandBQDSB.append(",");
-									commandBQDSB.append(BatchTest.RESTART);
-									commandBQDSB.append(")]");
-									execute(commandBQDSB.toString());
+									//调用batch环境的重启接口
+									commandBatch(createIDVal,BatchTest.RESTART);
 									
 									String stateResultJOStr = getItem("BLState_"+j);
 									JSONObject stateResultJO = new JSONObject(stateResultJOStr);
@@ -284,6 +265,7 @@ public class BatchController {
 									//stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
 									if(BatchTest.RUNNING.equals(stateVal)) {
 										workOrderService.updateStateById(WorkOrder.BYX, wo.getID());
+										
 										StringBuilder qdSB=new StringBuilder();
 										qdSB.append("[{");
 										qdSB.append("\"workOrder\":\"");
@@ -315,15 +297,7 @@ public class BatchController {
 								//createIDVal = createIDVal.substring(0, createIDVal.indexOf(Constant.END_SUCCESS));
 								System.out.println("createIDVal==="+createIDVal);
 								
-								StringBuilder commandQXZTSB=new StringBuilder();
-								commandQXZTSB.append("[COMMAND(Item,");
-								commandQXZTSB.append(Constant.USERID);
-								commandQXZTSB.append(",");
-								commandQXZTSB.append(createIDVal);
-								commandQXZTSB.append(",");
-								commandQXZTSB.append(BatchTest.STOP);
-								commandQXZTSB.append(")]");
-								execute(commandQXZTSB.toString());
+								commandBatch(createIDVal,BatchTest.STOP);
 	
 								//String stateVal = BLKey_x("State",j);
 								String stateResultJOStr = getItem("BLState_"+j);
@@ -343,13 +317,8 @@ public class BatchController {
 						break;
 					case WorkOrder.BZT:
 						boolean allowHold=false;
-						for (int j = 0; j < woPreStateList.size(); j++) {
-							Map<String, Object> woPreStateMap = woPreStateList.get(j);
-							String preWorkOrderID = woPreStateMap.get("workOrderID").toString();
-							Integer preState = Integer.valueOf(woPreStateMap.get("state").toString());
-							if(workOrderID.equals(preWorkOrderID)&&WorkOrder.BZT!=preState) {
-								allowHold=true;
-							}
+						if(WorkOrder.BZT!=getWOPreStateByWOID(workOrderID)) {
+							allowHold=true;
 						}
 	
 						if(allowHold) {
@@ -368,15 +337,7 @@ public class BatchController {
 									//createIDVal = createIDVal.substring(0, createIDVal.indexOf(Constant.END_SUCCESS));
 									System.out.println("createIDVal==="+createIDVal);
 									
-									StringBuilder commandZTSB=new StringBuilder();
-									commandZTSB.append("[COMMAND(Item,");
-									commandZTSB.append(Constant.USERID);
-									commandZTSB.append(",");
-									commandZTSB.append(createIDVal);
-									commandZTSB.append(",");
-									commandZTSB.append(BatchTest.HOLD);
-									commandZTSB.append(")]");
-									execute(commandZTSB.toString());
+									commandBatch(createIDVal,BatchTest.HOLD);
 									
 									addWOPreStateInList(WorkOrder.BZT,wo.getWorkOrderID());
 									break;
@@ -386,13 +347,8 @@ public class BatchController {
 						break;
 					case WorkOrder.GDLXZXQX:
 						boolean allowLXZXQX=false;
-						for (int j = 0; j < woPreStateList.size(); j++) {
-							Map<String, Object> woPreStateMap = woPreStateList.get(j);
-							String preWorkOrderID = woPreStateMap.get("workOrderID").toString();
-							Integer preState = Integer.valueOf(woPreStateMap.get("state").toString());
-							if(workOrderID.equals(preWorkOrderID)&&WorkOrder.GDLXZXQX!=preState) {
-								allowLXZXQX=true;
-							}
+						if(WorkOrder.GDLXZXQX!=getWOPreStateByWOID(workOrderID)) {
+							allowLXZXQX=true;
 						}
 						
 						if(allowLXZXQX) {
@@ -475,12 +431,23 @@ public class BatchController {
 									
 									addWOPreStateInList(WorkOrder.BJS,workOrderID);
 								}
+								else if(BatchTest.RUNNING.equals(stateVal)) {
+									if(WorkOrder.BZT==getWOPreStateByWOID(workOrderID)) {
+										workOrderService.updateStateByFormulaId(WorkOrder.BYX, formulaId);
+									}
+									
+									addWOPreStateInList(WorkOrder.BYX,workOrderID);
+								}
 								else if(BatchTest.HELD.equals(stateVal)) {
-									workOrderService.updateStateByFormulaId(WorkOrder.BZT, formulaId);
+
+									if(WorkOrder.BZT!=getWOPreStateByWOID(workOrderID)) {
+										workOrderService.updateStateByFormulaId(WorkOrder.BZT, formulaId);
+									}
 									
 									addWOPreStateInList(WorkOrder.BZT,workOrderID);
 								}
-								else if(BatchTest.STOPPED.equals(stateVal)) {
+								else if(BatchTest.STOPPED.equals(stateVal)||
+										BatchTest.ABORTED.equals(stateVal)) {
 									workOrderService.updateStateByFormulaId(WorkOrder.BYWZZ, formulaId);
 									
 									woMap.put("existRunWO", false);
@@ -489,16 +456,11 @@ public class BatchController {
 									jsSB.append("[{");
 									jsSB.append("\"workOrder\":\"");
 									jsSB.append(workOrderID);
-									jsSB.append("\",\"orderExecuteStatus\":\"PRODUCTBREAK\",");
+									jsSB.append("\",\"orderExecuteStatus\":\""+WorkOrder.PRODUCTBREAK+"\",");
 									jsSB.append("\"updateTime\":\""+sdf.format(new Date())+"\",\"updateBy\":\"OPR2\"}]");
 									changeOrderStatus(jsSB.toString());
 									
 									addWOPreStateInList(WorkOrder.BYWZZ,workOrderID);
-								}
-								else if(BatchTest.ABORTED.equals(stateVal)) {
-									workOrderService.updateStateByFormulaId(WorkOrder.BYWZZ, formulaId);
-									
-									woMap.put("existRunWO", false);
 								}
 								break;
 							}
@@ -752,6 +714,21 @@ public class BatchController {
 		}
 	}
 	
+	private int getWOPreStateByWOID(String workOrderID) {
+		int state = 0;
+		for (int j = 0; j < woPreStateList.size(); j++) {
+			Map<String, Object> woPreStateMap = woPreStateList.get(j);
+			String preWorkOrderID = woPreStateMap.get("workOrderID").toString();
+			Integer preState = Integer.valueOf(woPreStateMap.get("state").toString());
+			if(workOrderID.equals(preWorkOrderID)) {
+				state=preState;
+				break;
+			}
+		}
+		//System.out.println("preState==="+state);
+		return state;
+	}
+	
 	private boolean checkWOIfExistInPreStateList(String workOrderID) {
 		boolean exist=false;
 		for (Map<String, Object> woPreStateMap : woPreStateList) {
@@ -829,7 +806,7 @@ public class BatchController {
 		commandSB.append(",");
 		commandSB.append(batchID);
 		commandSB.append("");
-		commandSB.append(",100,FRENCHVANILLA PREMIUM -CLASSBASED,FREEZER,4,MIXER,2,PARMS,");
+		commandSB.append(",100,,FREEZER,4,MIXER,2,PARMS,");
 		//commandSB.append("CREAM_AMOUNT,2001,EGG_AMOUNT,200,FLAVOR_AMOUNT,50,MILK_AMOUNT,1999,SUGAR_AMOUNT, 750");
 		
 		List<RecipePM> rPMList=recipePMService.getDLListByWorkOrderID(workOrderID);
@@ -855,6 +832,22 @@ public class BatchController {
 		commandSB.append(")]");
 		String commandSBStr=commandSB.toString();
 		System.out.println("commandSBStr==="+commandSBStr);
+		
+		execute(commandSBStr);
+	}
+	
+	private void commandBatch(String createID, String cmd) {
+		StringBuilder commandSB=new StringBuilder();
+		commandSB.append("[COMMAND(Item,");
+		commandSB.append(Constant.USERID);
+		commandSB.append(",");
+		commandSB.append(createID);
+		commandSB.append(",");
+		commandSB.append(cmd);
+		commandSB.append(")]");
+		String commandSBStr=commandSB.toString();
+		System.out.println("commandSBStr==="+commandSBStr);
+		
 		execute(commandSBStr);
 	}
 
