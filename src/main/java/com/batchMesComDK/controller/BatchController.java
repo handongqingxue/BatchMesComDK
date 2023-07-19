@@ -300,14 +300,14 @@ public class BatchController {
 								String stateResultJOStr = getItem("BLState_"+j);
 								JSONObject stateResultJO = new JSONObject(stateResultJOStr);
 								String stateVal = stateResultJO.getString("data");
-								if(BatchTest.READY.equals(stateVal)) {
+								if(BatchTest.READY.equals(stateVal)) {//工单取消时，若batch状态是已创建，还未执行，就没必要停止batch，直接移除batch就行
 									removeBatch(createIDVal);
 									
 									workOrderService.updateStateById(WorkOrder.BYWZZ, wo.getID());
 									
 									addWOPreStateInList(WorkOrder.BYWZZ,wo.getWorkOrderID());
 								}
-								else {
+								else {//若工单已经执行了，就得停止batch运行
 									commandBatch(createIDVal,BatchTest.STOP);
 		
 									//String stateVal = BLKey_x("State",j);
@@ -329,7 +329,7 @@ public class BatchController {
 						break;
 					case WorkOrder.BZT:
 						boolean allowHold=false;
-						if(WorkOrder.BZT!=getWOPreStateByWOID(workOrderID)) {
+						if(WorkOrder.BZT!=getWOPreStateByWOID(workOrderID)) {//若本次工单状态为暂停，上次状态不是暂停，说明刚暂停，就同步batch端的状态为暂停
 							allowHold=true;
 						}
 	
@@ -892,6 +892,10 @@ public class BatchController {
 		execute(commandSBStr);
 	}
 	
+	/**
+	 * 移除batch
+	 * @param createID
+	 */
 	private void removeBatch(String createID) {
 		StringBuilder removeSB=new StringBuilder();
 		removeSB.append("[REMOVE(Item,");
@@ -1603,7 +1607,6 @@ public class BatchController {
 			boolean success = true;
 			int state = 1;
 			String msg = "操作成功!";
-			*/
 			System.out.println("success=========="+success);
 			System.out.println("state=========="+state);
 			System.out.println("msg=========="+msg);
@@ -1614,6 +1617,7 @@ public class BatchController {
 			testLog.setState(state+"");
 			testLog.setMsg(msg);
 			testLogService.add(testLog);
+			*/
 			
 			if(success) {
 				jsonMap.put("success", "true");
@@ -1720,6 +1724,11 @@ public class BatchController {
 		}
 	}
 	
+	/**
+	 * 将工单下达报文转为工单对象
+	 * @param mesBody
+	 * @return
+	 */
 	private WorkOrder convertMesWorkOrderDownToJava(String mesBody) {
 
 		net.sf.json.JSONObject wodMesJO = net.sf.json.JSONObject.fromObject(mesBody);
@@ -1760,6 +1769,11 @@ public class BatchController {
 		return wo;
 	}
 	
+	/**
+	 * 将工单报文里的物料信息转为配方参数集合
+	 * @param materialListStr
+	 * @return
+	 */
 	private List<RecipePM> convertMesMaterialListStrToRecipePMList(String materialListStr){
 		List<RecipePM> recipePMList=new ArrayList<>();
 		net.sf.json.JSONArray materialListJA = net.sf.json.JSONArray.fromObject(materialListStr);
@@ -1782,6 +1796,11 @@ public class BatchController {
 		return recipePMList;
 	}
 	
+	/**
+	 * 将人工投料信息报文转为人工投料集合
+	 * @param mesBody
+	 * @return
+	 */
 	private List<ManFeed> convertMesFeedIssusDownToJava(String mesBody) {
 
 		List<ManFeed> mfList=new ArrayList<ManFeed>();
@@ -1958,15 +1977,7 @@ public class BatchController {
 
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		System.out.println("bodyEnc==="+bodyEnc);
-		String bodyDec = bodyEnc;
-		//String bodyDec = DesUtil.decrypt(bodyEnc,DesUtil.SECRET_KEY);
-		//net.sf.json.JSONArray fibJA = net.sf.json.JSONArray.fromObject(bodyDec);
-		/*
-		FeedIssusBody fib=(FeedIssusBody)net.sf.json.JSONObject.toBean(fibJO, FeedIssusBody.class);
-		int c=feedIssusBodyService.add(fib);
-		*/
 
-		//ManFeed mf=(ManFeed)net.sf.json.JSONObject.toBean(fibJO, ManFeed.class);
 		List<ManFeed> mfList=convertMesFeedIssusDownToJava(bodyEnc);
 		
 		/*
@@ -1998,19 +2009,7 @@ public class BatchController {
 
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		System.out.println("bodyEnc==="+bodyEnc);
-		/*
-		String bodyDec = DesUtil.decrypt(bodyEnc,DesUtil.SECRET_KEY);
-		List<PasteWorkingNumBody> pwnbList=new ArrayList<PasteWorkingNumBody>();
-		net.sf.json.JSONArray pwnbJA = net.sf.json.JSONArray.fromObject(bodyDec);
-		for (int i = 0; i < pwnbJA.size(); i++) {
-			net.sf.json.JSONObject pwnbJO = (net.sf.json.JSONObject)pwnbJA.get(i);
-			PasteWorkingNumBody pwnb=(PasteWorkingNumBody)net.sf.json.JSONObject.toBean(pwnbJO, PasteWorkingNumBody.class);
-			System.out.println("id==="+pwnb.getId());
-			pwnbList.add(pwnb);
-		}
-		int c=pasteWorkingNumBodyService.add(pwnbList.get(0));
-		*/
-
+		
 		int c=0;
 		net.sf.json.JSONArray pwndJA = net.sf.json.JSONArray.fromObject(bodyEnc);
 		for (int i = 0; i < pwndJA.size(); i++) {
@@ -2035,6 +2034,10 @@ public class BatchController {
 		return jsonMap;
 	}
 	
+	/**
+	 * 给mes发送批记录
+	 * @return
+	 */
 	@RequestMapping(value="/getSendToMesBRData", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> getSendToMesBRData() {
