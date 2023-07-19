@@ -296,20 +296,32 @@ public class BatchController {
 								String createIDVal = createIDResultJO.getString("data");
 								//createIDVal = createIDVal.substring(0, createIDVal.indexOf(Constant.END_SUCCESS));
 								System.out.println("createIDVal==="+createIDVal);
-								
-								commandBatch(createIDVal,BatchTest.STOP);
-	
-								//String stateVal = BLKey_x("State",j);
+
 								String stateResultJOStr = getItem("BLState_"+j);
 								JSONObject stateResultJO = new JSONObject(stateResultJOStr);
 								String stateVal = stateResultJO.getString("data");
-								//stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
-								if(BatchTest.STOPPED.equals(stateVal)) {
+								if(BatchTest.READY.equals(stateVal)) {
+									removeBatch(createIDVal);
+									
 									workOrderService.updateStateById(WorkOrder.BYWZZ, wo.getID());
 									
-									getSendToMesBRData();//检索是否存在给mes端推送批记录的工单
-									
 									addWOPreStateInList(WorkOrder.BYWZZ,wo.getWorkOrderID());
+								}
+								else {
+									commandBatch(createIDVal,BatchTest.STOP);
+		
+									//String stateVal = BLKey_x("State",j);
+									stateResultJOStr = getItem("BLState_"+j);
+									stateResultJO = new JSONObject(stateResultJOStr);
+									stateVal = stateResultJO.getString("data");
+									//stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
+									if(BatchTest.STOPPED.equals(stateVal)) {
+										workOrderService.updateStateById(WorkOrder.BYWZZ, wo.getID());
+										
+										getSendToMesBRData();//检索是否存在给mes端推送批记录的工单
+										
+										addWOPreStateInList(WorkOrder.BYWZZ,wo.getWorkOrderID());
+									}
 								}
 								break;
 							}
@@ -404,65 +416,68 @@ public class BatchController {
 							//String batchIDVal = BLKey_x("BatchID",j);
 							String batchIDResultJOStr = getItem("BLBatchID_"+j);
 							JSONObject batchIDResultJO = new JSONObject(batchIDResultJOStr);
-							String batchIDVal = batchIDResultJO.getString("data");
-							//batchIDVal = batchIDVal.substring(0, batchIDVal.indexOf(Constant.END_SUCCESS));
-							if(formulaId.equals(batchIDVal)) {
-								woMap.put("existInBatchList", true);
-								
-								//String stateVal = BLKey_x("State",j);
-								String stateResultJOStr = getItem("BLState_"+j);
-								JSONObject stateResultJO = new JSONObject(stateResultJOStr);
-								String stateVal = stateResultJO.getString("data");
-								//stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
-								if(BatchTest.COMPLETE.equals(stateVal)) {
-									workOrderService.updateStateByFormulaId(WorkOrder.BJS, formulaId);
+							int blBatchIDStatus = batchIDResultJO.getInt("status");
+							if(blBatchIDStatus==1) {
+								String batchIDVal = batchIDResultJO.getString("data");
+								//batchIDVal = batchIDVal.substring(0, batchIDVal.indexOf(Constant.END_SUCCESS));
+								if(formulaId.equals(batchIDVal)) {
+									woMap.put("existInBatchList", true);
 									
-									woMap.put("existRunWO", false);
-									
-									StringBuilder jsSB=new StringBuilder();
-									jsSB.append("[{");
-									jsSB.append("\"workOrder\":\"");
-									jsSB.append(workOrderID);
-									jsSB.append("\",\"orderExecuteStatus\":\""+WorkOrder.COMPLETE+"\",");
-									jsSB.append("\"updateTime\":\""+sdf.format(new Date())+"\",\"updateBy\":\"OPR2\"}]");
-									changeOrderStatus(jsSB.toString());
-									
-									getSendToMesBRData();//检索是否存在给mes端推送批记录的工单
-									
-									addWOPreStateInList(WorkOrder.BJS,workOrderID);
-								}
-								else if(BatchTest.RUNNING.equals(stateVal)) {
-									if(WorkOrder.BZT==getWOPreStateByWOID(workOrderID)) {
-										workOrderService.updateStateByFormulaId(WorkOrder.BYX, formulaId);
+									//String stateVal = BLKey_x("State",j);
+									String stateResultJOStr = getItem("BLState_"+j);
+									JSONObject stateResultJO = new JSONObject(stateResultJOStr);
+									String stateVal = stateResultJO.getString("data");
+									//stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
+									if(BatchTest.COMPLETE.equals(stateVal)) {
+										workOrderService.updateStateByFormulaId(WorkOrder.BJS, formulaId);
+										
+										woMap.put("existRunWO", false);
+										
+										StringBuilder jsSB=new StringBuilder();
+										jsSB.append("[{");
+										jsSB.append("\"workOrder\":\"");
+										jsSB.append(workOrderID);
+										jsSB.append("\",\"orderExecuteStatus\":\""+WorkOrder.COMPLETE+"\",");
+										jsSB.append("\"updateTime\":\""+sdf.format(new Date())+"\",\"updateBy\":\"OPR2\"}]");
+										changeOrderStatus(jsSB.toString());
+										
+										getSendToMesBRData();//检索是否存在给mes端推送批记录的工单
+										
+										addWOPreStateInList(WorkOrder.BJS,workOrderID);
 									}
-									
-									addWOPreStateInList(WorkOrder.BYX,workOrderID);
-								}
-								else if(BatchTest.HELD.equals(stateVal)) {
-
-									if(WorkOrder.BZT!=getWOPreStateByWOID(workOrderID)) {
-										workOrderService.updateStateByFormulaId(WorkOrder.BZT, formulaId);
+									else if(BatchTest.RUNNING.equals(stateVal)) {
+										if(WorkOrder.BZT==getWOPreStateByWOID(workOrderID)) {
+											workOrderService.updateStateByFormulaId(WorkOrder.BYX, formulaId);
+										}
+										
+										addWOPreStateInList(WorkOrder.BYX,workOrderID);
 									}
-									
-									addWOPreStateInList(WorkOrder.BZT,workOrderID);
+									else if(BatchTest.HELD.equals(stateVal)) {
+	
+										if(WorkOrder.BZT!=getWOPreStateByWOID(workOrderID)) {
+											workOrderService.updateStateByFormulaId(WorkOrder.BZT, formulaId);
+										}
+										
+										addWOPreStateInList(WorkOrder.BZT,workOrderID);
+									}
+									else if(BatchTest.STOPPED.equals(stateVal)||
+											BatchTest.ABORTED.equals(stateVal)) {
+										workOrderService.updateStateByFormulaId(WorkOrder.BYWZZ, formulaId);
+										
+										woMap.put("existRunWO", false);
+										
+										StringBuilder jsSB=new StringBuilder();
+										jsSB.append("[{");
+										jsSB.append("\"workOrder\":\"");
+										jsSB.append(workOrderID);
+										jsSB.append("\",\"orderExecuteStatus\":\""+WorkOrder.PRODUCTBREAK+"\",");
+										jsSB.append("\"updateTime\":\""+sdf.format(new Date())+"\",\"updateBy\":\"OPR2\"}]");
+										changeOrderStatus(jsSB.toString());
+										
+										addWOPreStateInList(WorkOrder.BYWZZ,workOrderID);
+									}
+									break;
 								}
-								else if(BatchTest.STOPPED.equals(stateVal)||
-										BatchTest.ABORTED.equals(stateVal)) {
-									workOrderService.updateStateByFormulaId(WorkOrder.BYWZZ, formulaId);
-									
-									woMap.put("existRunWO", false);
-									
-									StringBuilder jsSB=new StringBuilder();
-									jsSB.append("[{");
-									jsSB.append("\"workOrder\":\"");
-									jsSB.append(workOrderID);
-									jsSB.append("\",\"orderExecuteStatus\":\""+WorkOrder.PRODUCTBREAK+"\",");
-									jsSB.append("\"updateTime\":\""+sdf.format(new Date())+"\",\"updateBy\":\"OPR2\"}]");
-									changeOrderStatus(jsSB.toString());
-									
-									addWOPreStateInList(WorkOrder.BYWZZ,workOrderID);
-								}
-								break;
 							}
 						}
 						
@@ -875,6 +890,19 @@ public class BatchController {
 		System.out.println("commandSBStr==="+commandSBStr);
 		
 		execute(commandSBStr);
+	}
+	
+	private void removeBatch(String createID) {
+		StringBuilder removeSB=new StringBuilder();
+		removeSB.append("[REMOVE(Item,");
+		removeSB.append(Constant.USERID);
+		removeSB.append(",");
+		removeSB.append(createID);
+		removeSB.append(")]");
+		String removeSBStr=removeSB.toString();
+		System.out.println("removeSBStr==="+removeSBStr);
+		
+		execute(removeSB.toString());
 	}
 
 	@RequestMapping(value="/addWorkOrder")
