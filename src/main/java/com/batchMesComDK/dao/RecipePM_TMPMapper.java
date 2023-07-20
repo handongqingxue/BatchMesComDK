@@ -10,6 +10,8 @@ public interface RecipePM_TMPMapper {
 
 	List<RecipePM_TMP> getByProductParam(@Param("productCode") String productCode, @Param("productName") String productName);
 
+	List<RecipePM_TMP> getByRecipeID(@Param("recipeID") String recipeID);
+
 	int add(RecipePM_TMP rPM_TMP);
 
 	int deleteByList(@Param("idList") List<String> idList);

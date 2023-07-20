@@ -25,8 +25,9 @@ public class APIUtil {
 
 	public static final String SERVICE_URL="http://localhost:8080/ZnczLfyl/gkj/";
 	//public static final String SERVICE_URL_MES="https://385n683i90.imdo.co/mesPlatform/api/remote/batch/";
+	public static final String SERVICE_URL_MES="http://10.0.3.135:80/mesPlatform/api/remote/batch/";
 	//public static final String SERVICE_URL_MES="http://10.0.3.136:19888/mesPlatform/api/remote/batch/";
-	public static final String SERVICE_URL_MES="http://172.25.10.13:19888/mesPlatform/api/remote/batch/";
+	//public static final String SERVICE_URL_MES="http://172.25.10.13:19888/mesPlatform/api/remote/batch/";
 	public static final String ITEM_RESULT="item";
 	public static final String LIST_RESULT="list";
 

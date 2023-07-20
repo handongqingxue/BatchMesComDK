@@ -386,7 +386,7 @@ public class BatchController {
 						
 						int sgcjEditCount=workOrderService.edit(woSGCJ);
 						if(sgcjEditCount>0) {
-							recipePMService.addFromTMP(workOrderIDSGCJ, productCodeSGCJ, productNameSGCJ);
+							recipePMService.addFromTMP(workOrderIDSGCJ, recipeID);
 							workOrderService.updateStateByWorkOrderID(WorkOrder.WLQTWB,workOrderIDSGCJ);
 						}
 						
@@ -842,7 +842,8 @@ public class BatchController {
 		commandSB.append(",");
 		commandSB.append(batchID);
 		commandSB.append("");
-		commandSB.append(",100,,FREEZER,4,MIXER,2,PARMS,");
+		//commandSB.append(",100,,FREEZER,4,MIXER,2,PARMS,");
+		commandSB.append(",100,,,PARMS,");
 		//commandSB.append("CREAM_AMOUNT,2001,EGG_AMOUNT,200,FLAVOR_AMOUNT,50,MILK_AMOUNT,1999,SUGAR_AMOUNT, 750");
 		
 		List<RecipePM> rPMList=recipePMService.getDLListByWorkOrderID(workOrderID);
@@ -852,13 +853,16 @@ public class BatchController {
 				RecipePM rPM = rPMList.get(i);
 				String pMName = rPM.getPMName();
 				String dosage = rPM.getDosage();
+				
 				rPMSB.append(",");
 				rPMSB.append(pMName);
 				rPMSB.append(",");
 				rPMSB.append(dosage);
 			}
+			
 			String rPMStr = rPMSB.toString();
 			rPMStr=rPMStr.substring(1);
+			
 			commandSB.append(rPMStr);
 		}
 		else {
@@ -1138,12 +1142,12 @@ public class BatchController {
 
 	@RequestMapping(value="/addRecipePMFromTMP")
 	@ResponseBody
-	public Map<String, Object> addRecipePMFromTMP(String workOrderID, String productCode, String productName) {
+	public Map<String, Object> addRecipePMFromTMP(String workOrderID, String recipeID) {
 
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		
 		try {
-			int count=recipePMService.addFromTMP(workOrderID, productCode, productName);
+			int count=recipePMService.addFromTMP(workOrderID, recipeID);
 			if(count>0) {
 				jsonMap.put("message", "ok");
 				jsonMap.put("info", "添加配方参数成功");
@@ -1690,9 +1694,8 @@ public class BatchController {
 			int c=workOrderService.add(wo);
 			if(c>0) {
 				String workOrderID = wo.getWorkOrderID();
-				String productCode = wo.getProductCode();
-				String productName = wo.getProductName();
-				c=recipePMService.addFromTMP(workOrderID, productCode, productName);
+				String recipeID = wo.getRecipeID();
+				c=recipePMService.addFromTMP(workOrderID, recipeID);
 				//c=recipePMService.addFromWORecipePMList(workOrderID, wo.getRecipePMList());
 				if(c>0) {
 					/*
@@ -1747,7 +1750,8 @@ public class BatchController {
 		List<RecipePM> recipePMList=convertMesMaterialListStrToRecipePMList(materialListStr);
 		
 		WorkOrder wo=new WorkOrder();
-		RecipeHeader recipeHeader=recipeHeaderService.getByProductParam(productcode, productName);
+		//RecipeHeader recipeHeader=recipeHeaderService.getByProductParam(productcode, productName);
+		RecipeHeader recipeHeader=recipeHeaderService.getByRecipeID(recipeID);
 		String identifier=recipeHeader.getIdentifier();
 		String formulaId=workOrderService.createFormulaIdByDateYMD(identifier);
 		wo.setIdentifier(identifier);
