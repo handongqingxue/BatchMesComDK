@@ -45,12 +45,6 @@
 			<if test="CName!=null">
 				CName,
 			</if>
-			<if test="FeedPort!=null">
-				FeedPort,
-			</if>
-			<if test="materialSV!=null">
-				materialSV,
-			</if>
 			<if test="HH!=null">
 				HH,
 			</if>
@@ -92,12 +86,6 @@
 			</if>
 			<if test="CName!=null">
 				#{CName},
-			</if>
-			<if test="FeedPort!=null">
-				#{FeedPort},
-			</if>
-			<if test="materialSV!=null">
-				#{materialSV},
 			</if>
 			<if test="HH!=null">
 				#{HH},
@@ -145,12 +133,6 @@
 			</if>
 			<if test="CName!=null">
 				CName=#{CName},
-			</if>
-			<if test="feedPort!=null">
-				FeedPort=#{feedPort},
-			</if>
-			<if test="materialSV!=null">
-				materialSV=#{materialSV},
 			</if>
 			<if test="HH!=null">
 				HH=#{HH},

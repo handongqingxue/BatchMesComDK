@@ -8,4 +8,6 @@ public interface RecipeHeaderService {
 
 	RecipeHeader getByRecipeID(String recipeID);
 
+	RecipeHeader getByWorkOrderID(String workOrderID);
+
 }

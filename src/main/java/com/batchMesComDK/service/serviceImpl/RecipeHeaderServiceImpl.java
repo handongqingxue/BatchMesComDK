@@ -24,4 +24,10 @@ public class RecipeHeaderServiceImpl implements RecipeHeaderService {
 		// TODO Auto-generated method stub
 		return recipeHeaderDao.getByRecipeID(recipeID);
 	}
+
+	@Override
+	public RecipeHeader getByWorkOrderID(String workOrderID) {
+		// TODO Auto-generated method stub
+		return recipeHeaderDao.getByWorkOrderID(workOrderID);
+	}
 }

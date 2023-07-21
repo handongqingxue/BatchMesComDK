@@ -45,8 +45,6 @@ public class RecipePMServiceImpl implements RecipePMService {
 			rPM.setPMType(rPMTmp.getPMType());
 			rPM.setWorkOrderID(workOrderID);
 			rPM.setCName(rPMTmp.getCName());
-			rPM.setFeedPort(rPMTmp.getFeedPort());
-			rPM.setMaterialSV(rPMTmp.getMaterialSV());
 			rPM.setHH(rPMTmp.getHH());
 			rPM.setLL(rPMTmp.getLL());
 			rPM.setPMSort(rPMTmp.getPMSort());
@@ -177,14 +175,8 @@ public class RecipePMServiceImpl implements RecipePMService {
 	@Override
 	public List<RecipePM> getDLListByWorkOrderID(String workOrderID) {
 		// TODO Auto-generated method stub
-		List<RecipePM> dlRecipePMList = new ArrayList<RecipePM>();
 		List<RecipePM> recipePMList = recipePMDao.getListByWorkOrderID(workOrderID);
-		for (RecipePM recipePM : recipePMList) {
-			String feedPort = recipePM.getFeedPort();
-			if(StringUtils.isEmpty(feedPort))
-				dlRecipePMList.add(recipePM);
-		}
-		return dlRecipePMList;
+		return recipePMList;
 	}
 
 	@Override

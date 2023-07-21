@@ -1698,11 +1698,14 @@ public class BatchController {
 				c=recipePMService.addFromTMP(workOrderID, recipeID);
 				//c=recipePMService.addFromWORecipePMList(workOrderID, wo.getRecipePMList());
 				if(c>0) {
+					List<RecipePM> recipePMList = wo.getRecipePMList();
+					List<ManFeed> manFeedList = wo.getManFeedList();
 					/*
 					 * 为了测试这块先屏蔽掉
 					 */
-					//c=recipePMService.updateDosageXByPMParam(workOrderID, wo.getRecipePMList());
-					c=recipePMService.updateDosageLastByPMParam(workOrderID, wo.getRecipePMList());
+					//c=recipePMService.updateDosageXByPMParam(workOrderID, recipePMList);
+					c=recipePMService.updateDosageLastByPMParam(workOrderID, recipePMList);
+					c=manFeedService.addTestFromList(manFeedList);
 					c=workOrderService.updateStateByWorkOrderID(WorkOrder.WLQTWB,workOrderID);
 				}
 				
@@ -1747,7 +1750,9 @@ public class BatchController {
 		String workOrder = wodMesJO.getString("workOrder");
 		String workcenterId = wodMesJO.getString("workcenterId");
 		String materialListStr = wodMesJO.getString("materialList");
-		List<RecipePM> recipePMList=convertMesMaterialListStrToRecipePMList(materialListStr);
+		Map<String,Object> materialListMap=convertMesMaterialListStrToMaterialListMap(workOrder,recipeID,materialListStr);
+		List<RecipePM> recipePMList=(List<RecipePM>)materialListMap.get("recipePMList");
+		List<ManFeed> manFeedList=(List<ManFeed>)materialListMap.get("manFeedList");
 		
 		WorkOrder wo=new WorkOrder();
 		//RecipeHeader recipeHeader=recipeHeaderService.getByProductParam(productcode, productName);
@@ -1764,6 +1769,7 @@ public class BatchController {
 		wo.setTotalOutput(qty);
 		wo.setWorkOrderID(workOrder);
 		wo.setRecipePMList(recipePMList);
+		wo.setManFeedList(manFeedList);
 		wo.setLotNo(lotNo);
 		wo.setWorkcenterId(workcenterId);
 		
@@ -1778,26 +1784,61 @@ public class BatchController {
 	 * @param materialListStr
 	 * @return
 	 */
-	private List<RecipePM> convertMesMaterialListStrToRecipePMList(String materialListStr){
+	private Map<String,Object> convertMesMaterialListStrToMaterialListMap(String workOrderID, String recipeID, String materialListStr){
+		Map<String,Object> materialListMap=new HashMap<>();
+		
 		List<RecipePM> recipePMList=new ArrayList<>();
+		List<ManFeed> manFeedList=new ArrayList<>();
+		
 		net.sf.json.JSONArray materialListJA = net.sf.json.JSONArray.fromObject(materialListStr);
 		int materialListJASize = materialListJA.size();
+		
 		RecipePM recipePM=null;
+		ManFeed manFeed=null;
+		
+		RecipeHeader rh=recipeHeaderService.getByRecipeID(recipeID);
+		String dev1 = rh.getDev1();
+		String dev2 = rh.getDev2();
+		
 		for (int i = 0; i < materialListJASize; i++) {
 			net.sf.json.JSONObject materialListJO = (net.sf.json.JSONObject)materialListJA.get(i);
 			String materialCode = materialListJO.getString("materialCode");
 			String materialName = materialListJO.getString("materialName");
 			String qty = materialListJO.getString("qty");
+			String unit = materialListJO.getString("unit");
+			//String upperDeviation = materialListJO.getString("upperDeviation");
+			//String lowerDeviation = materialListJO.getString("lowerDeviation");
+			String feedportCode = materialListJO.getString("feedportCode");
 			
-			recipePM=new RecipePM();
-			recipePM.setPMCode(materialCode);
-			//recipePM.setPMName(materialName);
-			recipePM.setCName(materialName);
-			recipePM.setDosage(qty);
-			
-			recipePMList.add(recipePM);
+			if(StringUtils.isEmpty(feedportCode)) {
+				recipePM=new RecipePM();
+				recipePM.setPMCode(materialCode);
+				//recipePM.setPMName(materialName);
+				recipePM.setCName(materialName);
+				recipePM.setDosage(qty);
+				
+				recipePMList.add(recipePM);
+			}
+			else {
+				manFeed=new ManFeed();
+				manFeed.setWorkOrderID(workOrderID);
+				manFeed.setMaterialCode(materialCode);
+				manFeed.setMaterialName(materialName);
+				manFeed.setUnit(unit);
+				manFeed.setFeedPort(feedportCode);
+				manFeed.setMarkBit(ManFeed.WJS+"");
+				manFeed.setMaterialSV(qty);
+				manFeed.setDev1(dev1);
+				manFeed.setDev2(dev2);
+				
+				manFeedList.add(manFeed);
+			}
 		}
-		return recipePMList;
+		
+		materialListMap.put("recipePMList", recipePMList);
+		materialListMap.put("manFeedList", manFeedList);
+		
+		return materialListMap;
 	}
 	
 	/**
@@ -1987,8 +2028,8 @@ public class BatchController {
 		/*
 		 * 为了测试暂时屏蔽掉
 		*/
-		//int c=manFeedService.editByWorkOrderIDFeedPortList(mfList);
-		int c=manFeedService.addTestFromList(mfList);
+		int c=manFeedService.editByWorkOrderIDFeedPortList(mfList);
+		//int c=manFeedService.addTestFromList(mfList);
 		if(c>0) {
 			jsonMap.put("success", "true");
 			jsonMap.put("state", "001");

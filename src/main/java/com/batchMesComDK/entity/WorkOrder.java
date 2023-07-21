@@ -212,11 +212,18 @@ public class WorkOrder {
 	private String WorkcenterId;
 	private String Identifier;
 	private List<RecipePM> recipePMList;
+	private List<ManFeed> manFeedList;
 	public List<RecipePM> getRecipePMList() {
 		return recipePMList;
 	}
 	public void setRecipePMList(List<RecipePM> recipePMList) {
 		this.recipePMList = recipePMList;
+	}
+	public List<ManFeed> getManFeedList() {
+		return manFeedList;
+	}
+	public void setManFeedList(List<ManFeed> manFeedList) {
+		this.manFeedList = manFeedList;
 	}
 	
 }

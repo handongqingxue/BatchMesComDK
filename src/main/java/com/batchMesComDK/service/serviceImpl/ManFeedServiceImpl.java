@@ -44,7 +44,6 @@ public class ManFeedServiceImpl implements ManFeedService {
 		  	mf.setMaterialCode(rPM.getPMCode());
 		  	mf.setMaterialName(rPM.getPMName());
 		  	mf.setUnit(rPM.getUnit());
-		  	mf.setFeedPort(rPM.getFeedPort());
 		  	mf.setMarkBit(ManFeed.WJS+"");
 		  	mf.setMaterialSV(rPM.getDosage());
 		  	mf.setDev1(dev1);
@@ -60,13 +59,7 @@ public class ManFeedServiceImpl implements ManFeedService {
 	public int addTestFromList(List<ManFeed> mfList) {
 		// TODO Auto-generated method stub
 		int count=0;
-		String workOrderID = mfList.get(0).getWorkOrderID();
-		RecipeHeader rh=recipeHeaderDao.getByWorkOrderID(workOrderID);
 		for (ManFeed mf : mfList) {
-			mf.setMarkBit(ManFeed.YJS+"");
-			mf.setMaterialSV(mf.getSuttle()+"");
-			mf.setDev1(rh.getDev1());
-			mf.setDev2(rh.getDev2());
 			count+=manFeedDao.add(mf);
 		}
 		return count;

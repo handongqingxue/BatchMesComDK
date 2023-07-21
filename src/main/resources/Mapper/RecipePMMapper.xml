@@ -36,9 +36,6 @@
 			<if test="CName!=null">
 				CName,
 			</if>
-			<if test="FeedPort!=null">
-				FeedPort,
-			</if>
 			<if test="MaterialSV!=null">
 				MaterialSV,
 			</if>
@@ -86,9 +83,6 @@
 			</if>
 			<if test="CName!=null">
 				#{CName},
-			</if>
-			<if test="FeedPort!=null">
-				#{FeedPort},
 			</if>
 			<if test="MaterialSV!=null">
 				#{MaterialSV},

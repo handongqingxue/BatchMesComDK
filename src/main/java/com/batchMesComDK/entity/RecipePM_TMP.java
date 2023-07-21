@@ -88,12 +88,6 @@ public class RecipePM_TMP {
 	public void setFeedPort(String feedPort) {
 		FeedPort = feedPort;
 	}
-	public String getMaterialSV() {
-		return MaterialSV;
-	}
-	public void setMaterialSV(String materialSV) {
-		MaterialSV = materialSV;
-	}
 	public String getHH() {
 		return HH;
 	}
@@ -129,7 +123,6 @@ public class RecipePM_TMP {
   	private String RecipeID;
   	private String CName;
 	private String FeedPort;
-  	private String MaterialSV;
 	private String HH;
 	private String LL;
 	private Integer PMSort;
