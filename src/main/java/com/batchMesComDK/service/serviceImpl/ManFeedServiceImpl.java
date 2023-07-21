@@ -60,12 +60,13 @@ public class ManFeedServiceImpl implements ManFeedService {
 	public int addTestFromList(List<ManFeed> mfList) {
 		// TODO Auto-generated method stub
 		int count=0;
+		String workOrderID = mfList.get(0).getWorkOrderID();
+		RecipeHeader rh=recipeHeaderDao.getByWorkOrderID(workOrderID);
 		for (ManFeed mf : mfList) {
-			mf.setFeedPort("001");
-			mf.setMarkBit("0");
-			mf.setMaterialSV("100");
-			mf.setDev1("0.3");
-			mf.setDev2("0.5");
+			mf.setMarkBit(ManFeed.YJS+"");
+			mf.setMaterialSV(mf.getSuttle()+"");
+			mf.setDev1(rh.getDev1());
+			mf.setDev2(rh.getDev2());
 			count+=manFeedDao.add(mf);
 		}
 		return count;

@@ -157,9 +157,9 @@ public class BatchController {
 						//调用创建batch接口创建batch		
 	
 						/*
-						 * 内部测试先屏蔽掉这个逻辑
-						*/
+						 * 工艺指导书里的人工投料参数后来都取消了，因此创建batch时把pm的人工投料参数加入manfeed表这一步就取消了，等mes那边下发投料信息时再加入manfeed表里
 						addManFeedFromRecipePM(workOrderID,productCode,productName);//工单创建时，从配方参数表里取数据，放入人工投料表
+						*/
 						
 						createBatch(formulaId,workOrderID,identifier);
 						
@@ -1987,8 +1987,8 @@ public class BatchController {
 		/*
 		 * 为了测试暂时屏蔽掉
 		*/
-		int c=manFeedService.editByWorkOrderIDFeedPortList(mfList);
-		//int c=manFeedService.addTestFromList(mfList);
+		//int c=manFeedService.editByWorkOrderIDFeedPortList(mfList);
+		int c=manFeedService.addTestFromList(mfList);
 		if(c>0) {
 			jsonMap.put("success", "true");
 			jsonMap.put("state", "001");
