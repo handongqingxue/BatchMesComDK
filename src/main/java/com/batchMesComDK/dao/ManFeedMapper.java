@@ -10,6 +10,8 @@ public interface ManFeedMapper {
 
 	int add(ManFeed mf);
 
+	int addFromList(@Param("mfList") List<ManFeed> mfList);
+
 	int deleteByList(@Param("idList") List<String> idList);
 
 	int editByWorkOrderIDFeedPort(ManFeed mf);

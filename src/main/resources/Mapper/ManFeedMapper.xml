@@ -83,6 +83,40 @@
 			</if>
 		</trim>
 	</insert>
+	<insert id="addFromList" parameterType="com.batchMesComDK.entity.ManFeed">
+		insert into ManFeed (WorkOrderID,MaterialCode,MaterialName,Unit,FeedPort,MarkBit,MaterialSV,Dev1,Dev2) values
+		<foreach collection="mfList" item="mf" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				<if test="mf.workOrderID!=null">
+					#{mf.workOrderID},
+				</if>
+				<if test="mf.materialCode!=null">
+					#{mf.materialCode},
+				</if>
+				<if test="mf.materialName!=null">
+					#{mf.materialName},
+				</if>
+				<if test="mf.unit!=null">
+					#{mf.unit},
+				</if>
+				<if test="mf.feedPort!=null">
+					#{mf.feedPort},
+				</if>
+				<if test="mf.markBit!=null">
+					#{mf.markBit},
+				</if>
+				<if test="mf.materialSV!=null">
+					#{mf.materialSV},
+				</if>
+				<if test="mf.dev1!=null">
+					#{mf.dev1},
+				</if>
+				<if test="mf.dev2!=null">
+					#{mf.dev2},
+				</if>
+			</trim>
+		</foreach>
+	</insert>
 	<delete id="deleteByList">
 		delete from ManFeed where 1=1
 		<foreach collection="idList" item="id" open=" and cast(id as char) in (" separator="," close=")">

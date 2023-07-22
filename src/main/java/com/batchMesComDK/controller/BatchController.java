@@ -157,7 +157,8 @@ public class BatchController {
 						//调用创建batch接口创建batch		
 	
 						/*
-						 * 工艺指导书里的人工投料参数后来都取消了，因此创建batch时把pm的人工投料参数加入manfeed表这一步就取消了，等mes那边下发投料信息时再加入manfeed表里
+						 * 工艺指导书里的人工投料参数后来都取消了，因此创建batch时把pm的人工投料参数加入manfeed表这一步就取消了，改为下单时把mes那边发来的带投料口的信息先加入manfeed表。
+						 * 等mes那边下发投料信息时，根据小料的物料编码和投料口（下单时的投料口和下发投料信息时带的投料口是一致的），从manfeed表里找到对应的小料，把投料重量加进去。
 						addManFeedFromRecipePM(workOrderID,productCode,productName);//工单创建时，从配方参数表里取数据，放入人工投料表
 						*/
 						
@@ -1705,7 +1706,7 @@ public class BatchController {
 					 */
 					//c=recipePMService.updateDosageXByPMParam(workOrderID, recipePMList);
 					c=recipePMService.updateDosageLastByPMParam(workOrderID, recipePMList);
-					c=manFeedService.addTestFromList(manFeedList);
+					c=manFeedService.addFromList(manFeedList);
 					c=workOrderService.updateStateByWorkOrderID(WorkOrder.WLQTWB,workOrderID);
 				}
 				
@@ -1739,8 +1740,8 @@ public class BatchController {
 
 		net.sf.json.JSONObject wodMesJO = net.sf.json.JSONObject.fromObject(mesBody);
 		//WorkOrder wo=(WorkOrder)net.sf.json.JSONObject.toBean(woJO, WorkOrder.class);
-		String recipeID = wodMesJO.getString("formulaId");//mes那边发来的formulaId对应java端的recipeID
-		//String id = wodMesJO.getString("id");
+		//String recipeID = wodMesJO.getString("formulaId");//mes那边发来的formulaId对应java端的recipeID
+		String identifier = wodMesJO.getString("identifier");
 		String lotNo = wodMesJO.getString("lotNo");
 		String planStartTime = wodMesJO.getString("planStartTime");
 		String productName = wodMesJO.getString("productName");
@@ -1750,15 +1751,26 @@ public class BatchController {
 		String workOrder = wodMesJO.getString("workOrder");
 		String workcenterId = wodMesJO.getString("workcenterId");
 		String materialListStr = wodMesJO.getString("materialList");
-		Map<String,Object> materialListMap=convertMesMaterialListStrToMaterialListMap(workOrder,recipeID,materialListStr);
+		Map<String,Object> materialListMap=convertMesMaterialListStrToMaterialListMap(workOrder,materialListStr);
 		List<RecipePM> recipePMList=(List<RecipePM>)materialListMap.get("recipePMList");
 		List<ManFeed> manFeedList=(List<ManFeed>)materialListMap.get("manFeedList");
 		
 		WorkOrder wo=new WorkOrder();
 		//RecipeHeader recipeHeader=recipeHeaderService.getByProductParam(productcode, productName);
-		RecipeHeader recipeHeader=recipeHeaderService.getByRecipeID(recipeID);
-		String identifier=recipeHeader.getIdentifier();
+		RecipeHeader recipeHeader=recipeHeaderService.getByIdentifier(identifier);
+		
+		String dev1 = recipeHeader.getDev1();
+		String dev2 = recipeHeader.getDev2();
+		
+		for (ManFeed manFeed : manFeedList) {
+			manFeed.setDev1(dev1);
+			manFeed.setDev2(dev2);
+		}
+		
 		String formulaId=workOrderService.createFormulaIdByDateYMD(identifier);
+		
+		String recipeID=recipeHeader.getRecipeID();
+		
 		wo.setIdentifier(identifier);
 		wo.setFormulaId(formulaId);
 		wo.setRecipeID(recipeID);
@@ -1780,11 +1792,11 @@ public class BatchController {
 	}
 	
 	/**
-	 * 将工单报文里的物料信息转为配方参数集合
+	 * 将工单报文里的大料信息和工艺参数信息转为配方参数集合，和人工投料信息一起存入map里
 	 * @param materialListStr
 	 * @return
 	 */
-	private Map<String,Object> convertMesMaterialListStrToMaterialListMap(String workOrderID, String recipeID, String materialListStr){
+	private Map<String,Object> convertMesMaterialListStrToMaterialListMap(String workOrderID, String materialListStr){
 		Map<String,Object> materialListMap=new HashMap<>();
 		
 		List<RecipePM> recipePMList=new ArrayList<>();
@@ -1796,10 +1808,6 @@ public class BatchController {
 		RecipePM recipePM=null;
 		ManFeed manFeed=null;
 		
-		RecipeHeader rh=recipeHeaderService.getByRecipeID(recipeID);
-		String dev1 = rh.getDev1();
-		String dev2 = rh.getDev2();
-		
 		for (int i = 0; i < materialListJASize; i++) {
 			net.sf.json.JSONObject materialListJO = (net.sf.json.JSONObject)materialListJA.get(i);
 			String materialCode = materialListJO.getString("materialCode");
@@ -1810,7 +1818,7 @@ public class BatchController {
 			//String lowerDeviation = materialListJO.getString("lowerDeviation");
 			String feedportCode = materialListJO.getString("feedportCode");
 			
-			if(StringUtils.isEmpty(feedportCode)) {
+			if(StringUtils.isEmpty(feedportCode)) {//没有投料口说明是大料或工艺参数
 				recipePM=new RecipePM();
 				recipePM.setPMCode(materialCode);
 				//recipePM.setPMName(materialName);
@@ -1819,7 +1827,7 @@ public class BatchController {
 				
 				recipePMList.add(recipePM);
 			}
-			else {
+			else {//有投料口说明是小料
 				manFeed=new ManFeed();
 				manFeed.setWorkOrderID(workOrderID);
 				manFeed.setMaterialCode(materialCode);
@@ -1828,8 +1836,6 @@ public class BatchController {
 				manFeed.setFeedPort(feedportCode);
 				manFeed.setMarkBit(ManFeed.WJS+"");
 				manFeed.setMaterialSV(qty);
-				manFeed.setDev1(dev1);
-				manFeed.setDev2(dev2);
 				
 				manFeedList.add(manFeed);
 			}

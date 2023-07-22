@@ -82,12 +82,6 @@ public class RecipePM_TMP {
 	public void setCName(String cName) {
 		CName = cName;
 	}
-	public String getFeedPort() {
-		return FeedPort;
-	}
-	public void setFeedPort(String feedPort) {
-		FeedPort = feedPort;
-	}
 	public String getHH() {
 		return HH;
 	}
@@ -122,7 +116,6 @@ public class RecipePM_TMP {
   	private String PMType;
   	private String RecipeID;
   	private String CName;
-	private String FeedPort;
 	private String HH;
 	private String LL;
 	private Integer PMSort;

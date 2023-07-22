@@ -211,8 +211,8 @@ public class WorkOrder {
 	private String LotNo;
 	private String WorkcenterId;
 	private String Identifier;
-	private List<RecipePM> recipePMList;
-	private List<ManFeed> manFeedList;
+	private List<RecipePM> recipePMList;//用来存放mes那边下发的大料和工艺参数
+	private List<ManFeed> manFeedList;//用来存放mes那边下发的小料参数
 	public List<RecipePM> getRecipePMList() {
 		return recipePMList;
 	}

@@ -7,7 +7,7 @@
 		select rpm_TMP.* from RecipePM_TMP rpm_TMP,RecipeHeader rh where rpm_TMP.RecipeID=rh.RecipeID and rh.ProductCode=#{productCode} and rh.ProductName=#{productName}
 	</select>
 	<select id="getByRecipeID" resultType="com.batchMesComDK.entity.RecipePM_TMP">
-		select * from RecipePM_TMP where RecipeID=#{recipeID}
+		select * from RecipePM_TMP where RecipeID=#{recipeID} and FeedPort is null
 	</select>
 	<insert id="add" parameterType="com.batchMesComDK.entity.RecipePM_TMP">
 		insert into RecipePM_TMP

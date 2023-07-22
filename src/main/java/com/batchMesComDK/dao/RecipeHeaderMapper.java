@@ -10,5 +10,7 @@ public interface RecipeHeaderMapper {
 
 	RecipeHeader getByRecipeID(@Param("recipeID") String recipeID);
 
+	RecipeHeader getByIdentifier(@Param("identifier") String identifier);
+
 	RecipeHeader getByWorkOrderID(@Param("workOrderID") String workOrderID);
 }

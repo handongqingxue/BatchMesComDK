@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.batchMesComDK.dao.*;
-import com.batchMesComDK.entity.RecipeHeader;
+import com.batchMesComDK.entity.*;
 import com.batchMesComDK.service.*;
 
 @Service
@@ -23,6 +23,12 @@ public class RecipeHeaderServiceImpl implements RecipeHeaderService {
 	public RecipeHeader getByRecipeID(String recipeID) {
 		// TODO Auto-generated method stub
 		return recipeHeaderDao.getByRecipeID(recipeID);
+	}
+
+	@Override
+	public RecipeHeader getByIdentifier(String identifier) {
+		// TODO Auto-generated method stub
+		return recipeHeaderDao.getByIdentifier(identifier);
 	}
 
 	@Override

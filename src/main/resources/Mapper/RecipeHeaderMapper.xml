@@ -9,6 +9,9 @@
 	<select id="getByRecipeID" resultType="com.batchMesComDK.entity.RecipeHeader">
 		select * from RecipeHeader where RecipeID=#{recipeID}
 	</select>
+	<select id="getByIdentifier" resultType="com.batchMesComDK.entity.RecipeHeader">
+		select * from RecipeHeader where Identifier=#{identifier}
+	</select>
 	<select id="getByWorkOrderID" resultType="com.batchMesComDK.entity.RecipeHeader">
 		select rh.* from RecipeHeader rh,WorkOrder w where rh.RecipeID=w.RecipeID and w.WorkOrderID=#{workOrderID}
 	</select>

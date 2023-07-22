@@ -56,13 +56,9 @@ public class ManFeedServiceImpl implements ManFeedService {
 	}
 
 	@Override
-	public int addTestFromList(List<ManFeed> mfList) {
+	public int addFromList(List<ManFeed> mfList) {
 		// TODO Auto-generated method stub
-		int count=0;
-		for (ManFeed mf : mfList) {
-			count+=manFeedDao.add(mf);
-		}
-		return count;
+		return manFeedDao.addFromList(mfList);
 	}
 
 	@Override

@@ -23,6 +23,6 @@ public interface ManFeedService {
 	 * @param mfList
 	 * @return
 	 */
-	int addTestFromList(List<ManFeed> mfList);
+	int addFromList(List<ManFeed> mfList);
 
 }
