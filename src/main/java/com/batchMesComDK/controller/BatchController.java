@@ -840,12 +840,22 @@ public class BatchController {
 		commandSB.append(recipeID.trim());
 		//commandSB.append("TM61_PL_20230422.BPC");
 		commandSB.append(".BPC");
+		//commandSB.append(".UPC");
 		commandSB.append(",");
 		commandSB.append(batchID);
 		commandSB.append("");
 		//commandSB.append(",100,,FREEZER,4,MIXER,2,PARMS,");
 		commandSB.append(",100,,,PARMS,");
 		//commandSB.append("CREAM_AMOUNT,2001,EGG_AMOUNT,200,FLAVOR_AMOUNT,50,MILK_AMOUNT,1999,SUGAR_AMOUNT, 750");
+		
+		/*
+		 * LSL_ZYXS_2T配方的参数
+		commandSB.append("ADD_GL1,0.0,ADD_K12,0.0,ADD_SIO22_1,0.0,ADD_SIO22_2,0.0,ADD_SL1,0.0,ADD_SL2,0.0,ADD_WL1,0.0,ADD_WL2,0.0,");
+		commandSB.append("JB_T1,1.0,JB_VD1,-420.0,JB2_T,5.0,JB2_VD,-550.0,JB3_T,20.0,JB3_VD,-600.0,JB4_T,1.0,JB4_VD,-420.0,JB5_T,15.0,JB5_VD,-695.0,");
+		commandSB.append("ML_VD,-420.0,PM_JB_T1,10.0,PM_JB_T2,3.0,PM_VD,-420.0,PM_VD2,-420.0,PM_VD3,-420.0,SA_VD,-450.0,TW3_JB_T1,10.0,");
+		commandSB.append("W2_VD,-450.0,W3_VD,-450.0,W3_VD2,-450.0,WXH_T,5.0,WXH_VD,-600.0,WXH2_T,5.0,WXH2_VD,-670.0");
+		*/
+		
 		
 		List<RecipePM> rPMList=recipePMService.getDLListByWorkOrderID(workOrderID);
 		if(rPMList.size()>0) {
@@ -856,7 +866,7 @@ public class BatchController {
 				String dosage = rPM.getDosage();
 				
 				rPMSB.append(",");
-				rPMSB.append(pMName);
+				rPMSB.append(pMName.trim());//必须去掉参数名称里带的空格，不然会把空格当作是一个字符，工单会创建不成功
 				rPMSB.append(",");
 				rPMSB.append(dosage);
 			}
