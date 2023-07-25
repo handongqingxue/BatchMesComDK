@@ -112,7 +112,7 @@ public class BatchController {
 	public Map<String, Object> keepWatchOnWorkOrder() {
 		
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
-
+		
 		try {
 			if(unitIDWOMap==null)//一开始判断主机id工单map是否存在，不存在就初始化
 				initUnitIDWOMap();
@@ -491,9 +491,11 @@ public class BatchController {
 				}
 				
 				jsonMap.put("success", "true");
+				jsonMap.put("message", "ok");
 			}
 			else {
 				jsonMap.put("success", "false");
+				jsonMap.put("message", "no");
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -2135,7 +2137,7 @@ public class BatchController {
 			}
 			*/
 			
-			//sendToMesWOIDList.add("WOo8qrwtgrnd");
+			//sendToMesWOIDList.add("WOkforzjyc0l");
 			
 			
 			int count=0;
