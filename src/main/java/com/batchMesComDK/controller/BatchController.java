@@ -1530,11 +1530,13 @@ public class BatchController {
 			System.out.println("result==="+result);
 			if(StringUtils.isEmpty(result)) {
 				plan.setStatus(0);
-				plan.setMsg("Fail");
+				plan.setMsg("fail");
+				plan.setSuccess(false);
 			}
 			else {
 				plan.setStatus(1);
-				plan.setMsg("Success");
+				plan.setMsg("success");
+				plan.setSuccess(true);
 				plan.setData(result);
 			}
 			json=JsonUtil.getJsonFromObject(plan);
@@ -2139,7 +2141,6 @@ public class BatchController {
 			
 			//sendToMesWOIDList.add("WOkforzjyc0l");
 			
-			
 			int count=0;
 			/*
 			System.out.println("count===="+count);
@@ -2152,6 +2153,7 @@ public class BatchController {
 			
 			List<BatchRecord> brList=batchRecordService.getSendToMesData(sendToMesWOIDList);
 			System.out.println("sendToMesWOIDListSize==="+sendToMesWOIDList.size());
+			System.out.println("sendToMesWOListSize==="+sendToMesWOList.size());
 			
 			if(sendToMesWOIDList.size()>0) {
 				for (int i = 0; i < sendToMesWOIDList.size(); i++) {

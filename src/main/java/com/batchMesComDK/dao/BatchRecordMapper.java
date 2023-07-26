@@ -10,6 +10,8 @@ public interface BatchRecordMapper {
 
 	int add(BatchRecord br);
 
+	int addFromList(@Param("brList") List<BatchRecord> brList);
+
 	int deleteByList(@Param("idList") List<String> idList);
 
 	List<BatchRecord> getListByWorkOrderIDList(@Param("workOrderIDList") List<String> workOrderIDList,@Param("recordTypeList") List<String> recordTypeList);

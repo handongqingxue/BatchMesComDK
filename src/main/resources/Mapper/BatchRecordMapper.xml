@@ -119,6 +119,158 @@
 			</if>
 		</trim>
 	</insert>
+	<insert id="addFromList" parameterType="com.batchMesComDK.entity.BatchRecord">
+		insert into BatchRecord (WorkOrderID,PMCode,PMName,LotNo,RecordEvent,RecordContent,Unit,RecordStartTime,
+		RecordEndTime,HLimit,LLimit,DeviationType,RecordType,EquipmentCode,PMCName,PhaseDisc,PhaseID,FeedPort) values
+		<foreach collection="brList" item="br" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				<choose>
+					<when test="br.workOrderID!=null">
+						#{br.workOrderID},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="br.pMCode!=null">
+						#{br.pMCode},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="br.pMName!=null">
+						#{br.pMName},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="br.lotNo!=null">
+						#{br.lotNo},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="br.recordEvent!=null">
+						#{br.recordEvent},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="br.recordContent!=null">
+						#{br.recordContent},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="br.unit!=null">
+						#{br.unit},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="br.recordStartTime!=null">
+						#{br.recordStartTime},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="br.recordEndTime!=null">
+						#{br.recordEndTime},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="br.hLimit!=null">
+						#{br.hLimit},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="br.lLimit!=null">
+						#{br.lLimit},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="br.deviationType!=null">
+						#{br.deviationType},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="br.recordType!=null">
+						#{br.recordType},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="br.equipmentCode!=null">
+						#{br.equipmentCode},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="br.pMCName!=null">
+						#{br.pMCName},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="br.phaseDisc!=null">
+						#{br.phaseDisc},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="br.phaseID!=null">
+						#{br.phaseID},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="br.feedPort!=null">
+						#{br.feedPort},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+			</trim>
+		</foreach>
+	</insert>
 	<delete id="deleteByList">
 		delete from BatchRecord where 1=1
 		<foreach collection="idList" item="id" open=" and cast(id as char) in (" separator="," close=")">

@@ -105,10 +105,12 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 	public int addMaterialFromBHBatchHis(List<String> workOrderIDList) {
 		// TODO Auto-generated method stub
 		int count=0;//his 140
+		List<BatchRecord> batchRecordList=new ArrayList<>();
 		BatchRecord batchRecord=null;
 		List<BHBatchHis> materialList = bHBatchHisDao.getMaterialListByWOIDList(workOrderIDList);
 		for (BHBatchHis bhBatchHis : materialList) {
 			batchRecord=new BatchRecord();
+			
 			String workOrderID = bhBatchHis.getWorkOrderID();
 			String lclTime = bhBatchHis.getLclTime();
 			String pMCode = bhBatchHis.getPMCode();
@@ -116,7 +118,7 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 			String batchID = bhBatchHis.getBatchID();
 			String pValue = bhBatchHis.getPValue();
 			String eu = bhBatchHis.getEU();
-			String pMDisc = bhBatchHis.getPMDisc();
+			String cName = bhBatchHis.getCName();
 			String feedPort = bhBatchHis.getFeedPort();
 			
 			batchRecord.setWorkOrderID(workOrderID);
@@ -129,12 +131,17 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 			batchRecord.setRecordStartTime(lclTime);
 			batchRecord.setRecordEndTime(lclTime);
 			batchRecord.setRecordType("2");
-			batchRecord.setPMCName(pMDisc);
+			batchRecord.setPMCName(cName);
 			batchRecord.setFeedPort(feedPort);
 			
-			count+=batchRecordDao.add(batchRecord);
+			batchRecordList.add(batchRecord);
+			
+			//count+=batchRecordDao.add(batchRecord);
 		}
 		
+		System.out.println("batchRecordList.size()==="+batchRecordList.size());
+		if(batchRecordList.size()>0)
+			count=batchRecordDao.addFromList(batchRecordList);
 		return count;
 	}
 
@@ -142,6 +149,7 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 	public int addPhaseFromBHBatchHis(List<String> workOrderIDList) {
 		// TODO Auto-generated method stub
 		int count=0;//his 3420
+		List<BatchRecord> batchRecordList=new ArrayList<>();
 		BatchRecord batchRecord=null;
 		List<BHBatchHis> phaseList = new ArrayList<>();
 		List<BHBatchHis> bhBatchHisList = bHBatchHisDao.getPhaseListByWOIDList(workOrderIDList);
@@ -205,9 +213,12 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 			batchRecord.setPhaseID(phaseID);
 			batchRecord.setRecordStartTime(lclStartTime);
 			batchRecord.setRecordEndTime(lclCompleteTime);
-			count+=batchRecordDao.add(batchRecord);
+			
+			batchRecordList.add(batchRecord);
+			
+			//count+=batchRecordDao.add(batchRecord);
 		}
-		return count;
+		return batchRecordDao.addFromList(batchRecordList);
 	}
 	
 	private boolean checkIfExistInList(String phaseID, List<BHBatchHis> phaseList) {
