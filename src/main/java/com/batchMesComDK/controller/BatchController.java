@@ -127,6 +127,7 @@ public class BatchController {
 			System.out.println("batchCountResultStr==="+batchCountResultStr);
 			JSONObject batchCountResultJO = new JSONObject(batchCountResultStr);
 			int status = batchCountResultJO.getInt("status");
+			boolean success = batchCountResultJO.getBoolean("success");
 			if(status==1) {
 				String data = batchCountResultJO.getString("data");
 				int batchCount = Integer.valueOf(data);
@@ -490,12 +491,14 @@ public class BatchController {
 					}
 				}
 				
-				jsonMap.put("success", "true");
+				jsonMap.put("success", success);
 				jsonMap.put("message", "ok");
 			}
 			else {
-				jsonMap.put("success", "false");
-				jsonMap.put("message", "no");
+				String msg = batchCountResultJO.getString("msg");
+				
+				jsonMap.put("success", success);
+				jsonMap.put("message", msg);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -1528,9 +1531,10 @@ public class BatchController {
 			System.out.println("item==="+item);
 			result = BatchComBridge.getInstance().callGetItem(item);
 			System.out.println("result==="+result);
-			if(StringUtils.isEmpty(result)) {
+			if(StringUtils.isEmpty(result)||
+			   "Can't pass in null Dispatch object".equals(result)) {
 				plan.setStatus(0);
-				plan.setMsg("fail");
+				plan.setMsg(result);
 				plan.setSuccess(false);
 			}
 			else {

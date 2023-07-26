@@ -28,12 +28,21 @@ public class BatchComBridge {
     }
 	
 	public synchronized String callGetItem(String item) {
+		String result=null;
 		try {
-			return Dispatch.call(server,"GetItem",item).getString();
-		}catch(Exception e) {
+			result=Dispatch.call(server,"GetItem",item).getString();
+		}
+		catch(Exception e) {
 			e.printStackTrace();
 			LOG.error(e.toString());
-			return null;
+			String message = e.getMessage();
+			if("Can't pass in null Dispatch object".equals(message))
+				result=message;
+			else
+				result=null;
+		}
+		finally {
+			return result;
 		}
 	}
 	
