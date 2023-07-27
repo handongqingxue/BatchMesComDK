@@ -1539,8 +1539,8 @@ public class BatchController {
 			result = BatchComBridge.getInstance().callGetItem(item);
 			System.out.println("result==="+result);
 			if(StringUtils.isEmpty(result)||
-			   "Can't pass in null Dispatch object".equals(result)||
-			   "Can't map name to dispid: GetItem".equals(result)) {
+			   BatchTest.CANT_PASS_IN_NULL_DISPATCH_OBJECT.equals(result)||
+			   BatchTest.CANT_MAP_NAME_TO_DISPID_GETITEM.equals(result)) {
 				plan.setStatus(0);
 				plan.setMsg(result);
 				plan.setSuccess(false);

@@ -3,6 +3,8 @@ package com.thingworx.sdk.batch;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.batchMesComDK.entity.BatchTest;
 import  com.jacob.activeX.ActiveXComponent;
 import  com.jacob.com.Dispatch;
 
@@ -36,8 +38,8 @@ public class BatchComBridge {
 			e.printStackTrace();
 			LOG.error(e.toString());
 			String message = e.getMessage();
-			if("Can't pass in null Dispatch object".equals(message)||
-			   "Can't map name to dispid: GetItem".equals(message))
+			if(BatchTest.CANT_PASS_IN_NULL_DISPATCH_OBJECT.equals(message)||
+			   BatchTest.CANT_MAP_NAME_TO_DISPID_GETITEM.equals(message))
 				result=message;
 			else
 				result=null;
