@@ -36,7 +36,8 @@ public class BatchComBridge {
 			e.printStackTrace();
 			LOG.error(e.toString());
 			String message = e.getMessage();
-			if("Can't pass in null Dispatch object".equals(message))
+			if("Can't pass in null Dispatch object".equals(message)||
+			   "Can't map name to dispid: GetItem".equals(message))
 				result=message;
 			else
 				result=null;

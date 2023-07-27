@@ -163,11 +163,15 @@ public class BatchController {
 						addManFeedFromRecipePM(workOrderID,productCode,productName);//工单创建时，从配方参数表里取数据，放入人工投料表
 						*/
 						
-						createBatch(formulaId,workOrderID,identifier);
-						
-						workOrderService.updateStateById(WorkOrder.BCJWB, id);
-						
-						addWOPreStateInList(WorkOrder.BCJWB,workOrderID);
+						String createBatchResultStr = createBatch(formulaId,workOrderID,identifier);
+						JSONObject createBatchResultJO = new JSONObject(createBatchResultStr);
+						String createBatchData = createBatchResultJO.getString("data");
+						System.out.println("createBatchData==="+createBatchData);
+						if(createBatchData.contains("SUCCESS:")) {
+							workOrderService.updateStateById(WorkOrder.BCJWB, id);
+							
+							addWOPreStateInList(WorkOrder.BCJWB,workOrderID);
+						}
 						break;
 					case WorkOrder.BQD:
 						boolean existRunWO=Boolean.valueOf(woMap.get("existRunWO").toString());//是否正在运行状态
@@ -377,13 +381,16 @@ public class BatchController {
 						String productNameSGCJ = recipeHeader.getProductName();
 						String identifierSGCJ = recipeHeader.getIdentifier();
 						String formulaIdSGCJ=workOrderService.createFormulaIdByDateYMD(identifierSGCJ);//这个执行配方id是手工创建工单时生成的
+						String unitIDSGCJ = recipeHeader.getUnitID();
 						
 						WorkOrder woSGCJ=new WorkOrder();
 						woSGCJ.setID(id);
 						woSGCJ.setWorkOrderID(workOrderIDSGCJ);
 						woSGCJ.setProductCode(productCodeSGCJ);
 						woSGCJ.setProductName(productNameSGCJ);
+						woSGCJ.setTotalOutput("0");
 						woSGCJ.setFormulaId(formulaIdSGCJ);
+						woSGCJ.setUnitID(unitIDSGCJ);
 						woSGCJ.setIdentifier(identifierSGCJ);
 						
 						int sgcjEditCount=workOrderService.edit(woSGCJ);
@@ -837,7 +844,7 @@ public class BatchController {
 	 * @param workOrderID
 	 * @param recipeID
 	 */
-	private void createBatch(String batchID, String workOrderID, String recipeID) {
+	private String createBatch(String batchID, String workOrderID, String recipeID) {
 		StringBuilder commandSB=new StringBuilder();
 		commandSB.append("[BATCH(Item,");
 		commandSB.append(Constant.USERID);
@@ -889,7 +896,7 @@ public class BatchController {
 		String commandSBStr=commandSB.toString();
 		System.out.println("commandSBStr==="+commandSBStr);
 		
-		execute(commandSBStr);
+		return execute(commandSBStr);
 	}
 	
 	/**
@@ -1532,7 +1539,8 @@ public class BatchController {
 			result = BatchComBridge.getInstance().callGetItem(item);
 			System.out.println("result==="+result);
 			if(StringUtils.isEmpty(result)||
-			   "Can't pass in null Dispatch object".equals(result)) {
+			   "Can't pass in null Dispatch object".equals(result)||
+			   "Can't map name to dispid: GetItem".equals(result)) {
 				plan.setStatus(0);
 				plan.setMsg(result);
 				plan.setSuccess(false);
