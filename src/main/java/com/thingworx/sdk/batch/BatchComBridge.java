@@ -4,7 +4,7 @@ package com.thingworx.sdk.batch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.batchMesComDK.entity.BatchTest;
+import com.batchMesComDK.entity.*;
 import  com.jacob.activeX.ActiveXComponent;
 import  com.jacob.com.Dispatch;
 

@@ -14,7 +14,13 @@ public class BatchTest {
 	public static final String ABORTED="ABORTED";
 	public static final String COMPLETE="COMPLETE";
 	
+	/**
+	 * Can't pass in null Dispatch object
+	 */
 	public static final String CANT_PASS_IN_NULL_DISPATCH_OBJECT="Can't pass in null Dispatch object";
+	/**
+	 * Can't map name to dispid: GetItem
+	 */
 	public static final String CANT_MAP_NAME_TO_DISPID_GETITEM="Can't map name to dispid: GetItem";
 
 	private Integer CreateID;
