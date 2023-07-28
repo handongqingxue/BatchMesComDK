@@ -123,7 +123,7 @@ public class BatchController {
 			String formulaIds="";
 			String unitIDs="";
 			
-			String batchCountResultStr = getItem("BatchListCt");
+			String batchCountResultStr = getItem(BatchTest.BATCH_LIST_CT);
 			System.out.println("batchCountResultStr==="+batchCountResultStr);
 			JSONObject batchCountResultJO = new JSONObject(batchCountResultStr);
 			int status = batchCountResultJO.getInt("status");
@@ -167,11 +167,11 @@ public class BatchController {
 						JSONObject createBatchResultJO = new JSONObject(createBatchResultStr);
 						String createBatchData = createBatchResultJO.getString("data");
 						System.out.println("createBatchData==="+createBatchData);
-						if(createBatchData.contains("SUCCESS:")) {
+						//if(createBatchData.contains(BatchTest.SUCCESS_RESULT)) {
 							workOrderService.updateStateById(WorkOrder.BCJWB, id);
 							
 							addWOPreStateInList(WorkOrder.BCJWB,workOrderID);
-						}
+						//}
 						break;
 					case WorkOrder.BQD:
 						boolean existRunWO=Boolean.valueOf(woMap.get("existRunWO").toString());//是否正在运行状态
@@ -190,14 +190,14 @@ public class BatchController {
 							//启动执行配方
 							for (int j = 1; j <= batchCount; j++) {
 								//String batchIDVal = BLKey_x("BatchID",j);
-								String batchIDResultJOStr = getItem("BLBatchID_"+j);
+								String batchIDResultJOStr = getItem(BatchTest.BL_BATCH_ID+j);
 								JSONObject batchIDResultJO = new JSONObject(batchIDResultJOStr);
 								String batchIDVal = batchIDResultJO.getString("data");
 								System.out.println("batchIDVal==="+batchIDVal);
 								//batchIDVal = batchIDVal.substring(0, batchIDVal.indexOf(Constant.END_SUCCESS));
 								if(formulaId.equals(batchIDVal)) {
 									//String createIDVal = BLKey_x("CreateID",j);
-									String createIDResultJOStr = getItem("BLCreateID_"+j);
+									String createIDResultJOStr = getItem(BatchTest.BL_CREATE_ID+j);
 									JSONObject createIDResultJO = new JSONObject(createIDResultJOStr);
 									String createIDVal = createIDResultJO.getString("data");
 									//createIDVal = createIDVal.substring(0, createIDVal.indexOf(Constant.END_SUCCESS));
@@ -207,7 +207,7 @@ public class BatchController {
 									commandBatch(createIDVal,BatchTest.START);
 									
 									//String stateVal = BLKey_x("State",j);
-									String stateResultJOStr = getItem("BLState_"+j);
+									String stateResultJOStr = getItem(BatchTest.BL_STATE+j);
 									JSONObject stateResultJO = new JSONObject(stateResultJOStr);
 									String stateVal = stateResultJO.getString("data");
 									//stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
@@ -249,14 +249,14 @@ public class BatchController {
 								String workOrderIDStr = wo.getWorkOrderID().toString();
 								String formulaIdStr = wo.getFormulaId().toString();
 								//String batchIDVal = BLKey_x("BatchID",j);
-								String batchIDResultJOStr = getItem("BLBatchID_"+j);
+								String batchIDResultJOStr = getItem(BatchTest.BL_BATCH_ID+j);
 								JSONObject batchIDResultJO = new JSONObject(batchIDResultJOStr);
 								String batchIDVal = batchIDResultJO.getString("data");
 								System.out.println("batchIDVal==="+batchIDVal);
 								//batchIDVal = batchIDVal.substring(0, batchIDVal.indexOf(Constant.END_SUCCESS));
 								if(formulaIdStr.equals(batchIDVal)) {
 									//String createIDVal = BLKey_x("CreateID",j);
-									String createIDResultJOStr = getItem("BLCreateID_"+j);
+									String createIDResultJOStr = getItem(BatchTest.BL_CREATE_ID+j);
 									JSONObject createIDResultJO = new JSONObject(createIDResultJOStr);
 									String createIDVal = createIDResultJO.getString("data");
 									//createIDVal = createIDVal.substring(0, createIDVal.indexOf(Constant.END_SUCCESS));
@@ -265,7 +265,7 @@ public class BatchController {
 									//调用batch环境的重启接口
 									commandBatch(createIDVal,BatchTest.RESTART);
 									
-									String stateResultJOStr = getItem("BLState_"+j);
+									String stateResultJOStr = getItem(BatchTest.BL_STATE+j);
 									JSONObject stateResultJO = new JSONObject(stateResultJOStr);
 									String stateVal = stateResultJO.getString("data");
 									//stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
@@ -291,19 +291,19 @@ public class BatchController {
 						for (int j = 1; j <= batchCount; j++) {
 							String formulaIdStr = wo.getFormulaId().toString();
 							//String batchIDVal = BLKey_x("BatchID",j);
-							String batchIDResultJOStr = getItem("BLBatchID_"+j);
+							String batchIDResultJOStr = getItem(BatchTest.BL_BATCH_ID+j);
 							JSONObject batchIDResultJO = new JSONObject(batchIDResultJOStr);
 							String batchIDVal = batchIDResultJO.getString("data");
 							//batchIDVal = batchIDVal.substring(0, batchIDVal.indexOf(Constant.END_SUCCESS));
 							if(formulaIdStr.equals(batchIDVal)) {
 								//String createIDVal = BLKey_x("CreateID",j);
-								String createIDResultJOStr = getItem("BLCreateID_"+j);
+								String createIDResultJOStr = getItem(BatchTest.BL_CREATE_ID+j);
 								JSONObject createIDResultJO = new JSONObject(createIDResultJOStr);
 								String createIDVal = createIDResultJO.getString("data");
 								//createIDVal = createIDVal.substring(0, createIDVal.indexOf(Constant.END_SUCCESS));
 								System.out.println("createIDVal==="+createIDVal);
 
-								String stateResultJOStr = getItem("BLState_"+j);
+								String stateResultJOStr = getItem(BatchTest.BL_STATE+j);
 								JSONObject stateResultJO = new JSONObject(stateResultJOStr);
 								String stateVal = stateResultJO.getString("data");
 								if(BatchTest.READY.equals(stateVal)) {//工单取消时，若batch状态是已创建，还未执行，就没必要停止batch，直接移除batch就行
@@ -317,7 +317,7 @@ public class BatchController {
 									commandBatch(createIDVal,BatchTest.STOP);
 		
 									//String stateVal = BLKey_x("State",j);
-									stateResultJOStr = getItem("BLState_"+j);
+									stateResultJOStr = getItem(BatchTest.BL_STATE+j);
 									stateResultJO = new JSONObject(stateResultJOStr);
 									stateVal = stateResultJO.getString("data");
 									//stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
@@ -343,13 +343,13 @@ public class BatchController {
 							for (int j = 1; j <= batchCount; j++) {
 								String formulaIdStr = wo.getFormulaId().toString();
 								//String batchIDVal = BLKey_x("BatchID",j);
-								String batchIDResultJOStr = getItem("BLBatchID_"+j);
+								String batchIDResultJOStr = getItem(BatchTest.BL_BATCH_ID+j);
 								JSONObject batchIDResultJO = new JSONObject(batchIDResultJOStr);
 								String batchIDVal = batchIDResultJO.getString("data");
 								//batchIDVal = batchIDVal.substring(0, batchIDVal.indexOf(Constant.END_SUCCESS));
 								if(formulaIdStr.equals(batchIDVal)) {
 									//String createIDVal = BLKey_x("CreateID",j);
-									String createIDResultJOStr = getItem("BLCreateID_"+j);
+									String createIDResultJOStr = getItem(BatchTest.BL_CREATE_ID+j);
 									JSONObject createIDResultJO = new JSONObject(createIDResultJOStr);
 									String createIDVal = createIDResultJO.getString("data");
 									//createIDVal = createIDVal.substring(0, createIDVal.indexOf(Constant.END_SUCCESS));
@@ -423,7 +423,7 @@ public class BatchController {
 						woMap.put("existInBatchList", false);
 						for (int j = 1; j <= batchCount; j++) {
 							//String batchIDVal = BLKey_x("BatchID",j);
-							String batchIDResultJOStr = getItem("BLBatchID_"+j);
+							String batchIDResultJOStr = getItem(BatchTest.BL_BATCH_ID+j);
 							JSONObject batchIDResultJO = new JSONObject(batchIDResultJOStr);
 							int blBatchIDStatus = batchIDResultJO.getInt("status");
 							if(blBatchIDStatus==1) {
@@ -433,7 +433,7 @@ public class BatchController {
 									woMap.put("existInBatchList", true);
 									
 									//String stateVal = BLKey_x("State",j);
-									String stateResultJOStr = getItem("BLState_"+j);
+									String stateResultJOStr = getItem(BatchTest.BL_STATE+j);
 									JSONObject stateResultJO = new JSONObject(stateResultJOStr);
 									String stateVal = stateResultJO.getString("data");
 									//stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));

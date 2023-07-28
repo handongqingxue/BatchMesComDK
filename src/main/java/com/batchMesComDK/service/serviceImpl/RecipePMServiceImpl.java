@@ -247,11 +247,13 @@ public class RecipePMServiceImpl implements RecipePMService {
 			String pMCode = recipePM.getPMCode();
 			String dosage = recipePM.getDosage();
 			String pMName = recipePM.getPMName();
+			String pMType = recipePM.getPMType();
 			for (RecipePM wodRecipePM : wodRecipePMList) {
 				String wodPMCode = wodRecipePM.getPMCode();
 				String wodDosage = wodRecipePM.getDosage();
 				if(pMCode.equals(wodPMCode)) {
-					if(pMName.startsWith("AM_")) {
+					//if(pMName.startsWith("AM_")) {
+					if("1".equals(pMType)) {
 						HashMap<String, Object> recPMMap = recPMCodeMap.get(wodPMCode);
 						int rPMcount=Integer.valueOf(recPMMap.get("count").toString());//判断每种物料的加料次数
 						if(rPMcount==1) {//只加一次直接更新重量
