@@ -404,7 +404,9 @@ public class RecipePMServiceImpl implements RecipePMService {
 		HashMap<String, Object> recPMMap=null;
 		for (RecipePM recipePM : recipePMList) {
 			String pMName = recipePM.getPMName();
-			if(!pMName.startsWith("AM_"))
+			String pMType = recipePM.getPMType();
+			//if(!pMName.startsWith("AM_"))
+			if(!"1".equals(pMType))
 				continue;
 			String pMCode = recipePM.getPMCode();
 			float dosage = Float.valueOf(recipePM.getDosage());
