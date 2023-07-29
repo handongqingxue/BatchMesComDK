@@ -36,9 +36,6 @@
 			<if test="CName!=null">
 				CName,
 			</if>
-			<if test="MaterialSV!=null">
-				MaterialSV,
-			</if>
 			<if test="HH!=null">
 				HH,
 			</if>
@@ -84,9 +81,6 @@
 			<if test="CName!=null">
 				#{CName},
 			</if>
-			<if test="MaterialSV!=null">
-				#{MaterialSV},
-			</if>
 			<if test="HH!=null">
 				#{HH},
 			</if>
@@ -100,6 +94,126 @@
 				#{Step},
 			</if>
 		</trim>
+	</insert>
+	<insert id="addFromList">
+		insert into RecipePM(PMCode,PMName,Lot,Dosage,Unit,HLimit,LLimit,PMType,WorkOrderID,
+		CName,HH,LL,PMSort,Step) values
+		<foreach collection="rPMList" item="rPM" separator=",">
+			<trim prefix="(" suffix=")" suffixOverrides=",">
+				<choose>
+					<when test="rPM.PMCode!=null">
+						#{rPM.PMCode},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="rPM.PMName!=null">
+						#{rPM.PMName},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="rPM.lot!=null">
+						#{rPM.lot},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="rPM.dosage!=null">
+						#{rPM.dosage},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="rPM.unit!=null">
+						#{rPM.unit},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="rPM.HLimit!=null">
+						#{rPM.HLimit},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="rPM.LLimit!=null">
+						#{rPM.LLimit},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="rPM.PMType!=null">
+						#{rPM.PMType},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="rPM.workOrderID!=null">
+						#{rPM.workOrderID},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="rPM.CName!=null">
+						#{rPM.CName},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="rPM.HH!=null">
+						#{rPM.HH},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="rPM.LL!=null">
+						#{rPM.LL},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="rPM.PMSort!=null">
+						#{rPM.PMSort},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="rPM.step!=null">
+						#{rPM.step},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+			</trim>
+		</foreach>
 	</insert>
 	<delete id="deleteByList">
 		delete from RecipePM where 1=1

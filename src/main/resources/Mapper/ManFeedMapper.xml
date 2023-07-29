@@ -87,33 +87,78 @@
 		insert into ManFeed (WorkOrderID,MaterialCode,MaterialName,Unit,FeedPort,MarkBit,MaterialSV,Dev1,Dev2) values
 		<foreach collection="mfList" item="mf" separator=",">
 			<trim prefix="(" suffix=")" suffixOverrides=",">
-				<if test="mf.workOrderID!=null">
-					#{mf.workOrderID},
-				</if>
-				<if test="mf.materialCode!=null">
-					#{mf.materialCode},
-				</if>
-				<if test="mf.materialName!=null">
-					#{mf.materialName},
-				</if>
-				<if test="mf.unit!=null">
-					#{mf.unit},
-				</if>
-				<if test="mf.feedPort!=null">
-					#{mf.feedPort},
-				</if>
-				<if test="mf.markBit!=null">
-					#{mf.markBit},
-				</if>
-				<if test="mf.materialSV!=null">
-					#{mf.materialSV},
-				</if>
-				<if test="mf.dev1!=null">
-					#{mf.dev1},
-				</if>
-				<if test="mf.dev2!=null">
-					#{mf.dev2},
-				</if>
+				<choose>
+					<when test="mf.workOrderID!=null">
+						#{mf.workOrderID},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="mf.materialCode!=null">
+						#{mf.materialCode},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="mf.materialName!=null">
+						#{mf.materialName},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="mf.unit!=null">
+						#{mf.unit},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="mf.feedPort!=null">
+						#{mf.feedPort},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="mf.markBit!=null">
+						#{mf.markBit},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="mf.materialSV!=null">
+						#{mf.materialSV},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="mf.dev1!=null">
+						#{mf.dev1},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="mf.dev2!=null">
+						#{mf.dev2},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
 			</trim>
 		</foreach>
 	</insert>

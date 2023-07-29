@@ -82,12 +82,6 @@ public class RecipePM {
 	public void setCName(String cName) {
 		CName = cName;
 	}
-	public String getMaterialSV() {
-		return MaterialSV;
-	}
-	public void setMaterialSV(String materialSV) {
-		MaterialSV = materialSV;
-	}
 	public String getHH() {
 		return HH;
 	}
@@ -122,7 +116,6 @@ public class RecipePM {
   	private String PMType;
   	private String WorkOrderID;
 	private String CName;
-	private String MaterialSV;
 	private String HH;
 	private String LL;
 	private Integer PMSort;

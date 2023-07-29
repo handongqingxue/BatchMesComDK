@@ -34,6 +34,7 @@ public class RecipePMServiceImpl implements RecipePMService {
 		List<RecipePM_TMP> rPMTmpList=recipePM_TMPDao.getByRecipeID(recipeID);
 		//System.out.println("rPMTmpListsize==="+rPMTmpList.size());
 		
+		List<RecipePM> rPMList=new ArrayList<>();
 		RecipePM rPM=null;
 		for(int i=0;i<rPMTmpList.size();i++) {
 			RecipePM_TMP rPMTmp = rPMTmpList.get(i);
@@ -53,8 +54,11 @@ public class RecipePMServiceImpl implements RecipePMService {
 			rPM.setPMSort(rPMTmp.getPMSort());
 			rPM.setStep(rPMTmp.getStep());
 			
-			count+=recipePMDao.add(rPM);
+			rPMList.add(rPM);
+			//count+=recipePMDao.add(rPM);
 		}
+		
+		count=recipePMDao.addFromList(rPMList);
 		
 		return count;
 	}
