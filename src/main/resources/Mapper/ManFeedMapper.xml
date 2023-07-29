@@ -83,7 +83,7 @@
 			</if>
 		</trim>
 	</insert>
-	<insert id="addFromList" parameterType="com.batchMesComDK.entity.ManFeed">
+	<insert id="addFromList">
 		insert into ManFeed (WorkOrderID,MaterialCode,MaterialName,Unit,FeedPort,MarkBit,MaterialSV,Dev1,Dev2) values
 		<foreach collection="mfList" item="mf" separator=",">
 			<trim prefix="(" suffix=")" suffixOverrides=",">
@@ -135,11 +135,17 @@
 			<if test="feedTime!=null">
 				feedTime=#{feedTime},
 			</if>
-				MarkBit=${@com.batchMesComDK.entity.ManFeed@YJS}
 		</trim>
 		 where WorkOrderID=#{workOrderID} and FeedPort=#{feedPort} and materialCode=#{materialCode} and MarkBit=${@com.batchMesComDK.entity.ManFeed@WJS}
 	</update>
 	<select id="getByWorkOrderIDFeedPort" resultType="com.batchMesComDK.entity.ManFeed">
 		select * from ManFeed where WorkOrderID=#{workOrderID} and FeedPort=#{feedPort} and MarkBit=0
 	</select>
+	<update id="updateMarkBitByParamsList">
+		update ManFeed set MarkBit=${@com.batchMesComDK.entity.ManFeed@YJS} where 1=1 and
+		<foreach collection="mfList" item="mf" open="(" separator=" or " close=")">
+		WorkOrderID=#{mf.workOrderID} and FeedPort=#{mf.feedPort} and materialCode=#{mf.materialCode}
+		</foreach>
+		 and MarkBit=${@com.batchMesComDK.entity.ManFeed@WJS}
+	</update>
 </mapper>

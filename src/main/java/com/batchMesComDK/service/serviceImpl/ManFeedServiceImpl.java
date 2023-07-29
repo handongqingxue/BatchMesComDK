@@ -82,6 +82,9 @@ public class ManFeedServiceImpl implements ManFeedService {
 		for (ManFeed mf : mfList) {
 			count+=manFeedDao.editByWorkOrderIDFeedPort(mf);
 		}
+		
+		manFeedDao.updateMarkBitByParamsList(mfList);
+		
 		return count;
 	}
 
