@@ -16,5 +16,5 @@ public interface BatchRecordMapper {
 
 	List<BatchRecord> getListByWorkOrderIDList(@Param("workOrderIDList") List<String> workOrderIDList,@Param("recordTypeList") List<String> recordTypeList);
 
-	int updateDevPMCode(@Param("pMCode") String pMCode, @Param("pMName") String pMName, @Param("workOrderID") String workOrderID);
+	int updateDevPMCode(@Param("pMCode") String pMCode, @Param("pMCName") String pMCName, @Param("workOrderID") String workOrderID);
 }

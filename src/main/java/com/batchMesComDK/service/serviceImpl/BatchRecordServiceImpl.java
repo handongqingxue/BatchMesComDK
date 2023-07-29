@@ -84,14 +84,14 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 		List<BatchRecord> batchRecordList = batchRecordDao.getListByWorkOrderIDList(workOrderIDList,recordTypeList);
 		for (BatchRecord batchRecord : batchRecordList) {
 			String brWorkOrderID = batchRecord.getWorkOrderID();
-			String brPMName=batchRecord.getPMName();
+			String brPMCName=batchRecord.getPMCName();
 			for (RecipePM recipePM : recipePMList) {
 				String rPMWorkOrderID = recipePM.getWorkOrderID();
 				String pMCode = recipePM.getPMCode();
-				String pMName = recipePM.getPMName();
-				if(!StringUtils.isEmpty(pMName)) {
-					if(brWorkOrderID.equals(rPMWorkOrderID)&&pMName.equals(brPMName)&&String.valueOf(BatchRecord.PCJL).equals(batchRecord.getRecordType())) {
-						batchRecordDao.updateDevPMCode(pMCode,pMName,rPMWorkOrderID);
+				String cName = recipePM.getCName();
+				if(!StringUtils.isEmpty(cName)) {
+					if(brWorkOrderID.equals(rPMWorkOrderID)&&cName.equals(brPMCName)&&String.valueOf(BatchRecord.PCJL).equals(batchRecord.getRecordType())) {
+						batchRecordDao.updateDevPMCode(pMCode,cName,rPMWorkOrderID);
 						batchRecord.setPMCode(pMCode);
 						break;
 					}

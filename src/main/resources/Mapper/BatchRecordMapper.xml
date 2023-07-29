@@ -133,16 +133,16 @@
 					</otherwise>
 				</choose>
 				<choose>
-					<when test="br.pMCode!=null">
-						#{br.pMCode},
+					<when test="br.PMCode!=null">
+						#{br.PMCode},
 					</when>
 					<otherwise>
 						'',
 					</otherwise>
 				</choose>
 				<choose>
-					<when test="br.pMName!=null">
-						#{br.pMName},
+					<when test="br.PMName!=null">
+						#{br.PMName},
 					</when>
 					<otherwise>
 						'',
@@ -197,16 +197,16 @@
 					</otherwise>
 				</choose>
 				<choose>
-					<when test="br.hLimit!=null">
-						#{br.hLimit},
+					<when test="br.HLimit!=null">
+						#{br.HLimit},
 					</when>
 					<otherwise>
 						'',
 					</otherwise>
 				</choose>
 				<choose>
-					<when test="br.lLimit!=null">
-						#{br.lLimit},
+					<when test="br.LLimit!=null">
+						#{br.LLimit},
 					</when>
 					<otherwise>
 						'',
@@ -237,8 +237,8 @@
 					</otherwise>
 				</choose>
 				<choose>
-					<when test="br.pMCName!=null">
-						#{br.pMCName},
+					<when test="br.PMCName!=null">
+						#{br.PMCName},
 					</when>
 					<otherwise>
 						'',
@@ -288,6 +288,6 @@
 		order by RecordType
 	</select>
 	<update id="updateDevPMCode">
-		update BatchRecord set PMCode=#{pMCode} where PMName=#{pMName} and WorkOrderID=#{workOrderID} and RecordType='3'
+		update BatchRecord set PMCode=#{pMCode} where PMCName=#{pMCName} and WorkOrderID=#{workOrderID} and RecordType='3'
 	</update>
 </mapper>
