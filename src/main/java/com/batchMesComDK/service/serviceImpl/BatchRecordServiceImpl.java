@@ -21,6 +21,8 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 	@Autowired
 	RecipePMMapper recipePMDao;
 	@Autowired
+	ManFeedMapper manFeedDao;
+	@Autowired
 	BHBatchHisMapper bHBatchHisDao;
 	@Autowired
 	BHBatchMapper bHBatchDao;
@@ -81,10 +83,13 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 		String[] recordTypeArr = recordTypes.split(",");
 		List<String> recordTypeList = Arrays.asList(recordTypeArr);
 		List<RecipePM> recipePMList = recipePMDao.getListByWorkOrderIDList(workOrderIDList);
+		List<ManFeed> manFeedList = manFeedDao.getListByWorkOrderIDList(workOrderIDList);
 		List<BatchRecord> batchRecordList = batchRecordDao.getListByWorkOrderIDList(workOrderIDList,recordTypeList);
+		
 		for (BatchRecord batchRecord : batchRecordList) {
 			String brWorkOrderID = batchRecord.getWorkOrderID();
 			String brPMCName=batchRecord.getPMCName();
+			
 			for (RecipePM recipePM : recipePMList) {
 				String rPMWorkOrderID = recipePM.getWorkOrderID();
 				String pMCode = recipePM.getPMCode();
@@ -93,6 +98,19 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 					if(brWorkOrderID.equals(rPMWorkOrderID)&&cName.equals(brPMCName)&&String.valueOf(BatchRecord.PCJL).equals(batchRecord.getRecordType())) {
 						batchRecordDao.updateDevPMCode(pMCode,cName,rPMWorkOrderID);
 						batchRecord.setPMCode(pMCode);
+						break;
+					}
+				}
+			}
+			
+			for (ManFeed manFeed : manFeedList) {
+				String mfWorkOrderID = manFeed.getWorkOrderID();
+				String materialCode = manFeed.getMaterialCode();
+				String materialName = manFeed.getMaterialName();
+				if(!StringUtils.isEmpty(materialName)) {
+					if(brWorkOrderID.equals(mfWorkOrderID)&&materialName.equals(brPMCName)&&String.valueOf(BatchRecord.PCJL).equals(batchRecord.getRecordType())) {
+						batchRecordDao.updateDevPMCode(materialCode,materialName,mfWorkOrderID);
+						batchRecord.setPMCode(materialCode);
 						break;
 					}
 				}

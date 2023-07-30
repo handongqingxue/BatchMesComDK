@@ -193,4 +193,10 @@
 		</foreach>
 		 and MarkBit=${@com.batchMesComDK.entity.ManFeed@WJS}
 	</update>
+	<select id="getListByWorkOrderIDList" resultType="com.batchMesComDK.entity.ManFeed">
+		select * from ManFeed where 1=1
+		<foreach collection="workOrderIDList" item="workOrderID" open=" and cast(workOrderID as char) in (" separator="," close=")">
+		#{workOrderID}
+		</foreach>
+	</select>
 </mapper>
