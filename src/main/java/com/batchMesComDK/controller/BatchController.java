@@ -96,7 +96,7 @@ public class BatchController {
 		wOMap.put("existRunWO", false);
 		wOMap.put("existInBatchList", false);
 		
-		String[] unitIDArr=new String[] {"09","10"};
+		String[] unitIDArr=new String[] {"09","10","11","12"};
 		
 		unitIDWOMap=new HashMap<String,Map<String, Object>>();
 		for (String unitID : unitIDArr) {
