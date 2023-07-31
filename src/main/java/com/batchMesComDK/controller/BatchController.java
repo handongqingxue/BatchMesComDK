@@ -1766,7 +1766,6 @@ public class BatchController {
 
 		net.sf.json.JSONObject wodMesJO = net.sf.json.JSONObject.fromObject(mesBody);
 		//WorkOrder wo=(WorkOrder)net.sf.json.JSONObject.toBean(woJO, WorkOrder.class);
-		//String recipeID = wodMesJO.getString("formulaId");//mes那边发来的formulaId对应java端的recipeID
 		String identifier = wodMesJO.getString("identifier");
 		String lotNo = wodMesJO.getString("lotNo");
 		String planStartTime = wodMesJO.getString("planStartTime");
@@ -1776,6 +1775,8 @@ public class BatchController {
 		String unit = wodMesJO.getString("unit");
 		String workOrder = wodMesJO.getString("workOrder");
 		String workcenterId = wodMesJO.getString("workcenterId");
+		String formulaIdMes = wodMesJO.getString("formulaId");//mes那边发来的formulaId对应java端的FormulaIdMes
+		
 		String materialListStr = wodMesJO.getString("materialList");
 		Map<String,Object> materialListMap=convertMesMaterialListStrToMaterialListMap(workOrder,materialListStr);
 		List<RecipePM> recipePMList=(List<RecipePM>)materialListMap.get("recipePMList");
@@ -1810,6 +1811,7 @@ public class BatchController {
 		wo.setManFeedList(manFeedList);
 		wo.setLotNo(lotNo);
 		wo.setWorkcenterId(workcenterId);
+		wo.setFormulaIdMes(formulaIdMes);
 		
 		String unitID = recipeHeader.getUnitID();
 		wo.setUnitID(unitID);
@@ -2174,9 +2176,9 @@ public class BatchController {
 					String workOrderID=sendToMesWO.getWorkOrderID();
 					String productCode = sendToMesWO.getProductCode();
 					String productName = sendToMesWO.getProductName();
-					String recipeID = sendToMesWO.getRecipeID();
 					String lotNo = sendToMesWO.getLotNo();
 					String workcenterId = sendToMesWO.getWorkcenterId();
+					String formulaIdMes = sendToMesWO.getFormulaIdMes();
 					
 					JSONObject bodyParamBRJO=new JSONObject();
 					bodyParamBRJO.put("id", id);
@@ -2184,7 +2186,7 @@ public class BatchController {
 					bodyParamBRJO.put("productCode", productCode);
 					bodyParamBRJO.put("productName", productName);
 					bodyParamBRJO.put("lotNo", lotNo);
-					bodyParamBRJO.put("formulaId", recipeID);
+					bodyParamBRJO.put("formulaId", formulaIdMes);
 					bodyParamBRJO.put("formulaName", productName);
 					bodyParamBRJO.put("workcenterId", workcenterId);
 

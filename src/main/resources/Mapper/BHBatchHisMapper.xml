@@ -12,6 +12,14 @@
 		</foreach>
 		 and his.Descript='ADDED_AMOUNT' and his.Event='report'
 	</select>
+	<select id="getMaterialCompleteListByWOIDList" resultType="com.batchMesComDK.entity.BHBatchHis">
+		select wo.WorkOrderID,his.* from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo,BatchRecordTr brTr 
+		 where his.BatchID=wo.FormulaId collate chinese_prc_ci_as and his.Phase=brTr.PhaseName collate chinese_prc_ci_as
+		 <foreach collection="workOrderIDList" item="workOrderID" open=" and wo.WorkOrderID in (" separator="," close=")">
+		#{workOrderID}
+		</foreach>
+		  and his.Descript='State Changed: ' and his.PValue='COMPLETE'
+	</select>
 	<select id="getPhaseListByWOIDList" resultType="com.batchMesComDK.entity.BHBatchHis">
 		select brTr.PhaseDisc,wo.WorkOrderID,his.BatchID,his.Recipe,Phase,EU from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo,BatchRecordTr brTr
 		 where his.BatchID=wo.FormulaId collate chinese_prc_ci_as and his.Phase=brTr.PhaseName collate chinese_prc_ci_as and EU!=''

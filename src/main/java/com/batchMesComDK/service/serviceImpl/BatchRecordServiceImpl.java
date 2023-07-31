@@ -126,11 +126,12 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 		List<BatchRecord> batchRecordList=new ArrayList<>();
 		BatchRecord batchRecord=null;
 		List<BHBatchHis> materialList = bHBatchHisDao.getMaterialListByWOIDList(workOrderIDList);
+		List<BHBatchHis> materialCompleteList = bHBatchHisDao.getMaterialCompleteListByWOIDList(workOrderIDList);
 		for (BHBatchHis bhBatchHis : materialList) {
 			batchRecord=new BatchRecord();
 			
 			String workOrderID = bhBatchHis.getWorkOrderID();
-			String lclTime = bhBatchHis.getLclTime();
+			String recordStartTime = bhBatchHis.getLclTime();
 			String pMCode = bhBatchHis.getPMCode();
 			String descript = bhBatchHis.getDescript();
 			String batchID = bhBatchHis.getBatchID();
@@ -138,6 +139,9 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 			String eu = bhBatchHis.getEU();
 			String cName = bhBatchHis.getCName();
 			String feedPort = bhBatchHis.getFeedPort();
+			String phase = bhBatchHis.getPhase();
+			String recipe = bhBatchHis.getRecipe();
+			String recordEndTime=getRecordEndTime(workOrderID,recipe,phase,materialCompleteList);
 			
 			batchRecord.setWorkOrderID(workOrderID);
 			batchRecord.setPMCode(pMCode);
@@ -146,8 +150,8 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 			batchRecord.setRecordEvent("原料进料记录");
 			batchRecord.setRecordContent(pValue);//phase batch是时间跨度
 			batchRecord.setUnit(eu);
-			batchRecord.setRecordStartTime(lclTime);
-			batchRecord.setRecordEndTime(lclTime);
+			batchRecord.setRecordStartTime(recordStartTime);
+			batchRecord.setRecordEndTime(recordEndTime);
 			batchRecord.setRecordType("2");
 			batchRecord.setPMCName(cName);
 			batchRecord.setFeedPort(feedPort);
@@ -161,6 +165,21 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 		if(batchRecordList.size()>0)
 			count=batchRecordDao.addFromList(batchRecordList);
 		return count;
+	}
+	
+	public String getRecordEndTime(String workOrderID, String recipe, String phase, List<BHBatchHis> materialCompleteList) {
+		String recordEndTime=null;
+		
+		for (BHBatchHis materialComplete : materialCompleteList) {
+			String mcWorkOrderID=materialComplete.getWorkOrderID(); 
+			String mcRecipe=materialComplete.getRecipe();
+			String mcPhase=materialComplete.getPhase();
+			if(workOrderID.equals(mcWorkOrderID)&&recipe.equals(mcRecipe)&&phase.equals(mcPhase)) {
+				recordEndTime = materialComplete.getLclTime();
+				break;
+			}
+		}
+		return recordEndTime;
 	}
 
 	@Override
