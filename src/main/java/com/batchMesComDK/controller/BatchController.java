@@ -498,14 +498,14 @@ public class BatchController {
 					}
 				}
 				
-				jsonMap.put("success", success);
-				jsonMap.put("message", "ok");
+				jsonMap.put(APIUtil.SUCCESS, success);
+				jsonMap.put(APIUtil.MESSAGE, APIUtil.MESSAGE_OK);
 			}
 			else {
 				String msg = batchCountResultJO.getString("msg");
 				
-				jsonMap.put("success", success);
-				jsonMap.put("message", msg);
+				jsonMap.put(APIUtil.SUCCESS, success);
+				jsonMap.put(APIUtil.MESSAGE, msg);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -708,9 +708,9 @@ public class BatchController {
 				//changeOrderStatus();
 			}
 			
-			jsonMap.put("success", "true");
-			jsonMap.put("state", "001");//001正常 002数据格式有误 003数据不完整
-			jsonMap.put("msg", "正常");
+			jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_TRUE);
+			jsonMap.put(APIUtil.STATE, APIUtil.STATE_001);
+			jsonMap.put(APIUtil.MSG, APIUtil.MSG_NORMAL);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -1543,12 +1543,12 @@ public class BatchController {
 			   BatchTest.CANT_MAP_NAME_TO_DISPID_GETITEM.equals(result)) {
 				plan.setStatus(0);
 				plan.setMsg(result);
-				plan.setSuccess(false);
+				plan.setSuccess(APIUtil.SUCCESS_FALSE);
 			}
 			else {
 				plan.setStatus(1);
 				plan.setMsg("success");
-				plan.setSuccess(true);
+				plan.setSuccess(APIUtil.SUCCESS_TRUE);
 				plan.setData(result);
 			}
 			json=JsonUtil.getJsonFromObject(plan);
@@ -1651,14 +1651,14 @@ public class BatchController {
 			*/
 			
 			if(success) {
-				jsonMap.put("success", "true");
-				jsonMap.put("state", "001");//001正常 002数据格式有误 003数据不完整
-				jsonMap.put("msg", "正常");
+				jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_TRUE);
+				jsonMap.put(APIUtil.STATE, APIUtil.STATE_001);//001正常 002数据格式有误 003数据不完整
+				jsonMap.put(APIUtil.MSG, APIUtil.MSG_NORMAL);
 			}
 			else {
-				jsonMap.put("success", "false");
-				jsonMap.put("state", "002");
-				jsonMap.put("msg", "数据格式有误");
+				jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_FALSE);
+				jsonMap.put(APIUtil.STATE, APIUtil.STATE_002);
+				jsonMap.put(APIUtil.MSG, APIUtil.MSG_DATA_FORMAT_ERROR);
 			}
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
@@ -1692,14 +1692,14 @@ public class BatchController {
 		*/
 		int c=1;//formulaDtoService.add(fdList.get(0));
 		if(c>0) {
-			jsonMap.put("success", "true");
-			jsonMap.put("state", "001");
-			jsonMap.put("msg", "正常");
+			jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_TRUE);
+			jsonMap.put(APIUtil.STATE, APIUtil.STATE_001);
+			jsonMap.put(APIUtil.MSG, APIUtil.MSG_NORMAL);
 		}
 		else {
-			jsonMap.put("success", "false");
-			jsonMap.put("state", "002");
-			jsonMap.put("msg", "数据格式有误");
+			jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_FALSE);
+			jsonMap.put(APIUtil.STATE, APIUtil.STATE_002);
+			jsonMap.put(APIUtil.MSG, APIUtil.MSG_DATA_FORMAT_ERROR);
 		}
 		
 		return jsonMap;
@@ -1736,21 +1736,21 @@ public class BatchController {
 					c=workOrderService.updateStateByWorkOrderID(WorkOrder.WLQTWB,workOrderID);
 				}
 				
-				jsonMap.put("success", "true");
-				jsonMap.put("state", "001");
-				jsonMap.put("msg", "正常");
+				jsonMap.put("success", APIUtil.SUCCESS_TRUE);
+				jsonMap.put("state", APIUtil.STATE_001);
+				jsonMap.put("msg", APIUtil.MSG_NORMAL);
 			}
 			else {
-				jsonMap.put("success", "false");
-				jsonMap.put("state", "002");
-				jsonMap.put("msg", "数据格式有误");
+				jsonMap.put("success", APIUtil.SUCCESS_FALSE);
+				jsonMap.put("state", APIUtil.STATE_002);
+				jsonMap.put("msg", APIUtil.MSG_DATA_FORMAT_ERROR);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			jsonMap.put("success", "false");
-			jsonMap.put("state", "002");
-			jsonMap.put("msg", "数据格式有误");
+			jsonMap.put("success", APIUtil.SUCCESS_FALSE);
+			jsonMap.put("state", APIUtil.STATE_002);
+			jsonMap.put("msg", APIUtil.MSG_DATA_FORMAT_ERROR);
 		}
 		finally {
 			return jsonMap;
@@ -1776,6 +1776,8 @@ public class BatchController {
 		String workOrder = wodMesJO.getString("workOrder");
 		String workcenterId = wodMesJO.getString("workcenterId");
 		String formulaIdMes = wodMesJO.getString("formulaId");//mes那边发来的formulaId对应java端的FormulaIdMes
+		//以前对应配方表里的recipeId,为了手动创建配方选择recipeId时容易识别配方，就把recipeId和Identifier改为一样的
+		//mes那边的formulaId在batch这边暂时用不到，但工单完成后还得返回给mes，就保存到工单表的FormulaIdMes字段里
 		
 		String materialListStr = wodMesJO.getString("materialList");
 		Map<String,Object> materialListMap=convertMesMaterialListStrToMaterialListMap(workOrder,materialListStr);
@@ -1784,7 +1786,7 @@ public class BatchController {
 		
 		WorkOrder wo=new WorkOrder();
 		//RecipeHeader recipeHeader=recipeHeaderService.getByProductParam(productcode, productName);
-		RecipeHeader recipeHeader=recipeHeaderService.getByIdentifier(identifier);
+		RecipeHeader recipeHeader=recipeHeaderService.getByIdentifier(identifier);//这个配方名是mes那边下发的，以前是根据配方id查询配方，后来wincc上为了手工创建配方时选择配方方便，就把batch这边的配方id和配方名改为一样的，batch这边的配方id和mes下发的配方id不是同一个字段了，就改为用配方名查询配方
 		
 		String dev1 = recipeHeader.getDev1();
 		String dev2 = recipeHeader.getDev2();
@@ -2001,32 +2003,32 @@ public class BatchController {
 					if(workOrderStatusBool) {
 						int updateCount=workOrderService.updateStateByWOIDs(WorkOrder.BQX, workOrders);
 						if(updateCount>0) {
-							jsonMap.put("success", "true");
-							jsonMap.put("state", "001");
-							jsonMap.put("msg", "正常");
+							jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_TRUE);
+							jsonMap.put(APIUtil.STATE, APIUtil.STATE_001);
+							jsonMap.put(APIUtil.MSG, APIUtil.MSG_NORMAL);
 						}
 						else {
-							jsonMap.put("success", "false");
-							jsonMap.put("state", "002");
-							jsonMap.put("msg", "工单号不存在");
+							jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_FALSE);
+							jsonMap.put(APIUtil.STATE, APIUtil.STATE_002);
+							jsonMap.put(APIUtil.MSG, WorkOrder.WOID_NO_EXIST);
 						}
 					}
 					else {
-						jsonMap.put("success", "false");
-						jsonMap.put("state", "002");
-						jsonMap.put("msg", "执行中的工单不允许取消");
+						jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_FALSE);
+						jsonMap.put(APIUtil.STATE, APIUtil.STATE_002);
+						jsonMap.put(APIUtil.MSG, WorkOrder.RUN_WO_NO_ALLOW_CANNEL);
 					}
 				}
 				else {
-					jsonMap.put("success", "false");
-					jsonMap.put("state", "002");
-					jsonMap.put("msg", "工单号不存在");
+					jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_FALSE);
+					jsonMap.put(APIUtil.STATE, APIUtil.STATE_002);
+					jsonMap.put(APIUtil.MSG, WorkOrder.WOID_NO_EXIST);
 				}
 			}
 			else {
-				jsonMap.put("success", "false");
-				jsonMap.put("state", "003");
-				jsonMap.put("msg", "状态有误");
+				jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_FALSE);
+				jsonMap.put(APIUtil.STATE, APIUtil.STATE_003);
+				jsonMap.put(APIUtil.MSG, WorkOrder.STATE_ERROR);
 			}
 			
 		} catch (Exception e) {
@@ -2065,14 +2067,14 @@ public class BatchController {
 		int c=manFeedService.editByWorkOrderIDFeedPortList(mfList);
 		//int c=manFeedService.addTestFromList(mfList);
 		if(c>0) {
-			jsonMap.put("success", "true");
-			jsonMap.put("state", "001");
-			jsonMap.put("msg", "正常");
+			jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_TRUE);
+			jsonMap.put(APIUtil.STATE, APIUtil.STATE_001);
+			jsonMap.put(APIUtil.MSG, APIUtil.MSG_NORMAL);
 		}
 		else {
-			jsonMap.put("success", "false");
-			jsonMap.put("state", "002");
-			jsonMap.put("msg", "数据格式有误");
+			jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_FALSE);
+			jsonMap.put(APIUtil.STATE, APIUtil.STATE_002);
+			jsonMap.put(APIUtil.MSG, APIUtil.MSG_DATA_FORMAT_ERROR);
 		}
 		return jsonMap;
 	}
@@ -2101,14 +2103,14 @@ public class BatchController {
 			c+=workOrderService.updateZGIDByWorkOrder(creamCode, workOrder);
 		}
 		if(c>0) {
-			jsonMap.put("success", "true");
-			jsonMap.put("state", "001");
-			jsonMap.put("msg", "正常");
+			jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_TRUE);
+			jsonMap.put(APIUtil.STATE, APIUtil.STATE_001);
+			jsonMap.put(APIUtil.MSG, APIUtil.MSG_NORMAL);
 		}
 		else {
-			jsonMap.put("success", "false");
-			jsonMap.put("state", "002");
-			jsonMap.put("msg", "数据格式有误");
+			jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_FALSE);
+			jsonMap.put(APIUtil.STATE, APIUtil.STATE_002);
+			jsonMap.put(APIUtil.MSG, APIUtil.MSG_DATA_FORMAT_ERROR);
 		}
 		return jsonMap;
 	}
@@ -2153,7 +2155,7 @@ public class BatchController {
 			}
 			*/
 			
-			//sendToMesWOIDList.add("ZI2308010202");
+			//sendToMesWOIDList.add("ZI2308020401");
 			
 			int count=0;
 			/*
@@ -2252,7 +2254,7 @@ public class BatchController {
 			}
 
 			/*
-			jsonMap.put("success", "true");
+			jsonMap.put("success", true);
 			jsonMap.put("state", "001");
 			jsonMap.put("msg", "正常");
 			net.sf.json.JSONArray brListJA = net.sf.json.JSONArray.fromObject(brList);

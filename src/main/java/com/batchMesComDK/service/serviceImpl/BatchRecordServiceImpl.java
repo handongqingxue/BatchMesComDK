@@ -90,7 +90,8 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 			String brWorkOrderID = batchRecord.getWorkOrderID();
 			String brPMCName=batchRecord.getPMCName();
 			
-			for (RecipePM recipePM : recipePMList) {
+			//大料、小料在进料或投料时都可能产生偏差
+			for (RecipePM recipePM : recipePMList) {//遍历物料参数，看看是否有偏差记录需要填充物料编码
 				String rPMWorkOrderID = recipePM.getWorkOrderID();
 				String pMCode = recipePM.getPMCode();
 				String cName = recipePM.getCName();
@@ -103,7 +104,7 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 				}
 			}
 			
-			for (ManFeed manFeed : manFeedList) {
+			for (ManFeed manFeed : manFeedList) {//遍历人工投料信息，看看是否有偏差记录需要填充物料编码
 				String mfWorkOrderID = manFeed.getWorkOrderID();
 				String materialCode = manFeed.getMaterialCode();
 				String materialName = manFeed.getMaterialName();

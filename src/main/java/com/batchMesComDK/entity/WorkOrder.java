@@ -98,6 +98,19 @@ public class WorkOrder {
 	 * 生产终止
 	 */
 	public static final String PRODUCTBREAK="PRODUCTBREAK";
+	
+	/**
+	 * 工单号不存在
+	 */
+	public static final String WOID_NO_EXIST="工单号不存在";
+	/**
+	 * 执行中的工单不允许取消
+	 */
+	public static final String RUN_WO_NO_ALLOW_CANNEL="执行中的工单不允许取消";
+	/**
+	 * 状态有误
+	 */
+	public static final String STATE_ERROR="状态有误";
 
 	private Integer ID;
 	public Integer getID() {
