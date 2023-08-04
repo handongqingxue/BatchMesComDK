@@ -122,6 +122,7 @@ public class BatchController {
 			String workOrderIDs="";
 			String formulaIds="";
 			String unitIDs="";
+			String updateUsers="";
 			
 			String batchCountResultStr = getItem(BatchTest.BATCH_LIST_CT);
 			System.out.println("batchCountResultStr==="+batchCountResultStr);
@@ -216,13 +217,8 @@ public class BatchController {
 										
 										woMap.put("existRunWO", true);//工单运行了，就把存在运行中的状态值1，其他启动了的工单就无法运行了，直到状态置0才能运行下一个时间点的工单
 										
-										StringBuilder qdSB=new StringBuilder();
-										qdSB.append("[{");
-										qdSB.append("\"workOrder\":\"");
-										qdSB.append(wo.getWorkOrderID());
-										qdSB.append("\",\"orderExecuteStatus\":\""+WorkOrder.PRODUCTION+"\",");
-										qdSB.append("\"updateTime\":\""+sdf.format(new Date())+"\",\"updateBy\":\"OPR2\"}]");
-										changeOrderStatus(qdSB.toString());
+										String qdBodyStr=getChaOrdStaBodyStr(wo.getWorkOrderID(),WorkOrder.PRODUCTION,wo.getUpdateUser());
+										changeOrderStatus(qdBodyStr);
 										
 										addWOPreStateInList(WorkOrder.BYX,workOrderID);
 									}
@@ -272,13 +268,8 @@ public class BatchController {
 									if(BatchTest.RUNNING.equals(stateVal)) {
 										workOrderService.updateStateById(WorkOrder.BYX, wo.getID());
 										
-										StringBuilder qdSB=new StringBuilder();
-										qdSB.append("[{");
-										qdSB.append("\"workOrder\":\"");
-										qdSB.append(wo.getWorkOrderID());
-										qdSB.append("\",\"orderExecuteStatus\":\""+WorkOrder.PRODUCTION+"\",");
-										qdSB.append("\"updateTime\":\""+sdf.format(new Date())+"\",\"updateBy\":\"OPR2\"}]");
-										changeOrderStatus(qdSB.toString());
+										String qdBodyStr = getChaOrdStaBodyStr(wo.getWorkOrderID(),WorkOrder.PRODUCTION,wo.getUpdateUser());
+										changeOrderStatus(qdBodyStr);
 										
 										addWOPreStateInList(WorkOrder.BYX,workOrderIDStr);
 									}
@@ -407,6 +398,7 @@ public class BatchController {
 						formulaIds+=","+wo.getFormulaId();
 						workOrderIDs+=","+wo.getWorkOrderID();
 						unitIDs+=","+wo.getUnitID();
+						updateUsers+=","+wo.getUpdateUser();
 					}
 				}
 	
@@ -415,10 +407,14 @@ public class BatchController {
 					String[] formulaIdArr = formulaIds.substring(1).split(",");
 					String[] workOrderIDArr = workOrderIDs.substring(1).split(",");
 					String[] unitIDArr = unitIDs.substring(1).split(",");
+					String[] updateUserArr = updateUsers.substring(1).split(",");
+					
 					for (int i = 0; i < formulaIdArr.length; i++) {
 						String formulaId = formulaIdArr[i];
 						String workOrderID = workOrderIDArr[i];
 						String unitID = unitIDArr[i];
+						String updateUser = updateUserArr[i];
+						
 						Map<String, Object> woMap = unitIDWOMap.get(unitID);
 						woMap.put("existInBatchList", false);
 						for (int j = 1; j <= batchCount; j++) {
@@ -442,13 +438,8 @@ public class BatchController {
 										
 										woMap.put("existRunWO", false);
 										
-										StringBuilder jsSB=new StringBuilder();
-										jsSB.append("[{");
-										jsSB.append("\"workOrder\":\"");
-										jsSB.append(workOrderID);
-										jsSB.append("\",\"orderExecuteStatus\":\""+WorkOrder.COMPLETE+"\",");
-										jsSB.append("\"updateTime\":\""+sdf.format(new Date())+"\",\"updateBy\":\"OPR2\"}]");
-										changeOrderStatus(jsSB.toString());
+										String wcBodyStr = getChaOrdStaBodyStr(workOrderID,WorkOrder.COMPLETE,updateUser);
+										changeOrderStatus(wcBodyStr);
 										
 										getSendToMesBRData();//检索是否存在给mes端推送批记录的工单
 										
@@ -475,13 +466,8 @@ public class BatchController {
 										
 										woMap.put("existRunWO", false);
 										
-										StringBuilder jsSB=new StringBuilder();
-										jsSB.append("[{");
-										jsSB.append("\"workOrder\":\"");
-										jsSB.append(workOrderID);
-										jsSB.append("\",\"orderExecuteStatus\":\""+WorkOrder.PRODUCTBREAK+"\",");
-										jsSB.append("\"updateTime\":\""+sdf.format(new Date())+"\",\"updateBy\":\"OPR2\"}]");
-										changeOrderStatus(jsSB.toString());
+										String jsBodyStr = getChaOrdStaBodyStr(workOrderID,WorkOrder.PRODUCTBREAK,updateUser);
+										changeOrderStatus(jsBodyStr);
 										
 										addWOPreStateInList(WorkOrder.BYWZZ,workOrderID);
 									}
@@ -1584,6 +1570,18 @@ public class BatchController {
 		}
 		return json;
 	}
+	
+	private String getChaOrdStaBodyStr(String workOrderID, String status, String updateUser) {
+		StringBuilder cosSB=new StringBuilder();
+		
+		cosSB.append("[{");
+		cosSB.append("\"workOrder\":\"");
+		cosSB.append(workOrderID);
+		cosSB.append("\",\"orderExecuteStatus\":\""+status+"\",");
+		cosSB.append("\"updateTime\":\""+sdf.format(new Date())+"\",\"updateBy\":\""+(StringUtils.isEmpty(updateUser)?"OPR2":updateUser)+"\"}]");
+		
+		return cosSB.toString();
+	}
 
 	/**
 	 * 4.1 工单状态变更
@@ -1736,21 +1734,21 @@ public class BatchController {
 					c=workOrderService.updateStateByWorkOrderID(WorkOrder.WLQTWB,workOrderID);
 				}
 				
-				jsonMap.put("success", APIUtil.SUCCESS_TRUE);
-				jsonMap.put("state", APIUtil.STATE_001);
-				jsonMap.put("msg", APIUtil.MSG_NORMAL);
+				jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_TRUE);
+				jsonMap.put(APIUtil.STATE, APIUtil.STATE_001);
+				jsonMap.put(APIUtil.MSG, APIUtil.MSG_NORMAL);
 			}
 			else {
-				jsonMap.put("success", APIUtil.SUCCESS_FALSE);
-				jsonMap.put("state", APIUtil.STATE_002);
-				jsonMap.put("msg", APIUtil.MSG_DATA_FORMAT_ERROR);
+				jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_FALSE);
+				jsonMap.put(APIUtil.STATE, APIUtil.STATE_002);
+				jsonMap.put(APIUtil.MSG, APIUtil.MSG_DATA_FORMAT_ERROR);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			jsonMap.put("success", APIUtil.SUCCESS_FALSE);
-			jsonMap.put("state", APIUtil.STATE_002);
-			jsonMap.put("msg", APIUtil.MSG_DATA_FORMAT_ERROR);
+			jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_FALSE);
+			jsonMap.put(APIUtil.STATE, APIUtil.STATE_002);
+			jsonMap.put(APIUtil.MSG, APIUtil.MSG_DATA_FORMAT_ERROR);
 		}
 		finally {
 			return jsonMap;
@@ -2050,6 +2048,7 @@ public class BatchController {
 	public Map<String, Object> feedIssusDown(@RequestBody String bodyEnc) {
 
 		/*
+		 * 原先定的方案：
 		 * 除了ManFeed表里加设定值，RecipePM表里也要加设定值。工单创建时，要从RecipePM表里根据工单id获取相关的配方参数，这些属于物料参数，放入ManFeed表里。
 		 * 放入后在操作员扫码之前这个阶段只有物料名、FeedPort（投料口）、MarkBit（是否投料结束为0）、MaterialSV这些字段有数据，其他字段要在操作员扫码填入数后才能填充进去。
 		           当操作员扫码时，填入数量、单位，根据系统时间作进料时间。mes端调用人工投料接口，把填入的数据根据工单id和FeedPort（投料口）两个字段，从人工投料表里查询出符合条件的数据，

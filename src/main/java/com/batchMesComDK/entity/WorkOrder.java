@@ -209,6 +209,12 @@ public class WorkOrder {
 	public void setIdentifier(String identifier) {
 		Identifier = identifier;
 	}
+	public String getUpdateUser() {
+		return UpdateUser;
+	}
+	public void setUpdateUser(String updateUser) {
+		UpdateUser = updateUser;
+	}
 	public String getFormulaIdMes() {
 		return FormulaIdMes;
 	}
@@ -230,6 +236,7 @@ public class WorkOrder {
 	private String LotNo;
 	private String WorkcenterId;
 	private String Identifier;
+	private String UpdateUser;
 	private String FormulaIdMes;
 	private List<RecipePM> recipePMList;//用来存放mes那边下发的大料和工艺参数
 	private List<ManFeed> manFeedList;//用来存放mes那边下发的小料参数
