@@ -19,7 +19,7 @@ public interface ManFeedService {
 	ManFeed getByWorkOrderIDFeedPort(String workOrderID,String feedPort);
 
 	/**
-	 * 为了测试暂时直接把报文数据插入人工投料表
+	 * 直接把下单时带的小料数据插入人工投料表
 	 * @param mfList
 	 * @return
 	 */

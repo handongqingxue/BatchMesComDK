@@ -98,6 +98,19 @@ public class WorkOrder {
 	 * 生产终止
 	 */
 	public static final String PRODUCTBREAK="PRODUCTBREAK";
+	
+	/**
+	 * 工单号不存在
+	 */
+	public static final String WOID_NO_EXIST="工单号不存在";
+	/**
+	 * 执行中的工单不允许取消
+	 */
+	public static final String RUN_WO_NO_ALLOW_CANNEL="执行中的工单不允许取消";
+	/**
+	 * 状态有误
+	 */
+	public static final String STATE_ERROR="状态有误";
 
 	private Integer ID;
 	public Integer getID() {
@@ -196,6 +209,18 @@ public class WorkOrder {
 	public void setIdentifier(String identifier) {
 		Identifier = identifier;
 	}
+	public String getUpdateUser() {
+		return UpdateUser;
+	}
+	public void setUpdateUser(String updateUser) {
+		UpdateUser = updateUser;
+	}
+	public String getFormulaIdMes() {
+		return FormulaIdMes;
+	}
+	public void setFormulaIdMes(String formulaIdMes) {
+		FormulaIdMes = formulaIdMes;
+	}
 	private String WorkOrderID;
 	private String ProductCode;
 	private String ProductName;
@@ -211,6 +236,8 @@ public class WorkOrder {
 	private String LotNo;
 	private String WorkcenterId;
 	private String Identifier;
+	private String UpdateUser;
+	private String FormulaIdMes;
 	private List<RecipePM> recipePMList;//用来存放mes那边下发的大料和工艺参数
 	private List<ManFeed> manFeedList;//用来存放mes那边下发的小料参数
 	public List<RecipePM> getRecipePMList() {

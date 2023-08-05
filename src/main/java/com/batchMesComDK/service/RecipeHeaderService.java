@@ -19,6 +19,11 @@ public interface RecipeHeaderService {
 	 */
 	RecipeHeader getByRecipeID(String recipeID);
 	
+	/**
+	 * 根据配方名称查询配方
+	 * @param identifier
+	 * @return
+	 */
 	RecipeHeader getByIdentifier(String identifier);
 
 	/**

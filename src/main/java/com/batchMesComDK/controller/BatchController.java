@@ -122,6 +122,7 @@ public class BatchController {
 			String workOrderIDs="";
 			String formulaIds="";
 			String unitIDs="";
+			String updateUsers="";
 			
 			String batchCountResultStr = getItem(BatchTest.BATCH_LIST_CT);
 			System.out.println("batchCountResultStr==="+batchCountResultStr);
@@ -216,13 +217,8 @@ public class BatchController {
 										
 										woMap.put("existRunWO", true);//工单运行了，就把存在运行中的状态值1，其他启动了的工单就无法运行了，直到状态置0才能运行下一个时间点的工单
 										
-										StringBuilder qdSB=new StringBuilder();
-										qdSB.append("[{");
-										qdSB.append("\"workOrder\":\"");
-										qdSB.append(wo.getWorkOrderID());
-										qdSB.append("\",\"orderExecuteStatus\":\""+WorkOrder.PRODUCTION+"\",");
-										qdSB.append("\"updateTime\":\""+sdf.format(new Date())+"\",\"updateBy\":\"OPR2\"}]");
-										changeOrderStatus(qdSB.toString());
+										String qdBodyStr=getChaOrdStaBodyStr(wo.getWorkOrderID(),WorkOrder.PRODUCTION,wo.getUpdateUser());
+										changeOrderStatus(qdBodyStr);
 										
 										addWOPreStateInList(WorkOrder.BYX,workOrderID);
 									}
@@ -272,13 +268,8 @@ public class BatchController {
 									if(BatchTest.RUNNING.equals(stateVal)) {
 										workOrderService.updateStateById(WorkOrder.BYX, wo.getID());
 										
-										StringBuilder qdSB=new StringBuilder();
-										qdSB.append("[{");
-										qdSB.append("\"workOrder\":\"");
-										qdSB.append(wo.getWorkOrderID());
-										qdSB.append("\",\"orderExecuteStatus\":\""+WorkOrder.PRODUCTION+"\",");
-										qdSB.append("\"updateTime\":\""+sdf.format(new Date())+"\",\"updateBy\":\"OPR2\"}]");
-										changeOrderStatus(qdSB.toString());
+										String qdBodyStr = getChaOrdStaBodyStr(wo.getWorkOrderID(),WorkOrder.PRODUCTION,wo.getUpdateUser());
+										changeOrderStatus(qdBodyStr);
 										
 										addWOPreStateInList(WorkOrder.BYX,workOrderIDStr);
 									}
@@ -407,6 +398,7 @@ public class BatchController {
 						formulaIds+=","+wo.getFormulaId();
 						workOrderIDs+=","+wo.getWorkOrderID();
 						unitIDs+=","+wo.getUnitID();
+						updateUsers+=","+wo.getUpdateUser();
 					}
 				}
 	
@@ -415,10 +407,14 @@ public class BatchController {
 					String[] formulaIdArr = formulaIds.substring(1).split(",");
 					String[] workOrderIDArr = workOrderIDs.substring(1).split(",");
 					String[] unitIDArr = unitIDs.substring(1).split(",");
+					String[] updateUserArr = updateUsers.substring(1).split(",");
+					
 					for (int i = 0; i < formulaIdArr.length; i++) {
 						String formulaId = formulaIdArr[i];
 						String workOrderID = workOrderIDArr[i];
 						String unitID = unitIDArr[i];
+						String updateUser = updateUserArr[i];
+						
 						Map<String, Object> woMap = unitIDWOMap.get(unitID);
 						woMap.put("existInBatchList", false);
 						for (int j = 1; j <= batchCount; j++) {
@@ -442,13 +438,8 @@ public class BatchController {
 										
 										woMap.put("existRunWO", false);
 										
-										StringBuilder jsSB=new StringBuilder();
-										jsSB.append("[{");
-										jsSB.append("\"workOrder\":\"");
-										jsSB.append(workOrderID);
-										jsSB.append("\",\"orderExecuteStatus\":\""+WorkOrder.COMPLETE+"\",");
-										jsSB.append("\"updateTime\":\""+sdf.format(new Date())+"\",\"updateBy\":\"OPR2\"}]");
-										changeOrderStatus(jsSB.toString());
+										String wcBodyStr = getChaOrdStaBodyStr(workOrderID,WorkOrder.COMPLETE,updateUser);
+										changeOrderStatus(wcBodyStr);
 										
 										getSendToMesBRData();//检索是否存在给mes端推送批记录的工单
 										
@@ -475,13 +466,8 @@ public class BatchController {
 										
 										woMap.put("existRunWO", false);
 										
-										StringBuilder jsSB=new StringBuilder();
-										jsSB.append("[{");
-										jsSB.append("\"workOrder\":\"");
-										jsSB.append(workOrderID);
-										jsSB.append("\",\"orderExecuteStatus\":\""+WorkOrder.PRODUCTBREAK+"\",");
-										jsSB.append("\"updateTime\":\""+sdf.format(new Date())+"\",\"updateBy\":\"OPR2\"}]");
-										changeOrderStatus(jsSB.toString());
+										String jsBodyStr = getChaOrdStaBodyStr(workOrderID,WorkOrder.PRODUCTBREAK,updateUser);
+										changeOrderStatus(jsBodyStr);
 										
 										addWOPreStateInList(WorkOrder.BYWZZ,workOrderID);
 									}
@@ -498,14 +484,14 @@ public class BatchController {
 					}
 				}
 				
-				jsonMap.put("success", success);
-				jsonMap.put("message", "ok");
+				jsonMap.put(APIUtil.SUCCESS, success);
+				jsonMap.put(APIUtil.MESSAGE, APIUtil.MESSAGE_OK);
 			}
 			else {
 				String msg = batchCountResultJO.getString("msg");
 				
-				jsonMap.put("success", success);
-				jsonMap.put("message", msg);
+				jsonMap.put(APIUtil.SUCCESS, success);
+				jsonMap.put(APIUtil.MESSAGE, msg);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -708,9 +694,9 @@ public class BatchController {
 				//changeOrderStatus();
 			}
 			
-			jsonMap.put("success", "true");
-			jsonMap.put("state", "001");//001正常 002数据格式有误 003数据不完整
-			jsonMap.put("msg", "正常");
+			jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_TRUE);
+			jsonMap.put(APIUtil.STATE, APIUtil.STATE_001);
+			jsonMap.put(APIUtil.MSG, APIUtil.MSG_NORMAL);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -1543,12 +1529,12 @@ public class BatchController {
 			   BatchTest.CANT_MAP_NAME_TO_DISPID_GETITEM.equals(result)) {
 				plan.setStatus(0);
 				plan.setMsg(result);
-				plan.setSuccess(false);
+				plan.setSuccess(APIUtil.SUCCESS_FALSE);
 			}
 			else {
 				plan.setStatus(1);
 				plan.setMsg("success");
-				plan.setSuccess(true);
+				plan.setSuccess(APIUtil.SUCCESS_TRUE);
 				plan.setData(result);
 			}
 			json=JsonUtil.getJsonFromObject(plan);
@@ -1583,6 +1569,18 @@ public class BatchController {
 			e.printStackTrace();
 		}
 		return json;
+	}
+	
+	private String getChaOrdStaBodyStr(String workOrderID, String status, String updateUser) {
+		StringBuilder cosSB=new StringBuilder();
+		
+		cosSB.append("[{");
+		cosSB.append("\"workOrder\":\"");
+		cosSB.append(workOrderID);
+		cosSB.append("\",\"orderExecuteStatus\":\""+status+"\",");
+		cosSB.append("\"updateTime\":\""+sdf.format(new Date())+"\",\"updateBy\":\""+(StringUtils.isEmpty(updateUser)?"OPR2":updateUser)+"\"}]");
+		
+		return cosSB.toString();
 	}
 
 	/**
@@ -1651,14 +1649,14 @@ public class BatchController {
 			*/
 			
 			if(success) {
-				jsonMap.put("success", "true");
-				jsonMap.put("state", "001");//001正常 002数据格式有误 003数据不完整
-				jsonMap.put("msg", "正常");
+				jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_TRUE);
+				jsonMap.put(APIUtil.STATE, APIUtil.STATE_001);//001正常 002数据格式有误 003数据不完整
+				jsonMap.put(APIUtil.MSG, APIUtil.MSG_NORMAL);
 			}
 			else {
-				jsonMap.put("success", "false");
-				jsonMap.put("state", "002");
-				jsonMap.put("msg", "数据格式有误");
+				jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_FALSE);
+				jsonMap.put(APIUtil.STATE, APIUtil.STATE_002);
+				jsonMap.put(APIUtil.MSG, APIUtil.MSG_DATA_FORMAT_ERROR);
 			}
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
@@ -1692,14 +1690,14 @@ public class BatchController {
 		*/
 		int c=1;//formulaDtoService.add(fdList.get(0));
 		if(c>0) {
-			jsonMap.put("success", "true");
-			jsonMap.put("state", "001");
-			jsonMap.put("msg", "正常");
+			jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_TRUE);
+			jsonMap.put(APIUtil.STATE, APIUtil.STATE_001);
+			jsonMap.put(APIUtil.MSG, APIUtil.MSG_NORMAL);
 		}
 		else {
-			jsonMap.put("success", "false");
-			jsonMap.put("state", "002");
-			jsonMap.put("msg", "数据格式有误");
+			jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_FALSE);
+			jsonMap.put(APIUtil.STATE, APIUtil.STATE_002);
+			jsonMap.put(APIUtil.MSG, APIUtil.MSG_DATA_FORMAT_ERROR);
 		}
 		
 		return jsonMap;
@@ -1736,21 +1734,21 @@ public class BatchController {
 					c=workOrderService.updateStateByWorkOrderID(WorkOrder.WLQTWB,workOrderID);
 				}
 				
-				jsonMap.put("success", "true");
-				jsonMap.put("state", "001");
-				jsonMap.put("msg", "正常");
+				jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_TRUE);
+				jsonMap.put(APIUtil.STATE, APIUtil.STATE_001);
+				jsonMap.put(APIUtil.MSG, APIUtil.MSG_NORMAL);
 			}
 			else {
-				jsonMap.put("success", "false");
-				jsonMap.put("state", "002");
-				jsonMap.put("msg", "数据格式有误");
+				jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_FALSE);
+				jsonMap.put(APIUtil.STATE, APIUtil.STATE_002);
+				jsonMap.put(APIUtil.MSG, APIUtil.MSG_DATA_FORMAT_ERROR);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			jsonMap.put("success", "false");
-			jsonMap.put("state", "002");
-			jsonMap.put("msg", "数据格式有误");
+			jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_FALSE);
+			jsonMap.put(APIUtil.STATE, APIUtil.STATE_002);
+			jsonMap.put(APIUtil.MSG, APIUtil.MSG_DATA_FORMAT_ERROR);
 		}
 		finally {
 			return jsonMap;
@@ -1766,7 +1764,6 @@ public class BatchController {
 
 		net.sf.json.JSONObject wodMesJO = net.sf.json.JSONObject.fromObject(mesBody);
 		//WorkOrder wo=(WorkOrder)net.sf.json.JSONObject.toBean(woJO, WorkOrder.class);
-		//String recipeID = wodMesJO.getString("formulaId");//mes那边发来的formulaId对应java端的recipeID
 		String identifier = wodMesJO.getString("identifier");
 		String lotNo = wodMesJO.getString("lotNo");
 		String planStartTime = wodMesJO.getString("planStartTime");
@@ -1776,6 +1773,10 @@ public class BatchController {
 		String unit = wodMesJO.getString("unit");
 		String workOrder = wodMesJO.getString("workOrder");
 		String workcenterId = wodMesJO.getString("workcenterId");
+		String formulaIdMes = wodMesJO.getString("formulaId");//mes那边发来的formulaId对应java端的FormulaIdMes
+		//以前对应配方表里的recipeId,为了手动创建配方选择recipeId时容易识别配方，就把recipeId和Identifier改为一样的
+		//mes那边的formulaId在batch这边暂时用不到，但工单完成后还得返回给mes，就保存到工单表的FormulaIdMes字段里
+		
 		String materialListStr = wodMesJO.getString("materialList");
 		Map<String,Object> materialListMap=convertMesMaterialListStrToMaterialListMap(workOrder,materialListStr);
 		List<RecipePM> recipePMList=(List<RecipePM>)materialListMap.get("recipePMList");
@@ -1783,7 +1784,7 @@ public class BatchController {
 		
 		WorkOrder wo=new WorkOrder();
 		//RecipeHeader recipeHeader=recipeHeaderService.getByProductParam(productcode, productName);
-		RecipeHeader recipeHeader=recipeHeaderService.getByIdentifier(identifier);
+		RecipeHeader recipeHeader=recipeHeaderService.getByIdentifier(identifier);//这个配方名是mes那边下发的，以前是根据配方id查询配方，后来wincc上为了手工创建配方时选择配方方便，就把batch这边的配方id和配方名改为一样的，batch这边的配方id和mes下发的配方id不是同一个字段了，就改为用配方名查询配方
 		
 		String dev1 = recipeHeader.getDev1();
 		String dev2 = recipeHeader.getDev2();
@@ -1810,6 +1811,7 @@ public class BatchController {
 		wo.setManFeedList(manFeedList);
 		wo.setLotNo(lotNo);
 		wo.setWorkcenterId(workcenterId);
+		wo.setFormulaIdMes(formulaIdMes);
 		
 		String unitID = recipeHeader.getUnitID();
 		wo.setUnitID(unitID);
@@ -2010,32 +2012,32 @@ public class BatchController {
 					if(workOrderStatusBool) {
 						int updateCount=workOrderService.updateStateByWOIDs(WorkOrder.BQX, workOrders);
 						if(updateCount>0) {
-							jsonMap.put("success", "true");
-							jsonMap.put("state", "001");
-							jsonMap.put("msg", "正常");
+							jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_TRUE);
+							jsonMap.put(APIUtil.STATE, APIUtil.STATE_001);
+							jsonMap.put(APIUtil.MSG, APIUtil.MSG_NORMAL);
 						}
 						else {
-							jsonMap.put("success", "false");
-							jsonMap.put("state", "002");
-							jsonMap.put("msg", "工单号不存在");
+							jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_FALSE);
+							jsonMap.put(APIUtil.STATE, APIUtil.STATE_002);
+							jsonMap.put(APIUtil.MSG, WorkOrder.WOID_NO_EXIST);
 						}
 					}
 					else {
-						jsonMap.put("success", "false");
-						jsonMap.put("state", "002");
-						jsonMap.put("msg", "执行中的工单不允许取消");
+						jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_FALSE);
+						jsonMap.put(APIUtil.STATE, APIUtil.STATE_002);
+						jsonMap.put(APIUtil.MSG, WorkOrder.RUN_WO_NO_ALLOW_CANNEL);
 					}
 				}
 				else {
-					jsonMap.put("success", "false");
-					jsonMap.put("state", "002");
-					jsonMap.put("msg", "工单号不存在");
+					jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_FALSE);
+					jsonMap.put(APIUtil.STATE, APIUtil.STATE_002);
+					jsonMap.put(APIUtil.MSG, WorkOrder.WOID_NO_EXIST);
 				}
 			}
 			else {
-				jsonMap.put("success", "false");
-				jsonMap.put("state", "003");
-				jsonMap.put("msg", "状态有误");
+				jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_FALSE);
+				jsonMap.put(APIUtil.STATE, APIUtil.STATE_003);
+				jsonMap.put(APIUtil.MSG, WorkOrder.STATE_ERROR);
 			}
 			
 		} catch (Exception e) {
@@ -2057,6 +2059,7 @@ public class BatchController {
 	public Map<String, Object> feedIssusDown(@RequestBody String bodyEnc) {
 
 		/*
+		 * 原先定的方案：
 		 * 除了ManFeed表里加设定值，RecipePM表里也要加设定值。工单创建时，要从RecipePM表里根据工单id获取相关的配方参数，这些属于物料参数，放入ManFeed表里。
 		 * 放入后在操作员扫码之前这个阶段只有物料名、FeedPort（投料口）、MarkBit（是否投料结束为0）、MaterialSV这些字段有数据，其他字段要在操作员扫码填入数后才能填充进去。
 		           当操作员扫码时，填入数量、单位，根据系统时间作进料时间。mes端调用人工投料接口，把填入的数据根据工单id和FeedPort（投料口）两个字段，从人工投料表里查询出符合条件的数据，
@@ -2074,14 +2077,14 @@ public class BatchController {
 		int c=manFeedService.editByWorkOrderIDFeedPortList(mfList);
 		//int c=manFeedService.addTestFromList(mfList);
 		if(c>0) {
-			jsonMap.put("success", "true");
-			jsonMap.put("state", "001");
-			jsonMap.put("msg", "正常");
+			jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_TRUE);
+			jsonMap.put(APIUtil.STATE, APIUtil.STATE_001);
+			jsonMap.put(APIUtil.MSG, APIUtil.MSG_NORMAL);
 		}
 		else {
-			jsonMap.put("success", "false");
-			jsonMap.put("state", "002");
-			jsonMap.put("msg", "数据格式有误");
+			jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_FALSE);
+			jsonMap.put(APIUtil.STATE, APIUtil.STATE_002);
+			jsonMap.put(APIUtil.MSG, APIUtil.MSG_DATA_FORMAT_ERROR);
 		}
 		return jsonMap;
 	}
@@ -2110,14 +2113,14 @@ public class BatchController {
 			c+=workOrderService.updateZGIDByWorkOrder(creamCode, workOrder);
 		}
 		if(c>0) {
-			jsonMap.put("success", "true");
-			jsonMap.put("state", "001");
-			jsonMap.put("msg", "正常");
+			jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_TRUE);
+			jsonMap.put(APIUtil.STATE, APIUtil.STATE_001);
+			jsonMap.put(APIUtil.MSG, APIUtil.MSG_NORMAL);
 		}
 		else {
-			jsonMap.put("success", "false");
-			jsonMap.put("state", "002");
-			jsonMap.put("msg", "数据格式有误");
+			jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_FALSE);
+			jsonMap.put(APIUtil.STATE, APIUtil.STATE_002);
+			jsonMap.put(APIUtil.MSG, APIUtil.MSG_DATA_FORMAT_ERROR);
 		}
 		return jsonMap;
 	}
@@ -2162,7 +2165,7 @@ public class BatchController {
 			}
 			*/
 			
-			//sendToMesWOIDList.add("ZI2308010202");
+			//sendToMesWOIDList.add("ZI2308020401");
 			
 			int count=0;
 			/*
@@ -2185,9 +2188,9 @@ public class BatchController {
 					String workOrderID=sendToMesWO.getWorkOrderID();
 					String productCode = sendToMesWO.getProductCode();
 					String productName = sendToMesWO.getProductName();
-					String recipeID = sendToMesWO.getRecipeID();
 					String lotNo = sendToMesWO.getLotNo();
 					String workcenterId = sendToMesWO.getWorkcenterId();
+					String formulaIdMes = sendToMesWO.getFormulaIdMes();
 					
 					JSONObject bodyParamBRJO=new JSONObject();
 					bodyParamBRJO.put("id", id);
@@ -2195,7 +2198,7 @@ public class BatchController {
 					bodyParamBRJO.put("productCode", productCode);
 					bodyParamBRJO.put("productName", productName);
 					bodyParamBRJO.put("lotNo", lotNo);
-					bodyParamBRJO.put("formulaId", recipeID);
+					bodyParamBRJO.put("formulaId", formulaIdMes);
 					bodyParamBRJO.put("formulaName", productName);
 					bodyParamBRJO.put("workcenterId", workcenterId);
 
@@ -2261,7 +2264,7 @@ public class BatchController {
 			}
 
 			/*
-			jsonMap.put("success", "true");
+			jsonMap.put("success", true);
 			jsonMap.put("state", "001");
 			jsonMap.put("msg", "正常");
 			net.sf.json.JSONArray brListJA = net.sf.json.JSONArray.fromObject(brList);

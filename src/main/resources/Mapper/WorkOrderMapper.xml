@@ -49,6 +49,9 @@
 			<if test="WorkcenterId!=null">
 				WorkcenterId,
 			</if>
+			<if test="FormulaIdMes!=null">
+				FormulaIdMes,
+			</if>
 		</trim>
 		values
 		<trim prefix="(" suffix=")" suffixOverrides=",">
@@ -94,6 +97,9 @@
 			</if>
 			<if test="WorkcenterId!=null">
 				#{WorkcenterId},
+			</if>
+			<if test="FormulaIdMes!=null">
+				#{FormulaIdMes},
 			</if>
 		</trim>
 	</insert>

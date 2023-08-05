@@ -25,11 +25,44 @@ public class APIUtil {
 
 	public static final String SERVICE_URL="http://localhost:8080/ZnczLfyl/gkj/";
 	//public static final String SERVICE_URL_MES="https://385n683i90.imdo.co/mesPlatform/api/remote/batch/";
+	
 	public static final String SERVICE_URL_MES="http://10.0.3.135:80/mesPlatform/api/remote/batch/";
 	//public static final String SERVICE_URL_MES="http://10.0.3.136:19888/mesPlatform/api/remote/batch/";
 	//public static final String SERVICE_URL_MES="http://172.25.10.13:19888/mesPlatform/api/remote/batch/";
+	
 	public static final String ITEM_RESULT="item";
 	public static final String LIST_RESULT="list";
+	
+	public static final String SUCCESS="success";
+	public static final boolean SUCCESS_TRUE=true;
+	public static final boolean SUCCESS_FALSE=false;
+	
+	public static final String STATE="state";
+	/**
+	 * 001正常状态(001正常 002数据格式有误 003数据不完整)
+	 */
+	public static final String STATE_001="001";
+	/**
+	 * 002数据格式有误状态(001正常 002数据格式有误 003数据不完整)
+	 */
+	public static final String STATE_002="002";
+	/**
+	 * 003数据不完整状态(001正常 002数据格式有误 003数据不完整)
+	 */
+	public static final String STATE_003="003";
+	
+	public static final String MSG="msg";
+	/**
+	 * 正常
+	 */
+	public static final String MSG_NORMAL="正常";
+	/**
+	 * 数据格式有误
+	 */
+	public static final String MSG_DATA_FORMAT_ERROR="数据格式有误";
+	
+	public static final String MESSAGE="message";
+	public static final String MESSAGE_OK="ok";
 
 	//https://www.cnblogs.com/aeolian/p/7746158.html
 	//https://www.cnblogs.com/bobc/p/8809761.html
