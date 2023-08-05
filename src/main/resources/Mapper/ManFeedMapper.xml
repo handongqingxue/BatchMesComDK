@@ -42,6 +42,9 @@
 			<if test="Dev2!=null">
 				Dev2,
 			</if>
+			<if test="RunStep!=null">
+				RunStep,
+			</if>
 		</trim>
 		values
 		<trim prefix="(" suffix=")" suffixOverrides=",">
@@ -81,10 +84,13 @@
 			<if test="Dev2!=null">
 				#{Dev2},
 			</if>
+			<if test="RunStep!=null">
+				#{RunStep},
+			</if>
 		</trim>
 	</insert>
 	<insert id="addFromList">
-		insert into ManFeed (WorkOrderID,MaterialCode,MaterialName,Unit,FeedPort,MarkBit,MaterialSV,Dev1,Dev2) values
+		insert into ManFeed (WorkOrderID,MaterialCode,MaterialName,Unit,FeedPort,MarkBit,MaterialSV,Dev1,Dev2,RunStep) values
 		<foreach collection="mfList" item="mf" separator=",">
 			<trim prefix="(" suffix=")" suffixOverrides=",">
 				<choose>
@@ -159,6 +165,14 @@
 						'',
 					</otherwise>
 				</choose>
+				<choose>
+					<when test="mf.runStep!=null">
+						#{mf.runStep},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
 			</trim>
 		</foreach>
 	</insert>
@@ -181,7 +195,7 @@
 				feedTime=#{feedTime},
 			</if>
 		</trim>
-		 where WorkOrderID=#{workOrderID} and FeedPort=#{feedPort} and materialCode=#{materialCode} and MarkBit=${@com.batchMesComDK.entity.ManFeed@WJS}
+		 where WorkOrderID=#{workOrderID} and FeedPort=#{feedPort} and materialCode=#{materialCode} and RunStep=#{runStep} and MarkBit=${@com.batchMesComDK.entity.ManFeed@WJS}
 	</update>
 	<select id="getByWorkOrderIDFeedPort" resultType="com.batchMesComDK.entity.ManFeed">
 		select * from ManFeed where WorkOrderID=#{workOrderID} and FeedPort=#{feedPort} and MarkBit=0
@@ -189,7 +203,7 @@
 	<update id="updateMarkBitByParamsList">
 		update ManFeed set MarkBit=${@com.batchMesComDK.entity.ManFeed@YJS} where 1=1 and
 		<foreach collection="mfList" item="mf" open="(" separator=" or " close=")">
-		WorkOrderID=#{mf.workOrderID} and FeedPort=#{mf.feedPort} and materialCode=#{mf.materialCode}
+		WorkOrderID=#{mf.workOrderID} and FeedPort=#{mf.feedPort} and materialCode=#{mf.materialCode} and RunStep=#{mf.runStep}
 		</foreach>
 		 and MarkBit=${@com.batchMesComDK.entity.ManFeed@WJS}
 	</update>

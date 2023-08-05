@@ -88,6 +88,12 @@ public class ManFeed {
 	public void setDev2(String dev2) {
 		Dev2 = dev2;
 	}
+	public Integer getRunStep() {
+		return RunStep;
+	}
+	public void setRunStep(Integer runStep) {
+		RunStep = runStep;
+	}
 	private String WorkOrderID;
 	private String MaterialCode;
   	private String MaterialName;
@@ -99,4 +105,5 @@ public class ManFeed {
   	private String MaterialSV;
   	private String Dev1;
   	private String Dev2;
+  	private Integer RunStep;
 }

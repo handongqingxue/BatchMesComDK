@@ -1843,6 +1843,10 @@ public class BatchController {
 			//String upperDeviation = materialListJO.getString("upperDeviation");
 			//String lowerDeviation = materialListJO.getString("lowerDeviation");
 			String feedportCode = materialListJO.getString("feedportCode");
+			Integer runStep = null;
+			String step = materialListJO.getString("step");
+			if(!StringUtils.isEmpty(step))
+				runStep = Integer.valueOf(step);
 			
 			if(StringUtils.isEmpty(feedportCode)) {//没有投料口说明是大料或工艺参数
 				recipePM=new RecipePM();
@@ -1862,6 +1866,7 @@ public class BatchController {
 				manFeed.setFeedPort(feedportCode);
 				manFeed.setMarkBit(ManFeed.WJS+"");
 				manFeed.setMaterialSV(qty);
+				manFeed.setRunStep(runStep);
 				
 				manFeedList.add(manFeed);
 			}
@@ -1893,6 +1898,10 @@ public class BatchController {
 			String materialName = fidMesJO.getString("materialName");
 			Float suttle = Float.valueOf(fidMesJO.getString("suttle"));
 			String unit = fidMesJO.getString("unit");
+			Integer runStep = null;
+			String step = fidMesJO.getString("step");
+			if(!StringUtils.isEmpty(step))
+				runStep = Integer.valueOf(step);
 			
 			mf=new ManFeed();
 			mf.setWorkOrderID(workOrder);
@@ -1902,6 +1911,8 @@ public class BatchController {
 			mf.setMaterialName(materialName);
 			mf.setSuttle(suttle);
 			mf.setUnit(unit);
+			mf.setRunStep(runStep);
+			
 			mfList.add(mf);
 		}
 		
