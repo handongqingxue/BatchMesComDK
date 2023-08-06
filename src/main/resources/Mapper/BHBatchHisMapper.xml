@@ -5,7 +5,8 @@
 <mapper namespace="com.batchMesComDK.dao.BHBatchHisMapper">
 	<select id="getMaterialListByWOIDList" resultType="com.batchMesComDK.entity.BHBatchHis">
 		select rPM.CName,brTr.PhaseName,wo.WorkOrderID,rPM.PMCode,his.* from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo,BatchRecordTr brTr,RecipePM rPM
-		 where his.BatchID=wo.FormulaId collate chinese_prc_ci_as and his.Descript=brTr.PMName collate chinese_prc_ci_as and his.Phase=brTr.PhaseName collate chinese_prc_ci_as and brTr.PMDisc=rPM.CName collate chinese_prc_ci_as
+		 where his.BatchID=wo.FormulaId collate chinese_prc_ci_as and his.Descript=brTr.PMName collate chinese_prc_ci_as and his.Phase=brTr.PhaseName collate chinese_prc_ci_as
+		  and brTr.PMDisc=case when charindex('_',rPM.CName)>0 then substring(rPM.CName,0,charindex('_',rPM.CName)) else rPM.CName end collate chinese_prc_ci_as
 		 and SUBSTRING(reverse(his.Recipe),charindex('-',reverse(his.Recipe))+1,1)=substring(rPM.PMName,len(rPM.PMName),1) collate chinese_prc_ci_as and wo.WorkOrderID=rPM.WorkOrderID
 		<foreach collection="workOrderIDList" item="workOrderID" open=" and cast(wo.WorkOrderID as char) in (" separator="," close=")">
 		#{workOrderID}
