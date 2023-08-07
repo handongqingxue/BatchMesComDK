@@ -4,14 +4,25 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.batchMesComDK.dao.BHBatchHisMapper">
 	<select id="getMaterialListByWOIDList" resultType="com.batchMesComDK.entity.BHBatchHis">
-		select rPM.CName,brTr.PhaseName,wo.WorkOrderID,rPM.PMCode,his.* from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo,BatchRecordTr brTr,RecipePM rPM
+		<!-- 
+		 select rPM.CName,brTr.PhaseName,wo.WorkOrderID,rPM.PMCode,his.* from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo,BatchRecordTr brTr,RecipePM rPM
 		 where his.BatchID=wo.FormulaId collate chinese_prc_ci_as and his.Descript=brTr.PMName collate chinese_prc_ci_as and his.Phase=brTr.PhaseName collate chinese_prc_ci_as
 		  and brTr.PMDisc=case when charindex('_',rPM.CName)>0 then substring(rPM.CName,0,charindex('_',rPM.CName)) else rPM.CName end collate chinese_prc_ci_as
 		 and SUBSTRING(reverse(his.Recipe),charindex('-',reverse(his.Recipe))+1,1)=substring(rPM.PMName,len(rPM.PMName),1) collate chinese_prc_ci_as and wo.WorkOrderID=rPM.WorkOrderID
 		<foreach collection="workOrderIDList" item="workOrderID" open=" and cast(wo.WorkOrderID as char) in (" separator="," close=")">
 		#{workOrderID}
 		</foreach>
-		 and his.Descript='ADDED_AMOUNT' and his.Event='report'
+		 and his.Descript='ADDED_AMOUNT' and his.Event='report' 
+		 -->
+		 <!-- https://blog.csdn.net/weixin_43111569/article/details/127268695 -->
+		 select rPM.CName,rPM.PMCode,t.* from(select brTr.PhaseName,brTr.PMDisc,wo.WorkOrderID,dense_rank() OVER (partition by SUBSTRING(his.Recipe,charindex('ADD_',his.Recipe) ,len(his.Recipe)) ORDER BY his.RecordNo) as AddIndex,his.* from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo,BatchRecordTr brTr
+		 where his.BatchID=wo.FormulaId collate chinese_prc_ci_as and his.Descript=brTr.PMName collate chinese_prc_ci_as and his.Phase=brTr.PhaseName collate chinese_prc_ci_as
+		 <foreach collection="workOrderIDList" item="workOrderID" open=" and cast(wo.WorkOrderID as char) in (" separator="," close=")">
+		 #{workOrderID}
+		 </foreach>
+		 and his.Descript='ADDED_AMOUNT' and his.Event='report') t,RecipePM rPM where 1=1
+		  and t.PMDisc=case when charindex('_',rPM.CName)>0 then substring(rPM.CName,0,charindex('_',rPM.CName)) else rPM.CName end collate chinese_prc_ci_as
+		 and t.AddIndex=substring(rPM.PMName,len(rPM.PMName),1) collate chinese_prc_ci_as and t.WorkOrderID=rPM.WorkOrderID
 	</select>
 	<select id="getMaterialCompleteListByWOIDList" resultType="com.batchMesComDK.entity.BHBatchHis">
 		select wo.WorkOrderID,his.* from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo,BatchRecordTr brTr 
