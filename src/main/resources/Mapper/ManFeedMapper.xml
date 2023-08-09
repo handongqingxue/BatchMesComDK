@@ -212,8 +212,60 @@
 		 </if>
 		  and MarkBit=${@com.batchMesComDK.entity.ManFeed@WJS}
 	</update>
+	<update id="editByList">
+		update ManFeed set 
+		<trim suffixOverrides=",">
+			suttle=case
+			<foreach collection="mfList" item="mf">
+				when MaterialCode=#{mf.materialCode} then 
+				<choose>
+					<when test="mf.suttle!=null">
+						#{mf.suttle}
+					</when>
+					<otherwise>
+						''
+					</otherwise>
+				</choose>
+			</foreach>
+		 	end,
+		 	unit=case
+			<foreach collection="mfList" item="mf">
+				when MaterialCode=#{mf.materialCode} then 
+				<choose>
+					<when test="mf.unit!=null">
+						#{mf.unit}
+					</when>
+					<otherwise>
+						''
+					</otherwise>
+				</choose>
+			</foreach>
+		 	end,
+		 	feedTime=case
+			<foreach collection="mfList" item="mf">
+				when MaterialCode=#{mf.materialCode} then 
+				<choose>
+					<when test="mf.feedTime!=null">
+						#{mf.feedTime}
+					</when>
+					<otherwise>
+						''
+					</otherwise>
+				</choose>
+			</foreach>
+		 	end
+		 </trim>
+		 where WorkOrderID=#{mfList[0].workOrderID} and FeedPort=#{mfList[0].feedPort}
+		 <if test="mfList[0].runStep!=null">
+			 and RunStep=#{mfList[0].runStep}
+		 </if>
+		 <if test="mfList[0].stepMes!=null">
+			 and StepMes=#{mfList[0].stepMes}
+		 </if>
+		  and MarkBit=${@com.batchMesComDK.entity.ManFeed@WJS}
+	</update>
 	<select id="getByWorkOrderIDFeedPort" resultType="com.batchMesComDK.entity.ManFeed">
-		select * from ManFeed where WorkOrderID=#{workOrderID} and FeedPort=#{feedPort} and MarkBit=0
+		select * from ManFeed where WorkOrderID=#{workOrderID} and FeedPort=#{feedPort} and MarkBit=${@com.batchMesComDK.entity.ManFeed@WJS}
 	</select>
 	<update id="updateMarkBitByParamsList">
 		update ManFeed set MarkBit=${@com.batchMesComDK.entity.ManFeed@YJS} where 1=1 and

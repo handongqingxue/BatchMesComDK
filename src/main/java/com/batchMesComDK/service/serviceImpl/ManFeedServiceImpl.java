@@ -79,10 +79,12 @@ public class ManFeedServiceImpl implements ManFeedService {
 	public int editByWorkOrderIDFeedPortList(List<ManFeed> mfList) {
 		// TODO Auto-generated method stub
 		int count=0;
+		/*
 		for (ManFeed mf : mfList) {
 			count+=manFeedDao.editByWorkOrderIDFeedPort(mf);
 		}
-		
+		*/
+		count=manFeedDao.editByList(mfList);
 		manFeedDao.updateMarkBitByParamsList(mfList);
 		
 		return count;

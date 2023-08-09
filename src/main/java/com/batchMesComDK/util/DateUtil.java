@@ -15,6 +15,9 @@ public class DateUtil {
 	public static final int MINUTES=2;
 	public static final int DAYS=3;
 	
+	/**
+	 * java处理StepMes为RunStep到期时间
+	 */
 	public static final String STEP_MES_EXP_DATE="2023-09-09 00:00:00.0";
 
 	public static int getTimeBetween(String time1, String time2, int flag) {
@@ -44,6 +47,11 @@ public class DateUtil {
         return (int)between;
 	}
 	
+	/**
+	 * 验证StepMes字段是否过期(mes那边转换runstep字段需要时间，经理说给mes那边一个月时间，这期间暂时由java端转换，到期后java端就不给处理了，依然由mes那边处理)
+	 * @param date
+	 * @return
+	 */
 	public static boolean checkStepMesIfExp(String date) {
 		int resDays = getTimeBetween(date+".0",STEP_MES_EXP_DATE,DAYS);
 		System.out.println("resDays==="+resDays);

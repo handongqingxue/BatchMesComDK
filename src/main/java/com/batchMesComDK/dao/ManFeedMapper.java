@@ -14,7 +14,19 @@ public interface ManFeedMapper {
 
 	int deleteByList(@Param("idList") List<String> idList);
 
+	/**
+	 * 单个更新投料信息
+	 * @param mf
+	 * @return
+	 */
 	int editByWorkOrderIDFeedPort(ManFeed mf);
+
+	/**
+	 * 批量更新投料信息
+	 * @param mfList
+	 * @return
+	 */
+	int editByList(@Param("mfList") List<ManFeed> mfList);
 
 	ManFeed getByWorkOrderIDFeedPort(@Param("workOrderID") String workOrderID,@Param("feedPort") String feedPort);
 
