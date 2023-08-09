@@ -14,6 +14,8 @@ public class DateUtil {
 	public static final int SECONDS=1;
 	public static final int MINUTES=2;
 	public static final int DAYS=3;
+	
+	public static final String STEP_MES_EXP_DATE="2023-09-09 00:00:00.0";
 
 	public static int getTimeBetween(String time1, String time2, int flag) {
 		//https://blog.csdn.net/qq_41977655/article/details/125248861
@@ -40,5 +42,11 @@ public class DateUtil {
 			break;
 		}
         return (int)between;
+	}
+	
+	public static boolean checkStepMesIfExp(String date) {
+		int resDays = getTimeBetween(date+".0",STEP_MES_EXP_DATE,DAYS);
+		System.out.println("resDays==="+resDays);
+		return resDays<=0?true:false;
 	}
 }

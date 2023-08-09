@@ -1,5 +1,6 @@
 package com.batchMesComDK.controller;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,6 +27,7 @@ import com.batchMesComDK.service.*;
 import com.batchMesComDK.util.APIUtil;
 import com.batchMesComDK.util.ActiveXTest;
 import com.batchMesComDK.util.Constant;
+import com.batchMesComDK.util.DateUtil;
 import com.batchMesComDK.util.DesUtil;
 import com.batchMesComDK.util.JsonUtil;
 import com.batchMesComDK.util.PinyinUtil;
@@ -1731,6 +1733,10 @@ public class BatchController {
 					//c=recipePMService.updateDosageXByPMParam(workOrderID, recipePMList);
 					c=recipePMService.updateDosageLastByPMParam(workOrderID, recipePMList);
 					c=manFeedService.addFromList(manFeedList);
+					boolean stepMesIfExp = DateUtil.checkStepMesIfExp(sdf.format(new Date()));
+					if(!stepMesIfExp) {
+						c=manFeedService.updateStepMesByWOID(workOrderID);
+					}
 					c=workOrderService.updateStateByWorkOrderID(WorkOrder.WLQTWB,workOrderID);
 				}
 				
@@ -1835,7 +1841,8 @@ public class BatchController {
 		
 		RecipePM recipePM=null;
 		ManFeed manFeed=null;
-		
+
+		boolean stepMesIfExp = DateUtil.checkStepMesIfExp(sdf.format(new Date()));
 		for (int i = 0; i < materialListJASize; i++) {
 			net.sf.json.JSONObject materialListJO = (net.sf.json.JSONObject)materialListJA.get(i);
 			String materialCode = materialListJO.getString("materialCode");
@@ -1845,10 +1852,16 @@ public class BatchController {
 			//String upperDeviation = materialListJO.getString("upperDeviation");
 			//String lowerDeviation = materialListJO.getString("lowerDeviation");
 			String feedportCode = materialListJO.getString("feedportCode");
+			
 			Integer runStep = null;
+			Integer stepMes = null;
 			String step = materialListJO.getString("step");
-			if(!StringUtils.isEmpty(step))
-				runStep = Integer.valueOf(step);
+			if(!StringUtils.isEmpty(step)) {
+				if(stepMesIfExp)
+					runStep = Integer.valueOf(step);
+				else
+					stepMes = Integer.valueOf(step);
+			}
 			
 			if(StringUtils.isEmpty(feedportCode)) {//没有投料口说明是大料或工艺参数
 				recipePM=new RecipePM();
@@ -1869,6 +1882,7 @@ public class BatchController {
 				manFeed.setMarkBit(ManFeed.WJS+"");
 				manFeed.setMaterialSV(qty);
 				manFeed.setRunStep(runStep);
+				manFeed.setStepMes(stepMes);
 				
 				manFeedList.add(manFeed);
 			}
@@ -1891,6 +1905,8 @@ public class BatchController {
 		ManFeed mf=null;
 		net.sf.json.JSONArray fidMesJA = net.sf.json.JSONArray.fromObject(mesBody);
 		int fidMesJASize = fidMesJA.size();
+		
+		boolean stepMesIfExp = DateUtil.checkStepMesIfExp(sdf.format(new Date()));
 		for(int i=0;i<fidMesJASize;i++) {
 			net.sf.json.JSONObject fidMesJO = (net.sf.json.JSONObject)fidMesJA.get(i);
 			String workOrder = fidMesJO.getString("workOrder");
@@ -1901,9 +1917,14 @@ public class BatchController {
 			Float suttle = Float.valueOf(fidMesJO.getString("suttle"));
 			String unit = fidMesJO.getString("unit");
 			Integer runStep = null;
+			Integer stepMes = null;
 			String step = fidMesJO.getString("step");
-			if(!StringUtils.isEmpty(step))
-				runStep = Integer.valueOf(step);
+			if(!StringUtils.isEmpty(step)) {
+				if(stepMesIfExp)
+					runStep = Integer.valueOf(step);
+				else
+					stepMes = Integer.valueOf(step);
+			}
 			
 			mf=new ManFeed();
 			mf.setWorkOrderID(workOrder);
@@ -1914,6 +1935,7 @@ public class BatchController {
 			mf.setSuttle(suttle);
 			mf.setUnit(unit);
 			mf.setRunStep(runStep);
+			mf.setStepMes(stepMes);
 			
 			mfList.add(mf);
 		}

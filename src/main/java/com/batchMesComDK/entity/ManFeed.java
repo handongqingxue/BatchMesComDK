@@ -94,6 +94,12 @@ public class ManFeed {
 	public void setRunStep(Integer runStep) {
 		RunStep = runStep;
 	}
+	public Integer getStepMes() {
+		return StepMes;
+	}
+	public void setStepMes(Integer stepMes) {
+		StepMes = stepMes;
+	}
 	private String WorkOrderID;
 	private String MaterialCode;
   	private String MaterialName;
@@ -106,4 +112,5 @@ public class ManFeed {
   	private String Dev1;
   	private String Dev2;
   	private Integer RunStep;
+  	private Integer StepMes;
 }

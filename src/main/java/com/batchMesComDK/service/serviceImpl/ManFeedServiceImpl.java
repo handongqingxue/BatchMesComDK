@@ -94,4 +94,13 @@ public class ManFeedServiceImpl implements ManFeedService {
 		return manFeedDao.getByWorkOrderIDFeedPort(workOrderID,feedPort);
 	}
 
+	@Override
+	public int updateStepMesByWOID(String workOrderID) {
+		// TODO Auto-generated method stub
+		int count=0;
+		List<ManFeed> manFeedList=manFeedDao.getStepMesListByWOID(workOrderID);
+		count=manFeedDao.updateStepMesByList(manFeedList);
+		return count;
+	}
+
 }

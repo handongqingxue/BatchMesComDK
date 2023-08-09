@@ -25,4 +25,6 @@ public interface ManFeedService {
 	 */
 	int addFromList(List<ManFeed> mfList);
 
+	int updateStepMesByWOID(String workOrderID);
+
 }
