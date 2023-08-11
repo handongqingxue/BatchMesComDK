@@ -191,6 +191,7 @@ public class RecipePMServiceImpl implements RecipePMService {
 		// TODO Auto-generated method stub
 		int count=0;
 		List<RecipePM> recipePMList = recipePMDao.getListByWorkOrderID(workOrderID);
+		List<RecipePM> udRPMList=new ArrayList<>();
 		for (RecipePM recipePM : recipePMList) {
 			int id = recipePM.getID();
 			String pMCode = recipePM.getPMCode();
@@ -200,12 +201,14 @@ public class RecipePMServiceImpl implements RecipePMService {
 				String wodDosage = wodRecipePM.getDosage();
 				if(pMCode.equals(wodPMCode)) {
 					if(dosage!=wodDosage) {
-						count+=recipePMDao.updateDosageByID(id,wodDosage);
+						//count+=recipePMDao.updateDosageByID(id,wodDosage);
+						addUpdateDosageInList(id,wodDosage,udRPMList);
 						break;
 					}
 				}
 			}
 		}
+		count=recipePMDao.updateDosageByListWOID(udRPMList,workOrderID);
 		return count;
 	}
 
@@ -340,7 +343,6 @@ public class RecipePMServiceImpl implements RecipePMService {
 			}
 		}
 		count=recipePMDao.updateDosageByListWOID(udRPMList,workOrderID);
-		System.out.println("count==="+count);
 		return count;
 	}
 	

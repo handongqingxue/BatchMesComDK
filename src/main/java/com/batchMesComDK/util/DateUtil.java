@@ -19,6 +19,9 @@ public class DateUtil {
 	 * java处理StepMes为RunStep到期时间
 	 */
 	public static final String STEP_MES_EXP_DATE="2023-09-09 00:00:00.0";
+	/**
+	 * java拆分大料量到期时间
+	 */
 	public static final String DOSAGE_LAST_EXP_DATE="2023-09-09 00:00:00.0";
 
 	public static int getTimeBetween(String time1, String time2, int flag) {
@@ -59,6 +62,11 @@ public class DateUtil {
 		return resDays<=0?true:false;
 	}
 	
+	/**
+	 * 验证java拆分大料量是否过期
+	 * @param date
+	 * @return
+	 */
 	public static boolean checkDosageLastIfExp(String date) {
 		int resDays = getTimeBetween(date+".0",DOSAGE_LAST_EXP_DATE,DAYS);
 		System.out.println("resDays==="+resDays);

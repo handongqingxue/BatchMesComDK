@@ -22,6 +22,12 @@ public interface RecipePMMapper {
 
 	int updateDosageByID(@Param("id") Integer id, @Param("dosage") String dosage);
 
+	/**
+	 * 根据工单id批量更新配方参数的量
+	 * @param rPMList
+	 * @param workOrderID
+	 * @return
+	 */
 	int updateDosageByListWOID(@Param("rPMList") List<RecipePM> rPMList, @Param("workOrderID") String workOrderID);
 
 	int clearDosageByIdList(@Param("idList") List<Integer> idList);
