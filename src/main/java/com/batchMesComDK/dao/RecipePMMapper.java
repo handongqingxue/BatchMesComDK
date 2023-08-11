@@ -22,5 +22,7 @@ public interface RecipePMMapper {
 
 	int updateDosageByID(@Param("id") Integer id, @Param("dosage") String dosage);
 
+	int updateDosageByListWOID(@Param("rPMList") List<RecipePM> rPMList, @Param("workOrderID") String workOrderID);
+
 	int clearDosageByIdList(@Param("idList") List<Integer> idList);
 }

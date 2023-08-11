@@ -1731,8 +1731,15 @@ public class BatchController {
 					 * 为了测试这块先屏蔽掉
 					 */
 					//c=recipePMService.updateDosageXByPMParam(workOrderID, recipePMList);
-					c=recipePMService.updateDosageLastByPMParam(workOrderID, recipePMList);
+					boolean dosageLastIfExp = DateUtil.checkDosageLastIfExp(sdf.format(new Date()));
+					if(dosageLastIfExp) {
+						c=recipePMService.updateDosageByPMParam(workOrderID, recipePMList);
+					}
+					else
+						c=recipePMService.updateDosageLastByPMParam(workOrderID, recipePMList);
+					
 					c=manFeedService.addFromList(manFeedList);
+					
 					boolean stepMesIfExp = DateUtil.checkStepMesIfExp(sdf.format(new Date()));
 					if(!stepMesIfExp) {
 						c=manFeedService.updateStepMesByWOID(workOrderID);

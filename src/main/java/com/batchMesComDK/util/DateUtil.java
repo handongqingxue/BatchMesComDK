@@ -19,6 +19,7 @@ public class DateUtil {
 	 * java处理StepMes为RunStep到期时间
 	 */
 	public static final String STEP_MES_EXP_DATE="2023-09-09 00:00:00.0";
+	public static final String DOSAGE_LAST_EXP_DATE="2023-09-09 00:00:00.0";
 
 	public static int getTimeBetween(String time1, String time2, int flag) {
 		//https://blog.csdn.net/qq_41977655/article/details/125248861
@@ -54,6 +55,12 @@ public class DateUtil {
 	 */
 	public static boolean checkStepMesIfExp(String date) {
 		int resDays = getTimeBetween(date+".0",STEP_MES_EXP_DATE,DAYS);
+		System.out.println("resDays==="+resDays);
+		return resDays<=0?true:false;
+	}
+	
+	public static boolean checkDosageLastIfExp(String date) {
+		int resDays = getTimeBetween(date+".0",DOSAGE_LAST_EXP_DATE,DAYS);
 		System.out.println("resDays==="+resDays);
 		return resDays<=0?true:false;
 	}

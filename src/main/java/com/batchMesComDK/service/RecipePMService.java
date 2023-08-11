@@ -22,6 +22,8 @@ public interface RecipePMService {
 
 	List<RecipePM> getDLListByWorkOrderID(String workOrderID);
 
+	int updateDosageByPMParam(String workOrderID, List<RecipePM> recipePMList);
+
 	/**
 	 * 对比大料加入量，若有变化则把每种大料的总量更新在第一次加料量里，并在后面加x(这个方法暂时这么用，以后可能会用其他的逻辑)
 	 * @param workOrderID

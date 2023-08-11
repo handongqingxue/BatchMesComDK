@@ -187,6 +187,29 @@ public class RecipePMServiceImpl implements RecipePMService {
 	}
 
 	@Override
+	public int updateDosageByPMParam(String workOrderID, List<RecipePM> wodRecipePMList) {
+		// TODO Auto-generated method stub
+		int count=0;
+		List<RecipePM> recipePMList = recipePMDao.getListByWorkOrderID(workOrderID);
+		for (RecipePM recipePM : recipePMList) {
+			int id = recipePM.getID();
+			String pMCode = recipePM.getPMCode();
+			String dosage = recipePM.getDosage();
+			for (RecipePM wodRecipePM : wodRecipePMList) {
+				String wodPMCode = wodRecipePM.getPMCode();
+				String wodDosage = wodRecipePM.getDosage();
+				if(pMCode.equals(wodPMCode)) {
+					if(dosage!=wodDosage) {
+						count+=recipePMDao.updateDosageByID(id,wodDosage);
+						break;
+					}
+				}
+			}
+		}
+		return count;
+	}
+
+	@Override
 	public int updateDosageXByPMParam(String workOrderID, List<RecipePM> wodRecipePMList) {
 		// TODO Auto-generated method stub
 		int count=0;
@@ -246,23 +269,25 @@ public class RecipePMServiceImpl implements RecipePMService {
 		Map<String,Float> preDosageSumMap=initPreDosageSumMap(recPMCodeMap);
 		Map<String,Boolean> addFinishMap=initAddFinishMap(recPMCodeMap);
 		
+		List<RecipePM> udRPMList=new ArrayList<>();
 		for (RecipePM recipePM : recipePMList) {
 			int id = recipePM.getID();
 			String pMCode = recipePM.getPMCode();
 			String dosage = recipePM.getDosage();
-			String pMName = recipePM.getPMName();
+			//String pMName = recipePM.getPMName();
 			String pMType = recipePM.getPMType();
 			for (RecipePM wodRecipePM : wodRecipePMList) {
 				String wodPMCode = wodRecipePM.getPMCode();
 				String wodDosage = wodRecipePM.getDosage();
 				if(pMCode.equals(wodPMCode)) {
 					//if(pMName.startsWith("AM_")) {
-					if("1".equals(pMType)) {
+					if(String.valueOf(RecipePM.WLCS).equals(pMType)) {
 						HashMap<String, Object> recPMMap = recPMCodeMap.get(wodPMCode);
 						int rPMcount=Integer.valueOf(recPMMap.get("count").toString());//判断每种物料的加料次数
 						if(rPMcount==1) {//只加一次直接更新重量
 							if(dosage!=wodDosage) {
-								count+=recipePMDao.updateDosageByID(id,wodDosage);
+								//count+=recipePMDao.updateDosageByID(id,wodDosage);
+								addUpdateDosageInList(id,wodDosage,udRPMList);
 								break;
 							}
 						}
@@ -279,14 +304,16 @@ public class RecipePMServiceImpl implements RecipePMService {
 								if(recPMCurAddCount==rPMcount) {//若当前加料次数等于需要加的总次数，说明是最后一次加料，就把剩余需要加的重量更新在最后一次的重量里
 									float lastDosage = Float.valueOf(wodDosage)-preDosageSum;//下单里的总量-前面几次加的总量和就是最后一次需要更新的重量
 									System.out.println("lastDosage==="+lastDosage);
-									count+=recipePMDao.updateDosageByID(id,lastDosage+"");
+									//count+=recipePMDao.updateDosageByID(id,lastDosage+"");
+									addUpdateDosageInList(id,lastDosage+"",udRPMList);
 								}
 								else {//在未循环到最后一次加料的情况下，执行下面逻辑
 									float nxtDosageSum = preDosageSum+Float.valueOf(dosage);//之前的总量+这次要加的重量=这次的总量
 									if(Float.valueOf(wodDosage)>preDosageSum&&Float.valueOf(wodDosage)<=nxtDosageSum) {//若下单里的物料总量>之前的总量,<这次的总量,说明加到这次就加完了
 										if(Float.valueOf(wodDosage)<nxtDosageSum) {
 											float lastDosage = Float.valueOf(wodDosage)-preDosageSum;
-											count+=recipePMDao.updateDosageByID(id,lastDosage+"");
+											//count+=recipePMDao.updateDosageByID(id,lastDosage+"");
+											addUpdateDosageInList(id,lastDosage+"",udRPMList);
 										}
 										if(recPMCurAddCount<rPMcount) {//若当前的投料次数<加料总次数,说明这次不是最后一次加料。但料已加完,后面就不加了,后面的重量都为0
 											clearAfterDosage(recPMCurAddCount,rPMcount,pMCode,recPMAddCountIdMap);
@@ -304,13 +331,25 @@ public class RecipePMServiceImpl implements RecipePMService {
 						}
 					}
 					else {
-						if(dosage!=wodDosage)
-							count+=recipePMDao.updateDosageByID(id,wodDosage);
+						if(dosage!=wodDosage) {
+							//count+=recipePMDao.updateDosageByID(id,wodDosage);
+							addUpdateDosageInList(id,wodDosage,udRPMList);
+						}
 					}
 				}
 			}
 		}
+		count=recipePMDao.updateDosageByListWOID(udRPMList,workOrderID);
+		System.out.println("count==="+count);
 		return count;
+	}
+	
+	private void addUpdateDosageInList(int id, String dosage, List<RecipePM> recipePMList) {
+		RecipePM recipePM=new RecipePM();
+		recipePM.setID(id);
+		recipePM.setDosage(dosage);
+		
+		recipePMList.add(recipePM);
 	}
 
 	private void clearAfterDosage(int recPMCurAddCount, int rPMcount, String pMCode, Map<String, HashMap<String, Integer>> recPMAddCountIdMap) {
