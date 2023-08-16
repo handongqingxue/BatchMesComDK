@@ -22,6 +22,10 @@ public class BatchTest {
 	
 	public static final String SUCCESS_RESULT="SUCCESS:";
 	
+	public static final String CRLF_SPACE_SIGN="\\crlf";
+	
+	public static final String T_SPACE_SIGN="\\t";
+	
 	/**
 	 * Can't pass in null Dispatch object
 	 */

@@ -166,7 +166,7 @@ public class BatchController {
 						addManFeedFromRecipePM(workOrderID,productCode,productName);//工单创建时，从配方参数表里取数据，放入人工投料表
 						*/
 						
-						if(!checkBatchIfExistInList(formulaId)) {
+						if(!checkBatchIfExistInList(formulaId)) {//验证batch是否已创建，避免用户重复点击确认执行配方按钮后重复创建
 							String createBatchResultStr = createBatch(formulaId,workOrderID,identifier);
 						}
 						
@@ -892,6 +892,11 @@ public class BatchController {
 		return execute(commandSBStr);
 	}
 	
+	/**
+	 * 验证batch是否存在batchView列表
+	 * @param batchID
+	 * @return
+	 */
 	private boolean checkBatchIfExistInList(String batchID) {
 		boolean exist=false;
 		try {
@@ -902,9 +907,9 @@ public class BatchController {
 			boolean success = batchListResultJO.getBoolean("success");
 			if(status==1) {
 				String batchList = batchListResultJO.getString("data");
-				String[] batchArr = batchList.split("\\crlf");
+				String[] batchArr = batchList.split(BatchTest.CRLF_SPACE_SIGN);
 				for (String batch:batchArr) {
-					String[] batchValArr = batch.split("\\t");
+					String[] batchValArr = batch.split(BatchTest.T_SPACE_SIGN);
 					if(batchValArr[0].equals(batchID)) {
 						exist=true;
 						break;
