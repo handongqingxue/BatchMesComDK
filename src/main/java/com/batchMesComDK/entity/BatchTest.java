@@ -15,6 +15,7 @@ public class BatchTest {
 	public static final String COMPLETE="COMPLETE";
 	
 	public static final String BATCH_LIST_CT="BatchListCt";
+	public static final String BATCH_LIST="BatchList";
 	public static final String BL_BATCH_ID="BLBatchID_";
 	public static final String BL_CREATE_ID="BLCreateID_";
 	public static final String BL_STATE="BLState_";

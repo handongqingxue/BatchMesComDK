@@ -166,11 +166,16 @@ public class BatchController {
 						addManFeedFromRecipePM(workOrderID,productCode,productName);//工单创建时，从配方参数表里取数据，放入人工投料表
 						*/
 						
-						String createBatchResultStr = createBatch(formulaId,workOrderID,identifier);
+						if(!checkBatchIfExistInList(formulaId)) {
+							String createBatchResultStr = createBatch(formulaId,workOrderID,identifier);
+						}
+						
+						/*
 						JSONObject createBatchResultJO = new JSONObject(createBatchResultStr);
 						String createBatchData = createBatchResultJO.getString("data");
 						System.out.println("createBatchData==="+createBatchData);
-						//if(createBatchData.contains(BatchTest.SUCCESS_RESULT)) {
+						if(createBatchData.contains(BatchTest.SUCCESS_RESULT)) {
+						 */
 							workOrderService.updateStateById(WorkOrder.BCJWB, id);
 							
 							addWOPreStateInList(WorkOrder.BCJWB,workOrderID);
@@ -220,7 +225,7 @@ public class BatchController {
 										woMap.put("existRunWO", true);//工单运行了，就把存在运行中的状态值1，其他启动了的工单就无法运行了，直到状态置0才能运行下一个时间点的工单
 										
 										String qdBodyStr=getChaOrdStaBodyStr(wo.getWorkOrderID(),WorkOrder.PRODUCTION,wo.getUpdateUser());
-										changeOrderStatus(qdBodyStr);
+										//changeOrderStatus(qdBodyStr);
 										
 										addWOPreStateInList(WorkOrder.BYX,workOrderID);
 									}
@@ -271,7 +276,7 @@ public class BatchController {
 										workOrderService.updateStateById(WorkOrder.BYX, wo.getID());
 										
 										String qdBodyStr = getChaOrdStaBodyStr(wo.getWorkOrderID(),WorkOrder.PRODUCTION,wo.getUpdateUser());
-										changeOrderStatus(qdBodyStr);
+										//changeOrderStatus(qdBodyStr);
 										
 										addWOPreStateInList(WorkOrder.BYX,workOrderIDStr);
 									}
@@ -441,7 +446,7 @@ public class BatchController {
 										woMap.put("existRunWO", false);
 										
 										String wcBodyStr = getChaOrdStaBodyStr(workOrderID,WorkOrder.COMPLETE,updateUser);
-										changeOrderStatus(wcBodyStr);
+										//changeOrderStatus(wcBodyStr);
 										
 										getSendToMesBRData();//检索是否存在给mes端推送批记录的工单
 										
@@ -469,7 +474,7 @@ public class BatchController {
 										woMap.put("existRunWO", false);
 										
 										String jsBodyStr = getChaOrdStaBodyStr(workOrderID,WorkOrder.PRODUCTBREAK,updateUser);
-										changeOrderStatus(jsBodyStr);
+										//changeOrderStatus(jsBodyStr);
 										
 										addWOPreStateInList(WorkOrder.BYWZZ,workOrderID);
 									}
@@ -885,6 +890,34 @@ public class BatchController {
 		System.out.println("commandSBStr==="+commandSBStr);
 		
 		return execute(commandSBStr);
+	}
+	
+	private boolean checkBatchIfExistInList(String batchID) {
+		boolean exist=false;
+		try {
+			String batchListResultStr = getItem(BatchTest.BATCH_LIST);
+			System.out.println("batchListResultStr==="+batchListResultStr);
+			JSONObject batchListResultJO = new JSONObject(batchListResultStr);
+			int status = batchListResultJO.getInt("status");
+			boolean success = batchListResultJO.getBoolean("success");
+			if(status==1) {
+				String batchList = batchListResultJO.getString("data");
+				String[] batchArr = batchList.split("\\crlf");
+				for (String batch:batchArr) {
+					String[] batchValArr = batch.split("\\t");
+					if(batchValArr[0].equals(batchID)) {
+						exist=true;
+						break;
+					}
+				}
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally {
+			return exist;
+		}
 	}
 	
 	/**
@@ -2253,7 +2286,7 @@ public class BatchController {
 								bodyParamDevJO.put("remark", "");
 
 								System.out.println("bodyParamDevJOStr==="+bodyParamDevJO.toString());
-								APIUtil.doHttpMes("devicationRecord",bodyParamDevJO);
+								//APIUtil.doHttpMes("devicationRecord",bodyParamDevJO);
 							}
 							else {
 								JSONObject electtonBatchRecordJO=new JSONObject();
@@ -2284,7 +2317,7 @@ public class BatchController {
 					if(electtonBatchRecordBRJA.length()>0) {
 						bodyParamBRJO.put("electtonBatchRecord", electtonBatchRecordBRJA);
 						System.out.println("bodyParamBRJOStr==="+bodyParamBRJO.toString());
-						APIUtil.doHttpMes("electronicBatchRecord",bodyParamBRJO);
+						//APIUtil.doHttpMes("electronicBatchRecord",bodyParamBRJO);
 					}
 				}
 				//System.out.println("brListSize==="+brList.size());

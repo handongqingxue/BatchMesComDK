@@ -227,7 +227,7 @@
 					</otherwise>
 				</choose>
 			</foreach>
-		 	end,
+			else suttle end,
 		 	unit=case
 			<foreach collection="mfList" item="mf">
 				when MaterialCode=#{mf.materialCode} then 
@@ -240,7 +240,7 @@
 					</otherwise>
 				</choose>
 			</foreach>
-		 	end,
+		 	else unit end,
 		 	feedTime=case
 			<foreach collection="mfList" item="mf">
 				when MaterialCode=#{mf.materialCode} then 
@@ -256,12 +256,14 @@
 		 	end
 		 </trim>
 		 where WorkOrderID=#{mfList[0].workOrderID} and FeedPort=#{mfList[0].feedPort}
+		 <!-- 
 		 <if test="mfList[0].runStep!=null">
 			 and RunStep=#{mfList[0].runStep}
 		 </if>
 		 <if test="mfList[0].stepMes!=null">
 			 and StepMes=#{mfList[0].stepMes}
-		 </if>
+		 </if> 
+		 -->
 		  and MarkBit=${@com.batchMesComDK.entity.ManFeed@WJS}
 	</update>
 	<select id="getByWorkOrderIDFeedPort" resultType="com.batchMesComDK.entity.ManFeed">
