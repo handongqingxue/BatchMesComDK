@@ -225,7 +225,7 @@ public class BatchController {
 										woMap.put("existRunWO", true);//工单运行了，就把存在运行中的状态值1，其他启动了的工单就无法运行了，直到状态置0才能运行下一个时间点的工单
 										
 										String qdBodyStr=getChaOrdStaBodyStr(wo.getWorkOrderID(),WorkOrder.PRODUCTION,wo.getUpdateUser());
-										//changeOrderStatus(qdBodyStr);
+										changeOrderStatus(qdBodyStr);
 										
 										addWOPreStateInList(WorkOrder.BYX,workOrderID);
 									}
@@ -276,7 +276,7 @@ public class BatchController {
 										workOrderService.updateStateById(WorkOrder.BYX, wo.getID());
 										
 										String qdBodyStr = getChaOrdStaBodyStr(wo.getWorkOrderID(),WorkOrder.PRODUCTION,wo.getUpdateUser());
-										//changeOrderStatus(qdBodyStr);
+										changeOrderStatus(qdBodyStr);
 										
 										addWOPreStateInList(WorkOrder.BYX,workOrderIDStr);
 									}
@@ -388,6 +388,9 @@ public class BatchController {
 						woSGCJ.setProductName(productNameSGCJ);
 						woSGCJ.setTotalOutput("0");
 						woSGCJ.setFormulaId(formulaIdSGCJ);
+
+						if(StringUtils.isEmpty(unitIDSGCJ))
+							unitIDSGCJ = createUnitIDByIdentifier(recipeHeader.getIdentifier());
 						woSGCJ.setUnitID(unitIDSGCJ);
 						woSGCJ.setIdentifier(identifierSGCJ);
 						
@@ -446,7 +449,7 @@ public class BatchController {
 										woMap.put("existRunWO", false);
 										
 										String wcBodyStr = getChaOrdStaBodyStr(workOrderID,WorkOrder.COMPLETE,updateUser);
-										//changeOrderStatus(wcBodyStr);
+										changeOrderStatus(wcBodyStr);
 										
 										getSendToMesBRData();//检索是否存在给mes端推送批记录的工单
 										
@@ -474,7 +477,7 @@ public class BatchController {
 										woMap.put("existRunWO", false);
 										
 										String jsBodyStr = getChaOrdStaBodyStr(workOrderID,WorkOrder.PRODUCTBREAK,updateUser);
-										//changeOrderStatus(jsBodyStr);
+										changeOrderStatus(jsBodyStr);
 										
 										addWOPreStateInList(WorkOrder.BYWZZ,workOrderID);
 									}
@@ -1865,6 +1868,8 @@ public class BatchController {
 		wo.setFormulaIdMes(formulaIdMes);
 		
 		String unitID = recipeHeader.getUnitID();
+		if(StringUtils.isEmpty(unitID))
+			unitID = createUnitIDByIdentifier(recipeHeader.getIdentifier());
 		wo.setUnitID(unitID);
 		
 		return wo;
@@ -1986,6 +1991,24 @@ public class BatchController {
 		}
 		
 		return mfList;
+	}
+	
+	/**
+	 * 根据配方名创建UnitID
+	 * @param identifier
+	 * @return
+	 */
+	private String createUnitIDByIdentifier(String identifier) {
+		String unitID=null;
+		if(identifier.contains("51"))
+			unitID="09";
+		else if(identifier.contains("52"))
+			unitID="10";
+		else if(identifier.contains("61"))
+			unitID="11";
+		else if(identifier.contains("62"))
+			unitID="12";
+		return unitID;
 	}
 
 	/**
@@ -2291,7 +2314,7 @@ public class BatchController {
 								bodyParamDevJO.put("remark", "");
 
 								System.out.println("bodyParamDevJOStr==="+bodyParamDevJO.toString());
-								//APIUtil.doHttpMes("devicationRecord",bodyParamDevJO);
+								APIUtil.doHttpMes("devicationRecord",bodyParamDevJO);
 							}
 							else {
 								JSONObject electtonBatchRecordJO=new JSONObject();
@@ -2322,7 +2345,7 @@ public class BatchController {
 					if(electtonBatchRecordBRJA.length()>0) {
 						bodyParamBRJO.put("electtonBatchRecord", electtonBatchRecordBRJA);
 						System.out.println("bodyParamBRJOStr==="+bodyParamBRJO.toString());
-						//APIUtil.doHttpMes("electronicBatchRecord",bodyParamBRJO);
+						APIUtil.doHttpMes("electronicBatchRecord",bodyParamBRJO);
 					}
 				}
 				//System.out.println("brListSize==="+brList.size());
