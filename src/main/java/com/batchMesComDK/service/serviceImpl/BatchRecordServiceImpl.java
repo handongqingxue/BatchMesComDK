@@ -96,8 +96,9 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 				String pMCode = recipePM.getPMCode();
 				String cName = recipePM.getCName();
 				if(!StringUtils.isEmpty(cName)) {
-					if(brWorkOrderID.equals(rPMWorkOrderID)&&cName.equals(brPMCName)&&String.valueOf(BatchRecord.PCJL).equals(batchRecord.getRecordType())) {
-						batchRecordDao.updateDevPMCode(pMCode,cName,rPMWorkOrderID);
+					String cNamePre = cName.substring(0, cName.indexOf("_"));
+					if(brWorkOrderID.equals(rPMWorkOrderID)&&cNamePre.equals(brPMCName)&&String.valueOf(BatchRecord.PCJL).equals(batchRecord.getRecordType())) {
+						batchRecordDao.updateDevPMCode(pMCode,cNamePre,rPMWorkOrderID);
 						batchRecord.setPMCode(pMCode);
 						break;
 					}
@@ -119,7 +120,7 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 		}
 		return batchRecordList;
 	}
-
+	
 	@Override
 	public int addMaterialFromBHBatchHis(List<String> workOrderIDList) {
 		// TODO Auto-generated method stub

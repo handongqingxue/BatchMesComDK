@@ -2255,7 +2255,7 @@ public class BatchController {
 			}
 			*/
 			
-			//sendToMesWOIDList.add("ZI2308010202");
+			//sendToMesWOIDList.add("ZI2308240101");
 			
 			int count=0;
 			/*
