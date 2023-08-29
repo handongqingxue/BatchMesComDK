@@ -32,13 +32,22 @@
 		</foreach>
 		  and his.Descript='State Changed: ' and his.PValue='COMPLETE'
 	</select>
+	<select id="getTechListByWOIDList" resultType="com.batchMesComDK.entity.BHBatchHis">
+		select brTr.PhaseDisc,wo.WorkOrderID,his.BatchID,his.Recipe,Phase,brTr.PMDisc,his.Descript,his.PValue,his.LclTime from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo,BatchRecordTr brTr
+		 where his.BatchID=wo.FormulaId collate chinese_prc_ci_as and his.Descript=brTr.PMName collate chinese_prc_ci_as and his.Phase=brTr.PhaseName collate chinese_prc_ci_as and EU!=''
+		 <foreach collection="workOrderIDList" item="workOrderID" open=" and wo.WorkOrderID in (" separator="," close=")">
+		#{workOrderID}
+		</foreach>
+		 and his.Event='Recipe Value' and (his.Descript='TIME' or his.Descript='VD')
+		 group by brTr.PhaseDisc,wo.WorkOrderID,his.BatchID,his.Recipe,his.Phase,brTr.PMDisc,his.Descript,his.PValue,his.LclTime
+	</select>
 	<select id="getPhaseListByWOIDList" resultType="com.batchMesComDK.entity.BHBatchHis">
-		select brTr.PhaseDisc,wo.WorkOrderID,his.BatchID,his.Recipe,Phase,EU from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo,BatchRecordTr brTr
+		select brTr.PhaseDisc,wo.WorkOrderID,his.BatchID,his.Recipe,Phase from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo,BatchRecordTr brTr
 		 where his.BatchID=wo.FormulaId collate chinese_prc_ci_as and his.Phase=brTr.PhaseName collate chinese_prc_ci_as and EU!=''
 		<foreach collection="workOrderIDList" item="workOrderID" open=" and cast(wo.WorkOrderID as char) in (" separator="," close=")">
 		#{workOrderID}
 		</foreach>
-		 group by brTr.PhaseDisc,wo.WorkOrderID,his.BatchID,his.Recipe,his.Phase,his.EU
+		 group by brTr.PhaseDisc,wo.WorkOrderID,his.BatchID,his.Recipe,his.Phase
 	</select>
 	<select id="getPhaseLclTimeListByWOIDList" resultType="com.batchMesComDK.entity.BHBatchHis">
 		select * from (

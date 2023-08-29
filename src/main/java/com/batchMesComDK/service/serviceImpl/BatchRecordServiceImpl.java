@@ -163,6 +163,31 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 			//count+=batchRecordDao.add(batchRecord);
 		}
 		
+		List<BHBatchHis> techList = bHBatchHisDao.getTechListByWOIDList(workOrderIDList);
+		for (BHBatchHis bhBatchHis : techList) {
+			batchRecord=new BatchRecord();
+			
+			String workOrderID = bhBatchHis.getWorkOrderID();
+			String lclTime = bhBatchHis.getLclTime();
+			String descript = bhBatchHis.getDescript();
+			String batchID = bhBatchHis.getBatchID();
+			String pValue = bhBatchHis.getPValue();
+			String phaseDisc = bhBatchHis.getPhaseDisc();
+			String pMDisc = bhBatchHis.getPMDisc();
+
+			batchRecord.setWorkOrderID(workOrderID);
+			batchRecord.setPMName(descript);//Descript BatchRecordTr
+			batchRecord.setLotNo(batchID);//pro开头的批次号
+			batchRecord.setRecordEvent("原料进料记录");
+			batchRecord.setRecordContent(pValue);//phase batch是时间跨度
+			batchRecord.setRecordStartTime(lclTime);
+			batchRecord.setRecordEndTime(lclTime);
+			batchRecord.setRecordType("2");
+			batchRecord.setPMCName(phaseDisc+pMDisc);
+			
+			batchRecordList.add(batchRecord);
+		}
+		
 		System.out.println("batchRecordList.size()==="+batchRecordList.size());
 		if(batchRecordList.size()>0)
 			count=batchRecordDao.addFromList(batchRecordList);

@@ -12,6 +12,8 @@ public interface BHBatchHisMapper {
 
 	List<BHBatchHis> getMaterialCompleteListByWOIDList(@Param("workOrderIDList") List<String> workOrderIDList);
 
+	List<BHBatchHis> getTechListByWOIDList(@Param("workOrderIDList") List<String> workOrderIDList);
+
 	List<BHBatchHis> getPhaseListByWOIDList(@Param("workOrderIDList") List<String> workOrderIDList);
 
 	List<BHBatchHis> getPhaseLclTimeListByWOIDList(@Param("workOrderIDList") List<String> workOrderIDList);
