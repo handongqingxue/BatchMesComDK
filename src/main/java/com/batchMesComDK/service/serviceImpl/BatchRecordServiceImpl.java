@@ -96,7 +96,7 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 				String pMCode = recipePM.getPMCode();
 				String cName = recipePM.getCName();
 				if(!StringUtils.isEmpty(cName)) {
-					String cNamePre = cName.substring(0, cName.indexOf("_"));
+					String cNamePre = cName.substring(0, cName.indexOf("_"));//wincc端生成的物料参数偏差记录不管是第几次后面都不带_,要截取物料参数名_之前的名称部分才能在批记录表里把物料编码更新进去
 					if(brWorkOrderID.equals(rPMWorkOrderID)&&cNamePre.equals(brPMCName)&&String.valueOf(BatchRecord.PCJL).equals(batchRecord.getRecordType())) {
 						batchRecordDao.updateDevPMCode(pMCode,cNamePre,rPMWorkOrderID);
 						batchRecord.setPMCode(pMCode);

@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -94,14 +96,18 @@ public class BatchController {
 	 * 初始化主机id工单map
 	 */
 	public void initUnitIDWOMap() {
-		Map<String, Object> wOMap=new HashMap<String, Object>();
-		wOMap.put("existRunWO", false);
-		wOMap.put("existInBatchList", false);
+		Map<String, Object> wOMap=null;
 		
 		String[] unitIDArr=new String[] {"09","10","11","12"};
 		
 		unitIDWOMap=new HashMap<String,Map<String, Object>>();
+		
 		for (String unitID : unitIDArr) {
+			wOMap=new HashMap<String, Object>();//必须为每台主机建立一个对应的标志对象，以防主机之间串窝，导致一台主机上有工单运行，其他主机工单启动后却无法运行
+			
+			wOMap.put("existRunWO", false);
+			wOMap.put("existInBatchList", false);
+			
 			unitIDWOMap.put(unitID, wOMap);
 		}
 	}
@@ -118,6 +124,7 @@ public class BatchController {
 		try {
 			if(unitIDWOMap==null)//一开始判断主机id工单map是否存在，不存在就初始化
 				initUnitIDWOMap();
+			//printUnitIDWOMap();
 			
 			List<WorkOrder> woList=workOrderService.getKeepWatchList();
 			System.out.println("woListSize==="+woList.size());
@@ -196,6 +203,7 @@ public class BatchController {
 						System.out.println("existRunWO===="+existRunWO);
 						if(!existRunWO) {//没有正在运行的工单，则运行下一个时间点的工单
 							//启动执行配方
+							boolean existQDInBatchList=false;//在batchview里是否存在启动状态的工单
 							for (int j = 1; j <= batchCount; j++) {
 								//String batchIDVal = BLKey_x("BatchID",j);
 								String batchIDResultJOStr = getItem(BatchTest.BL_BATCH_ID+j);
@@ -204,6 +212,7 @@ public class BatchController {
 								System.out.println("batchIDVal==="+batchIDVal);
 								//batchIDVal = batchIDVal.substring(0, batchIDVal.indexOf(Constant.END_SUCCESS));
 								if(formulaId.equals(batchIDVal)) {
+									existQDInBatchList=true;//存在启动状态的工单，说明该工单待运行，状态同步正确
 									//String createIDVal = BLKey_x("CreateID",j);
 									String createIDResultJOStr = getItem(BatchTest.BL_CREATE_ID+j);
 									JSONObject createIDResultJO = new JSONObject(createIDResultJOStr);
@@ -238,6 +247,10 @@ public class BatchController {
 									}
 								}
 							}
+							
+							if(!existQDInBatchList) {//在batchview里不存在启动状态的工单，说明该工单对应的批次可能在batchview里已被删除，就还原状态到2，下一轮重新创建批次
+								workOrderService.updateStateById(WorkOrder.CSQRWB, id);
+							}
 						}
 						break;
 					case WorkOrder.BYX:
@@ -246,7 +259,7 @@ public class BatchController {
 							allowRestoreRun=true;
 						}
 						
-						if(allowRestoreRun) {
+						if(allowRestoreRun) {//重启运行
 							//启动执行配方
 							for (int j = 1; j <= batchCount; j++) {
 								String workOrderIDStr = wo.getWorkOrderID().toString();
@@ -460,6 +473,11 @@ public class BatchController {
 											workOrderService.updateStateByFormulaId(WorkOrder.BYX, formulaId);
 										}
 										
+										boolean existRunWO=Boolean.valueOf(woMap.get("existRunWO").toString());//是否正在运行状态
+										if(!existRunWO) {//若不是运行状态，可能是java中间件意外关闭导致本机运行中标志还原了，需要重新复位为运行中，以防本机上其他启动的订单运行
+											woMap.put("existRunWO", true);
+										}
+										
 										addWOPreStateInList(WorkOrder.BYX,workOrderID);
 									}
 									else if(BatchTest.HELD.equals(stateVal)) {
@@ -494,6 +512,8 @@ public class BatchController {
 					}
 				}
 				
+				//printUnitIDWOMap();
+				
 				jsonMap.put(APIUtil.SUCCESS, success);
 				jsonMap.put(APIUtil.MESSAGE, APIUtil.MESSAGE_OK);
 			}
@@ -511,6 +531,18 @@ public class BatchController {
 			return jsonMap;
 		}
 		
+	}
+	
+	/**
+	 * 打印出不同主机上是否存在运行中的工单标志
+	 */
+	private void printUnitIDWOMap() {
+		Set<String> keySet = unitIDWOMap.keySet();
+		for (String unitID : keySet) {
+			Map<String, Object> woMap = unitIDWOMap.get(unitID);
+			Boolean existRunWO = Boolean.valueOf(woMap.get("existRunWO").toString());
+			System.out.println("unitID==="+unitID+",existRunWO==="+existRunWO);
+		}
 	}
 
 	/**
@@ -2255,7 +2287,7 @@ public class BatchController {
 			}
 			*/
 			
-			//sendToMesWOIDList.add("ZI2308240101");
+			//sendToMesWOIDList.add("20230829093918");
 			
 			int count=0;
 			/*
