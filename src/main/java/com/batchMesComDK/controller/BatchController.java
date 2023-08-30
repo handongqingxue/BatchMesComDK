@@ -299,6 +299,7 @@ public class BatchController {
 						break;
 					case WorkOrder.BQX:
 						//调用batch command接口
+						boolean existQXInBatchList=false;//在batchview里是否存在取消状态的工单
 						for (int j = 1; j <= batchCount; j++) {
 							String formulaIdStr = wo.getFormulaId().toString();
 							//String batchIDVal = BLKey_x("BatchID",j);
@@ -307,6 +308,7 @@ public class BatchController {
 							String batchIDVal = batchIDResultJO.getString("data");
 							//batchIDVal = batchIDVal.substring(0, batchIDVal.indexOf(Constant.END_SUCCESS));
 							if(formulaIdStr.equals(batchIDVal)) {
+								existQXInBatchList=true;//存在取消状态的工单，说明该工单待终止，状态同步正确
 								//String createIDVal = BLKey_x("CreateID",j);
 								String createIDResultJOStr = getItem(BatchTest.BL_CREATE_ID+j);
 								JSONObject createIDResultJO = new JSONObject(createIDResultJOStr);
@@ -342,6 +344,10 @@ public class BatchController {
 								}
 								break;
 							}
+						}
+						
+						if(!existQXInBatchList) {//在batchview里不存在取消状态的工单，说明该工单对应的批次可能在batchview里已被删除，就把状态自动到8
+							workOrderService.updateStateById(WorkOrder.BYWZZ, id);
 						}
 						break;
 					case WorkOrder.BZT:
@@ -401,6 +407,7 @@ public class BatchController {
 						woSGCJ.setProductName(productNameSGCJ);
 						woSGCJ.setTotalOutput("0");
 						woSGCJ.setFormulaId(formulaIdSGCJ);
+						woSGCJ.setCreateTime(sdf.format(new Date()));
 
 						if(StringUtils.isEmpty(unitIDSGCJ))
 							unitIDSGCJ = createUnitIDByIdentifier(recipeHeader.getIdentifier());
@@ -507,12 +514,12 @@ public class BatchController {
 						boolean existInBatchList=Boolean.valueOf(woMap.get("existInBatchList").toString());
 						System.out.println("existInBatchList==="+existInBatchList);
 						if(!existInBatchList) {//若工单不存在与batch列表里，说明batch view那边此工单已删除，就把该主机的存在运行中工单状态置0，便于下一个时间点的工单顺利运行
-							woMap.put("existRunWO", false);
+							woMap.put("existRunWO", false);//运行中的工单的存在运行中状态复位都是在这里执行
 						}
 					}
 				}
 				
-				//printUnitIDWOMap();
+				printUnitIDWOMap();
 				
 				jsonMap.put(APIUtil.SUCCESS, success);
 				jsonMap.put(APIUtil.MESSAGE, APIUtil.MESSAGE_OK);
@@ -2287,7 +2294,7 @@ public class BatchController {
 			}
 			*/
 			
-			//sendToMesWOIDList.add("20230829135548");
+			//sendToMesWOIDList.add("20230830101112");
 			
 			int count=0;
 			/*

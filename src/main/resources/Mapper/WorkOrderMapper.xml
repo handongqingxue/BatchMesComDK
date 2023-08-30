@@ -157,6 +157,9 @@
 			<if test="state!=null">
 				state=#{state},
 			</if>
+			<if test="createTime!=null">
+				createTime=#{createTime},
+			</if>
 			<if test="unitID!=null">
 				unitID=#{unitID},
 			</if>
