@@ -23,7 +23,7 @@ public interface BHBatchHisMapper {
 	List<BHBatchHis> getMaterialCompleteListByWOIDList(@Param("workOrderIDList") List<String> workOrderIDList);
 
 	/**
-	 * 获得工艺参数记录(归属于原料类型记录)
+	 * 获得工艺参数记录
 	 * @param workOrderIDList
 	 * @return
 	 */

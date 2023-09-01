@@ -11,9 +11,17 @@ public class BatchRecord {
 	 */
 	public static final int GCCSJL=1;
 	/**
+	 * 过程(工艺)参数记录
+	 */
+	public static final String GCCSJL_TEXT="工艺参数记录";
+	/**
 	 * 物料参数记录(原料进料记录)
 	 */
 	public static final int WLCSJL=2;
+	/**
+	 * 物料参数记录(原料进料记录)
+	 */
+	public static final String WLCSJL_TEXT="原料进料记录";
 	/**
 	 * 偏差记录
 	 */
@@ -23,9 +31,17 @@ public class BatchRecord {
 	 */
 	public static final int PGCJL=8;
 	/**
+	 * PHASE过程记录
+	 */
+	public static final String PGCJL_TEXT="PHASE过程记录";
+	/**
 	 * 批次过程记录
 	 */
 	public static final int PCGCJL=9;
+	/**
+	 * 批次过程记录
+	 */
+	public static final String PCGCJL_TEXT="批次过程记录";
 	
 	private Integer ID;
 	public Integer getID() {

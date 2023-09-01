@@ -12,6 +12,8 @@ public interface BatchRecordService {
 
 	List<BatchRecord> getSendToMesData(List<String> workOrderList);
 
+	int addTechFromBHBatchHis(List<String> sendToMesWOIDList);
+
 	int addMaterialFromBHBatchHis(List<String> workOrderIDList);
 
 	int addPhaseFromBHBatchHis(List<String> workOrderIDList);

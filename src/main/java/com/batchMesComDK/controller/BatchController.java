@@ -2294,12 +2294,13 @@ public class BatchController {
 			}
 			*/
 			
-			//sendToMesWOIDList.add("20230830101112");
+			//sendToMesWOIDList.add("20230829135548");
 			
 			int count=0;
 			/*
 			System.out.println("count===="+count);
 			*/
+			count=batchRecordService.addTechFromBHBatchHis(sendToMesWOIDList);
 			count=batchRecordService.addMaterialFromBHBatchHis(sendToMesWOIDList);
 			count=batchRecordService.addPhaseFromBHBatchHis(sendToMesWOIDList);
 			//count=batchRecordService.addBatchFromBHBatch(sendToMesWOIDList);

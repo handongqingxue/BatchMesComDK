@@ -120,11 +120,47 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 		}
 		return batchRecordList;
 	}
+
+	@Override
+	public int addTechFromBHBatchHis(List<String> workOrderIDList) {
+		// TODO Auto-generated method stub
+		int count=0;
+		List<BatchRecord> batchRecordList=new ArrayList<>();
+		BatchRecord batchRecord=null;
+		List<BHBatchHis> techList = bHBatchHisDao.getTechListByWOIDList(workOrderIDList);
+		for (BHBatchHis bhBatchHis : techList) {
+			batchRecord=new BatchRecord();
+			
+			String workOrderID = bhBatchHis.getWorkOrderID();
+			String lclTime = bhBatchHis.getLclTime();
+			String descript = bhBatchHis.getDescript();
+			String batchID = bhBatchHis.getBatchID();
+			String pValue = bhBatchHis.getPValue();
+			String phaseDisc = bhBatchHis.getPhaseDisc();
+			String pMDisc = bhBatchHis.getPMDisc();
+
+			batchRecord.setWorkOrderID(workOrderID);
+			batchRecord.setPMName(descript);//Descript BatchRecordTr
+			batchRecord.setLotNo(batchID);//pro开头的批次号
+			batchRecord.setRecordEvent(BatchRecord.GCCSJL_TEXT);
+			batchRecord.setRecordContent(pValue);//phase batch是时间跨度
+			batchRecord.setRecordStartTime(lclTime);
+			batchRecord.setRecordEndTime(lclTime);
+			batchRecord.setRecordType(BatchRecord.GCCSJL+"");
+			batchRecord.setPMCName(phaseDisc+pMDisc);
+			
+			batchRecordList.add(batchRecord);
+		}
+		
+		if(batchRecordList.size()>0)
+			count=batchRecordDao.addFromList(batchRecordList);
+		return count;
+	}
 	
 	@Override
 	public int addMaterialFromBHBatchHis(List<String> workOrderIDList) {
 		// TODO Auto-generated method stub
-		int count=0;//his 140
+		int count=0;
 		List<BatchRecord> batchRecordList=new ArrayList<>();
 		BatchRecord batchRecord=null;
 		List<BHBatchHis> materialList = bHBatchHisDao.getMaterialListByWOIDList(workOrderIDList);
@@ -149,43 +185,18 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 			batchRecord.setPMCode(pMCode);
 			batchRecord.setPMName(descript);//Descript BatchRecordTr
 			batchRecord.setLotNo(batchID);//pro开头的批次号
-			batchRecord.setRecordEvent("原料进料记录");
+			batchRecord.setRecordEvent(BatchRecord.WLCSJL_TEXT);
 			batchRecord.setRecordContent(pValue);//phase batch是时间跨度
 			batchRecord.setUnit(eu);
 			batchRecord.setRecordStartTime(recordStartTime);
 			batchRecord.setRecordEndTime(recordEndTime);
-			batchRecord.setRecordType("2");
+			batchRecord.setRecordType(BatchRecord.WLCSJL+"");
 			batchRecord.setPMCName(cName);
 			batchRecord.setFeedPort(feedPort);
 			
 			batchRecordList.add(batchRecord);
 			
 			//count+=batchRecordDao.add(batchRecord);
-		}
-		
-		List<BHBatchHis> techList = bHBatchHisDao.getTechListByWOIDList(workOrderIDList);
-		for (BHBatchHis bhBatchHis : techList) {
-			batchRecord=new BatchRecord();
-			
-			String workOrderID = bhBatchHis.getWorkOrderID();
-			String lclTime = bhBatchHis.getLclTime();
-			String descript = bhBatchHis.getDescript();
-			String batchID = bhBatchHis.getBatchID();
-			String pValue = bhBatchHis.getPValue();
-			String phaseDisc = bhBatchHis.getPhaseDisc();
-			String pMDisc = bhBatchHis.getPMDisc();
-
-			batchRecord.setWorkOrderID(workOrderID);
-			batchRecord.setPMName(descript);//Descript BatchRecordTr
-			batchRecord.setLotNo(batchID);//pro开头的批次号
-			batchRecord.setRecordEvent("原料进料记录");
-			batchRecord.setRecordContent(pValue);//phase batch是时间跨度
-			batchRecord.setRecordStartTime(lclTime);
-			batchRecord.setRecordEndTime(lclTime);
-			batchRecord.setRecordType("2");
-			batchRecord.setPMCName(phaseDisc+pMDisc);
-			
-			batchRecordList.add(batchRecord);
 		}
 		
 		System.out.println("batchRecordList.size()==="+batchRecordList.size());
@@ -266,10 +277,10 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 
 			batchRecord.setWorkOrderID(workOrderID);
 			batchRecord.setLotNo(batchID);
-			batchRecord.setRecordEvent("PHASE过程记录");
+			batchRecord.setRecordEvent(BatchRecord.PGCJL_TEXT);
 			batchRecord.setRecordContent(recordContent);
 			batchRecord.setUnit(eu);
-			batchRecord.setRecordType("8");
+			batchRecord.setRecordType(BatchRecord.PGCJL+"");
 			if(phaseID.startsWith("TB"))
 				batchRecord.setPhaseDisc(phaseDisc+recipe.substring(recipe.lastIndexOf(":")+1, recipe.lastIndexOf("-")));
 			else
@@ -314,9 +325,9 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 
 			batchRecord.setWorkOrderID(workOrderID);
 			batchRecord.setLotNo(batchid);
-			batchRecord.setRecordEvent("批次过程记录");
+			batchRecord.setRecordEvent(BatchRecord.PCGCJL_TEXT);
 			batchRecord.setRecordContent(recordContent);
-			batchRecord.setRecordType("9");
+			batchRecord.setRecordType(BatchRecord.PCGCJL+"");
 			batchRecord.setRecordStartTime(starttimebatchlist);
 			batchRecord.setRecordEndTime(endtimebatchlist);
 			
