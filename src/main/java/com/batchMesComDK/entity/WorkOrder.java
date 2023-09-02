@@ -99,6 +99,10 @@ public class WorkOrder {
 	 */
 	public static final String COMPLETE="COMPLETE";
 	/**
+	 * 制膏完成
+	 */
+	public static final String CREAMFINISH="CREAMFINISH";
+	/**
 	 * 生产终止
 	 */
 	public static final String PRODUCTBREAK="PRODUCTBREAK";

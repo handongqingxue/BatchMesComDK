@@ -482,7 +482,7 @@ public class BatchController {
 										
 										//woMap.put("existRunWO", false);
 										
-										String wcBodyStr = getChaOrdStaBodyStr(workOrderID,WorkOrder.COMPLETE,updateUser);
+										String wcBodyStr = getChaOrdStaBodyStr(workOrderID,WorkOrder.CREAMFINISH,updateUser);
 										changeOrderStatus(wcBodyStr);
 										
 										//getSendToMesBRData();//检索是否存在给mes端推送批记录的工单
@@ -1604,6 +1604,50 @@ public class BatchController {
 			return jsonMap;
 		}
 	}
+
+	@RequestMapping(value="/addTestLog")
+	@ResponseBody
+	public Map<String, Object> addTestLog(TestLog tl) {
+
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
+		
+		try {
+			int count=testLogService.add(tl);
+			if(count>0) {
+				jsonMap.put("message", "ok");
+				jsonMap.put("info", "添加日志记录成功");
+			}
+			else {
+				jsonMap.put("message", "no");
+				jsonMap.put("info", "添加日志记录失败");
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally {
+			return jsonMap;
+		}
+	}
+	
+	/**
+	 * 根据参数创建日志记录对象
+	 * @param action
+	 * @param success
+	 * @param state
+	 * @param msg
+	 * @return
+	 */
+	public TestLog createTestLogByParams(String action,String success,String state,String msg){
+		
+		TestLog testLog=new TestLog();
+		testLog.setAction(action);
+		testLog.setSuccess(success);
+		testLog.setState(state);
+		testLog.setMsg(msg);
+		
+		return testLog;
+	}
 	
 	/**
 	 * @param item
@@ -2247,16 +2291,30 @@ public class BatchController {
 		*/
 		int c=manFeedService.editByWorkOrderIDFeedPortList(mfList);
 		//int c=manFeedService.addTestFromList(mfList);
+		
+		boolean success=false;
+		String state=null;
 		if(c>0) {
-			jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_TRUE);
-			jsonMap.put(APIUtil.STATE, APIUtil.STATE_001);
+			success=APIUtil.SUCCESS_TRUE;
+			state=APIUtil.STATE_001;
+			
+			jsonMap.put(APIUtil.SUCCESS, success);
+			jsonMap.put(APIUtil.STATE, state);
 			jsonMap.put(APIUtil.MSG, APIUtil.MSG_NORMAL);
+			
 		}
 		else {
-			jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_FALSE);
-			jsonMap.put(APIUtil.STATE, APIUtil.STATE_002);
+			success=APIUtil.SUCCESS_FALSE;
+			state=APIUtil.STATE_002;
+			
+			jsonMap.put(APIUtil.SUCCESS, success);
+			jsonMap.put(APIUtil.STATE, state);
 			jsonMap.put(APIUtil.MSG, APIUtil.MSG_DATA_FORMAT_ERROR);
+			
 		}
+
+		testLogService.add(createTestLogByParams("feedIssusDown",success+"",state,bodyEnc+"---"+c));
+		
 		return jsonMap;
 	}
 	
