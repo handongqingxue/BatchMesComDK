@@ -285,7 +285,13 @@
 		<foreach collection="recordTypeList" item="recordType" open=" and cast(RecordType as char) in (" separator="," close=")">
 		#{recordType}
 		</foreach>
-		order by RecordType
+		union
+		select * from BatchRecord where 1=1
+		<foreach collection="workOrderIDList" item="workOrderID" open=" and cast(workOrderID as char) in (" separator="," close=")">
+		#{workOrderID}
+		</foreach>
+		and RecordType=1 and LotNo is not null
+		order by RecordStartTime,RecordType
 	</select>
 	<update id="updateDevPMCode">
 		update BatchRecord set PMCode=#{pMCode} where PMCName=#{pMCName} and WorkOrderID=#{workOrderID} and RecordType='3'

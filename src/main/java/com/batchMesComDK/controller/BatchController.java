@@ -421,6 +421,20 @@ public class BatchController {
 						}
 						
 						break;
+					case WorkOrder.PJLSCCG:
+						boolean allowPJLSCCG=false;
+						if(WorkOrder.BJS==getWOPreStateByWOID(workOrderID)) {//若工单前一个状态是结束，说明wincc端批记录刚上传成功，就执行一次下面的逻辑
+							allowPJLSCCG=true;
+						}
+						
+						if(allowPJLSCCG) {
+							woMap.put("existRunWO", false);
+	
+							getSendToMesBRData();//检索是否存在给mes端推送批记录的工单
+							
+							addWOPreStateInList(WorkOrder.PJLSCCG,workOrderID);
+						}
+						break;
 					}
 					
 					if(state==WorkOrder.BYX||state==WorkOrder.BQX||state==WorkOrder.BZT) {
@@ -466,12 +480,12 @@ public class BatchController {
 									if(BatchTest.COMPLETE.equals(stateVal)) {
 										workOrderService.updateStateByFormulaId(WorkOrder.BJS, formulaId);
 										
-										woMap.put("existRunWO", false);
+										//woMap.put("existRunWO", false);
 										
 										String wcBodyStr = getChaOrdStaBodyStr(workOrderID,WorkOrder.COMPLETE,updateUser);
 										changeOrderStatus(wcBodyStr);
 										
-										getSendToMesBRData();//检索是否存在给mes端推送批记录的工单
+										//getSendToMesBRData();//检索是否存在给mes端推送批记录的工单
 										
 										addWOPreStateInList(WorkOrder.BJS,workOrderID);
 									}
@@ -1797,44 +1811,55 @@ public class BatchController {
 		try {
 			System.out.println("bodyEnc==="+bodyEnc);
 			
-			WorkOrder wo = convertMesWorkOrderDownToJava(bodyEnc);
-			int c=workOrderService.add(wo);
-			if(c>0) {
-				String workOrderID = wo.getWorkOrderID();
-				String recipeID = wo.getRecipeID();
-				c=recipePMService.addFromTMP(workOrderID, recipeID);
-				//c=recipePMService.addFromWORecipePMList(workOrderID, wo.getRecipePMList());
+			Map<String, Object> jsonMapCMWODTJ = convertMesWorkOrderDownToJava(bodyEnc);
+			String stateCMWODTJ = jsonMapCMWODTJ.get(APIUtil.STATE).toString();
+			if("ok".equals(stateCMWODTJ)) {
+				WorkOrder wo = (WorkOrder)jsonMapCMWODTJ.get("workOrder");
+				int c=workOrderService.add(wo);
 				if(c>0) {
-					List<RecipePM> recipePMList = wo.getRecipePMList();
-					List<ManFeed> manFeedList = wo.getManFeedList();
-					/*
-					 * 为了测试这块先屏蔽掉
-					 */
-					//c=recipePMService.updateDosageXByPMParam(workOrderID, recipePMList);
-					boolean dosageLastIfExp = DateUtil.checkDosageLastIfExp(sdf.format(new Date()));
-					if(dosageLastIfExp) {
-						c=recipePMService.updateDosageByPMParam(workOrderID, recipePMList);
+					String workOrderID = wo.getWorkOrderID();
+					String recipeID = wo.getRecipeID();
+					c=recipePMService.addFromTMP(workOrderID, recipeID);
+					//c=recipePMService.addFromWORecipePMList(workOrderID, wo.getRecipePMList());
+					if(c>0) {
+						List<RecipePM> recipePMList = wo.getRecipePMList();
+						List<ManFeed> manFeedList = wo.getManFeedList();
+						/*
+						 * 为了测试这块先屏蔽掉
+						 */
+						//c=recipePMService.updateDosageXByPMParam(workOrderID, recipePMList);
+						boolean dosageLastIfExp = DateUtil.checkDosageLastIfExp(sdf.format(new Date()));
+						if(dosageLastIfExp) {
+							c=recipePMService.updateDosageByPMParam(workOrderID, recipePMList);
+						}
+						else
+							c=recipePMService.updateDosageLastByPMParam(workOrderID, recipePMList);
+						
+						c=manFeedService.addFromList(manFeedList);
+						
+						boolean stepMesIfExp = DateUtil.checkStepMesIfExp(sdf.format(new Date()));
+						if(!stepMesIfExp) {
+							c=manFeedService.updateStepMesByWOID(workOrderID);
+						}
+						c=workOrderService.updateStateByWorkOrderID(WorkOrder.WLQTWB,workOrderID);
 					}
-					else
-						c=recipePMService.updateDosageLastByPMParam(workOrderID, recipePMList);
 					
-					c=manFeedService.addFromList(manFeedList);
-					
-					boolean stepMesIfExp = DateUtil.checkStepMesIfExp(sdf.format(new Date()));
-					if(!stepMesIfExp) {
-						c=manFeedService.updateStepMesByWOID(workOrderID);
-					}
-					c=workOrderService.updateStateByWorkOrderID(WorkOrder.WLQTWB,workOrderID);
+					jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_TRUE);
+					jsonMap.put(APIUtil.STATE, APIUtil.STATE_001);
+					jsonMap.put(APIUtil.MSG, APIUtil.MSG_NORMAL);
 				}
-				
-				jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_TRUE);
-				jsonMap.put(APIUtil.STATE, APIUtil.STATE_001);
-				jsonMap.put(APIUtil.MSG, APIUtil.MSG_NORMAL);
+				else {
+					jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_FALSE);
+					jsonMap.put(APIUtil.STATE, APIUtil.STATE_002);
+					jsonMap.put(APIUtil.MSG, APIUtil.MSG_DATA_FORMAT_ERROR);
+				}
 			}
 			else {
+				String msgCMWODTJ = jsonMapCMWODTJ.get(APIUtil.MSG).toString();
+				
 				jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_FALSE);
-				jsonMap.put(APIUtil.STATE, APIUtil.STATE_002);
-				jsonMap.put(APIUtil.MSG, APIUtil.MSG_DATA_FORMAT_ERROR);
+				jsonMap.put(APIUtil.STATE, APIUtil.STATE_003);
+				jsonMap.put(APIUtil.MSG, msgCMWODTJ);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -1853,65 +1878,82 @@ public class BatchController {
 	 * @param mesBody
 	 * @return
 	 */
-	private WorkOrder convertMesWorkOrderDownToJava(String mesBody) {
+	private Map<String, Object> convertMesWorkOrderDownToJava(String mesBody) {
 
-		net.sf.json.JSONObject wodMesJO = net.sf.json.JSONObject.fromObject(mesBody);
-		//WorkOrder wo=(WorkOrder)net.sf.json.JSONObject.toBean(woJO, WorkOrder.class);
-		String identifier = wodMesJO.getString("identifier");
-		String lotNo = wodMesJO.getString("lotNo");
-		String planStartTime = wodMesJO.getString("planStartTime");
-		String productName = wodMesJO.getString("productName");
-		String productcode = wodMesJO.getString("productcode");
-		String qty = wodMesJO.getString("qty");
-		String unit = wodMesJO.getString("unit");
-		String workOrder = wodMesJO.getString("workOrder");
-		String workcenterId = wodMesJO.getString("workcenterId");
-		String formulaIdMes = wodMesJO.getString("formulaId");//mes那边发来的formulaId对应java端的FormulaIdMes
-		//以前对应配方表里的recipeId,为了手动创建配方选择recipeId时容易识别配方，就把recipeId和Identifier改为一样的
-		//mes那边的formulaId在batch这边暂时用不到，但工单完成后还得返回给mes，就保存到工单表的FormulaIdMes字段里
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		
-		String materialListStr = wodMesJO.getString("materialList");
-		Map<String,Object> materialListMap=convertMesMaterialListStrToMaterialListMap(workOrder,materialListStr);
-		List<RecipePM> recipePMList=(List<RecipePM>)materialListMap.get("recipePMList");
-		List<ManFeed> manFeedList=(List<ManFeed>)materialListMap.get("manFeedList");
-		
-		WorkOrder wo=new WorkOrder();
-		//RecipeHeader recipeHeader=recipeHeaderService.getByProductParam(productcode, productName);
-		RecipeHeader recipeHeader=recipeHeaderService.getByIdentifier(identifier);//这个配方名是mes那边下发的，以前是根据配方id查询配方，后来wincc上为了手工创建配方时选择配方方便，就把batch这边的配方id和配方名改为一样的，batch这边的配方id和mes下发的配方id不是同一个字段了，就改为用配方名查询配方
-		
-		String dev1 = recipeHeader.getDev1();
-		String dev2 = recipeHeader.getDev2();
-		
-		for (ManFeed manFeed : manFeedList) {
-			manFeed.setDev1(dev1);
-			manFeed.setDev2(dev2);
+		try {
+			net.sf.json.JSONObject wodMesJO = net.sf.json.JSONObject.fromObject(mesBody);
+			//WorkOrder wo=(WorkOrder)net.sf.json.JSONObject.toBean(woJO, WorkOrder.class);
+			String identifier = wodMesJO.getString("identifier");
+			String lotNo = wodMesJO.getString("lotNo");
+			String planStartTime = wodMesJO.getString("planStartTime");
+			String productName = wodMesJO.getString("productName");
+			String productcode = wodMesJO.getString("productcode");
+			String qty = wodMesJO.getString("qty");
+			String unit = wodMesJO.getString("unit");
+			String workOrder = wodMesJO.getString("workOrder");
+			String workcenterId = wodMesJO.getString("workcenterId");
+			String formulaIdMes = wodMesJO.getString("formulaId");//mes那边发来的formulaId对应java端的FormulaIdMes
+			//以前对应配方表里的recipeId,为了手动创建配方选择recipeId时容易识别配方，就把recipeId和Identifier改为一样的
+			//mes那边的formulaId在batch这边暂时用不到，但工单完成后还得返回给mes，就保存到工单表的FormulaIdMes字段里
+			
+			String materialListStr = wodMesJO.getString("materialList");
+			Map<String,Object> materialListMap=convertMesMaterialListStrToMaterialListMap(workOrder,materialListStr);
+			List<RecipePM> recipePMList=(List<RecipePM>)materialListMap.get("recipePMList");
+			List<ManFeed> manFeedList=(List<ManFeed>)materialListMap.get("manFeedList");
+			
+			WorkOrder wo=new WorkOrder();
+			//RecipeHeader recipeHeader=recipeHeaderService.getByProductParam(productcode, productName);
+			RecipeHeader recipeHeader=recipeHeaderService.getByIdentifier(identifier);//这个配方名是mes那边下发的，以前是根据配方id查询配方，后来wincc上为了手工创建配方时选择配方方便，就把batch这边的配方id和配方名改为一样的，batch这边的配方id和mes下发的配方id不是同一个字段了，就改为用配方名查询配方
+			if(recipeHeader==null) {
+				jsonMap.put(APIUtil.STATE, "no");
+				jsonMap.put(APIUtil.MSG, "配方"+identifier+"不存在");
+			}
+			else {
+				String dev1 = recipeHeader.getDev1();
+				String dev2 = recipeHeader.getDev2();
+				
+				for (ManFeed manFeed : manFeedList) {
+					manFeed.setDev1(dev1);
+					manFeed.setDev2(dev2);
+				}
+				
+				String formulaId=workOrderService.createFormulaIdByDateYMD(identifier);
+				
+				String recipeID=recipeHeader.getRecipeID();
+				
+				wo.setIdentifier(identifier);
+				wo.setFormulaId(formulaId);
+				wo.setRecipeID(recipeID);
+				//wo.setID(Integer.valueOf(id));
+				wo.setCreateTime(planStartTime);
+				wo.setProductName(productName);
+				wo.setProductCode(productcode);
+				wo.setTotalOutput(qty);
+				wo.setWorkOrderID(workOrder);
+				wo.setRecipePMList(recipePMList);
+				wo.setManFeedList(manFeedList);
+				wo.setLotNo(lotNo);
+				wo.setWorkcenterId(workcenterId);
+				wo.setFormulaIdMes(formulaIdMes);
+				
+				String unitID = recipeHeader.getUnitID();
+				if(StringUtils.isEmpty(unitID))
+					unitID = createUnitIDByIdentifier(recipeHeader.getIdentifier());
+				wo.setUnitID(unitID);
+				
+				jsonMap.put(APIUtil.STATE, "ok");
+				jsonMap.put("workOrder", wo);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			jsonMap.put(APIUtil.STATE, "no");
+			jsonMap.put(APIUtil.MSG, e.getMessage());
 		}
-		
-		String formulaId=workOrderService.createFormulaIdByDateYMD(identifier);
-		
-		String recipeID=recipeHeader.getRecipeID();
-		
-		wo.setIdentifier(identifier);
-		wo.setFormulaId(formulaId);
-		wo.setRecipeID(recipeID);
-		//wo.setID(Integer.valueOf(id));
-		wo.setCreateTime(planStartTime);
-		wo.setProductName(productName);
-		wo.setProductCode(productcode);
-		wo.setTotalOutput(qty);
-		wo.setWorkOrderID(workOrder);
-		wo.setRecipePMList(recipePMList);
-		wo.setManFeedList(manFeedList);
-		wo.setLotNo(lotNo);
-		wo.setWorkcenterId(workcenterId);
-		wo.setFormulaIdMes(formulaIdMes);
-		
-		String unitID = recipeHeader.getUnitID();
-		if(StringUtils.isEmpty(unitID))
-			unitID = createUnitIDByIdentifier(recipeHeader.getIdentifier());
-		wo.setUnitID(unitID);
-		
-		return wo;
+		finally {
+			return jsonMap;
+		}
 	}
 	
 	/**
