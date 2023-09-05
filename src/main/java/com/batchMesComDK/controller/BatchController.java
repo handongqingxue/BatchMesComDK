@@ -958,6 +958,9 @@ public class BatchController {
 		try {
 			String batchListResultStr = getItem(BatchTest.BATCH_LIST);
 			System.out.println("batchListResultStr==="+batchListResultStr);
+
+			//addTestLog(createTestLogByParams("batchListResultStr","","",batchListResultStr));
+			
 			JSONObject batchListResultJO = new JSONObject(batchListResultStr);
 			int status = batchListResultJO.getInt("status");
 			boolean success = batchListResultJO.getBoolean("success");
@@ -1605,6 +1608,11 @@ public class BatchController {
 		}
 	}
 
+	/**
+	 * 添加日志记录
+	 * @param tl
+	 * @return
+	 */
 	@RequestMapping(value="/addTestLog")
 	@ResponseBody
 	public Map<String, Object> addTestLog(TestLog tl) {
@@ -1852,6 +1860,8 @@ public class BatchController {
 	public Map<String, Object> workOrderDown(@RequestBody String bodyEnc) {
 
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
+		boolean success=false;
+		String state=null;
 		try {
 			System.out.println("bodyEnc==="+bodyEnc);
 			
@@ -1888,33 +1898,47 @@ public class BatchController {
 						c=workOrderService.updateStateByWorkOrderID(WorkOrder.WLQTWB,workOrderID);
 					}
 					
-					jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_TRUE);
-					jsonMap.put(APIUtil.STATE, APIUtil.STATE_001);
+					success=APIUtil.SUCCESS_TRUE;
+					state=APIUtil.STATE_001;
+					
+					jsonMap.put(APIUtil.SUCCESS, success);
+					jsonMap.put(APIUtil.STATE, state);
 					jsonMap.put(APIUtil.MSG, APIUtil.MSG_NORMAL);
 				}
 				else {
-					jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_FALSE);
-					jsonMap.put(APIUtil.STATE, APIUtil.STATE_002);
+					success=APIUtil.SUCCESS_FALSE;
+					state=APIUtil.STATE_002;
+							
+					jsonMap.put(APIUtil.SUCCESS, success);
+					jsonMap.put(APIUtil.STATE, state);
 					jsonMap.put(APIUtil.MSG, APIUtil.MSG_DATA_FORMAT_ERROR);
 				}
 			}
 			else {
 				String msgCMWODTJ = jsonMapCMWODTJ.get(APIUtil.MSG).toString();
 				
-				jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_FALSE);
-				jsonMap.put(APIUtil.STATE, APIUtil.STATE_003);
+				success=APIUtil.SUCCESS_FALSE;
+				state=APIUtil.STATE_003;
+				
+				jsonMap.put(APIUtil.SUCCESS, success);
+				jsonMap.put(APIUtil.STATE, state);
 				jsonMap.put(APIUtil.MSG, msgCMWODTJ);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_FALSE);
-			jsonMap.put(APIUtil.STATE, APIUtil.STATE_002);
+			
+			success=APIUtil.SUCCESS_FALSE;
+			state=APIUtil.STATE_002;
+			
+			jsonMap.put(APIUtil.SUCCESS, success);
+			jsonMap.put(APIUtil.STATE, state);
 			jsonMap.put(APIUtil.MSG, APIUtil.MSG_DATA_FORMAT_ERROR);
 		}
 		finally {
 
-			testLogService.add(createTestLogByParams("workOrderDown","true","001",bodyEnc));
+			addTestLog(createTestLogByParams("workOrderDown",success+"",state,bodyEnc));
+			
 			return jsonMap;
 		}
 	}
@@ -2122,6 +2146,11 @@ public class BatchController {
 		return mfList;
 	}
 	
+	/**
+	 * 根据配方名模拟获取产品名称(在乱码的情况下临时调用此方法)
+	 * @param identifier
+	 * @return
+	 */
 	private String getProductNameByIdentifierTest(String identifier) {
 		String productName=null;
 		
@@ -2135,6 +2164,11 @@ public class BatchController {
 		return productName;
 	}
 	
+	/**
+	 * 根据物料编码获取物料名称(在乱码的情况下临时调用此方法)
+	 * @param materialCode
+	 * @return
+	 */
 	private String getMaterialNameByCodeTest(String materialCode) {
 		String materialName=null;
 		
@@ -2365,7 +2399,7 @@ public class BatchController {
 			
 		}
 
-		testLogService.add(createTestLogByParams("feedIssusDown",success+"",state,bodyEnc+"---"+c));
+		addTestLog(createTestLogByParams("feedIssusDown",success+"",state,bodyEnc+"---"+c));
 		
 		return jsonMap;
 	}

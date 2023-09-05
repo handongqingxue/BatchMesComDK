@@ -22,7 +22,10 @@ public class BatchTest {
 	
 	public static final String SUCCESS_RESULT="SUCCESS:";
 	
-	public static final String CRLF_SPACE_SIGN="\\crlf";
+	/**
+	 * 行与行之间的分隔符(虽然文档里写着是crlf,但java端解析就成了\r\n)
+	 */
+	public static final String CRLF_SPACE_SIGN="\\r\\n";
 	
 	public static final String T_SPACE_SIGN="\\t";
 	
