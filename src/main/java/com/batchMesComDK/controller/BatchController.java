@@ -28,14 +28,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.batchMesComDK.entity.*;
 import com.batchMesComDK.service.*;
-import com.batchMesComDK.util.APIUtil;
-import com.batchMesComDK.util.ActiveXTest;
-import com.batchMesComDK.util.Constant;
-import com.batchMesComDK.util.DateUtil;
-import com.batchMesComDK.util.DesUtil;
-import com.batchMesComDK.util.JsonUtil;
-import com.batchMesComDK.util.PinyinUtil;
-import com.batchMesComDK.util.PlanResult;
+import com.batchMesComDK.util.*;
 import com.thingworx.sdk.batch.BatchComBridge;
 
 //https://blog.csdn.net/SHBWeiXiao/article/details/78392382
