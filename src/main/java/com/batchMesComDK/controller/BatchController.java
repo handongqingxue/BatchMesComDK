@@ -1,5 +1,7 @@
 package com.batchMesComDK.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -505,6 +507,11 @@ public class BatchController {
 	
 										if(WorkOrder.BZT!=getWOPreStateByWOID(workOrderID)) {
 											workOrderService.updateStateByFormulaId(WorkOrder.BZT, formulaId);
+										}
+										
+										boolean existRunWO=Boolean.valueOf(woMap.get("existRunWO").toString());//是否正在运行状态
+										if(!existRunWO) {//若不是运行状态，可能是java中间件意外关闭导致本机运行中标志还原了，需要重新复位为运行中，以防本机上其他启动的订单运行
+											woMap.put("existRunWO", true);
 										}
 										
 										addWOPreStateInList(WorkOrder.BZT,workOrderID);
@@ -1842,7 +1849,7 @@ public class BatchController {
 		
 		return jsonMap;
 	}
-
+	
 	/**
 	 * 4.4 工单下达
 	 * @param bodyEnc
@@ -1913,6 +1920,8 @@ public class BatchController {
 			jsonMap.put(APIUtil.MSG, APIUtil.MSG_DATA_FORMAT_ERROR);
 		}
 		finally {
+
+			testLogService.add(createTestLogByParams("workOrderDown","true","001",bodyEnc));
 			return jsonMap;
 		}
 	}
@@ -1933,6 +1942,7 @@ public class BatchController {
 			String lotNo = wodMesJO.getString("lotNo");
 			String planStartTime = wodMesJO.getString("planStartTime");
 			String productName = wodMesJO.getString("productName");
+			//String productName = getProductNameByIdentifierTest(identifier);
 			String productcode = wodMesJO.getString("productcode");
 			String qty = wodMesJO.getString("qty");
 			String unit = wodMesJO.getString("unit");
@@ -2022,6 +2032,7 @@ public class BatchController {
 			net.sf.json.JSONObject materialListJO = (net.sf.json.JSONObject)materialListJA.get(i);
 			String materialCode = materialListJO.getString("materialCode");
 			String materialName = materialListJO.getString("materialName");
+			//String materialName = getMaterialNameByCodeTest(materialCode);
 			String qty = materialListJO.getString("qty");
 			String unit = materialListJO.getString("unit");
 			//String upperDeviation = materialListJO.getString("upperDeviation");
@@ -2116,6 +2127,54 @@ public class BatchController {
 		}
 		
 		return mfList;
+	}
+	
+	private String getProductNameByIdentifierTest(String identifier) {
+		String productName=null;
+		
+		if("LSL_BNJS_51_F".equals(identifier))
+			productName="冰柠劲爽牙膏膏体02";
+		else if("LSL_ZMJS_61_M".equals(identifier))
+			productName="冷酸灵专研美白酵素";
+		else if("LSL_ZYYSJ_62_M".equals(identifier))
+			productName="冷酸灵专研益生菌";
+		
+		return productName;
+	}
+	
+	private String getMaterialNameByCodeTest(String materialCode) {
+		String materialName=null;
+		
+		if("2010071".equals(materialCode))
+			materialName="摩擦粒子(W3型)";
+		else if("2020027".equals(materialCode))
+			materialName="经典留兰味食品用香精";
+		else if("9010001".equals(materialCode))
+			materialName="去离子水";
+		else if("2010028".equals(materialCode))
+			materialName="氢氧化钠";
+		else if("2010006".equals(materialCode))
+			materialName="甘油";
+		else if("3010104".equals(materialCode))
+			materialName="专研美白酵素牙膏膏体";
+		else if("2010130".equals(materialCode))
+			materialName="二氧化硅(103型)";
+		else if("2010044".equals(materialCode))
+			materialName="聚乙二醇-1500";
+		else if("2010021".equals(materialCode))
+			materialName="二氧化硅(H型)";
+		else if("2010002".equals(materialCode))
+			materialName="十二烷基硫酸钠";
+		else if("2010001".equals(materialCode))
+			materialName="糖精钠";
+		else if("2010023".equals(materialCode))
+			materialName="二氧化硅(MIC型)";
+		else if("2010012".equals(materialCode))
+			materialName="山梨(糖)醇";
+		else if("2010026".equals(materialCode))
+			materialName="二氧化钛";
+		
+		return materialName;
 	}
 	
 	/**
