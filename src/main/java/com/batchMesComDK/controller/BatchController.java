@@ -256,33 +256,35 @@ public class BatchController {
 							allowRestoreRun=true;
 						}
 						
-						if(allowRestoreRun) {//重启运行
-							//启动执行配方
-							for (int j = 1; j <= batchCount; j++) {
-								String workOrderIDStr = wo.getWorkOrderID().toString();
-								String formulaIdStr = wo.getFormulaId().toString();
-								//String batchIDVal = BLKey_x("BatchID",j);
-								String batchIDResultJOStr = getItem(BatchTest.BL_BATCH_ID+j);
-								JSONObject batchIDResultJO = new JSONObject(batchIDResultJOStr);
-								String batchIDVal = batchIDResultJO.getString("data");
-								System.out.println("batchIDVal==="+batchIDVal);
-								//batchIDVal = batchIDVal.substring(0, batchIDVal.indexOf(Constant.END_SUCCESS));
-								if(formulaIdStr.equals(batchIDVal)) {
+						//启动执行配方
+						for (int j = 1; j <= batchCount; j++) {
+							String workOrderIDStr = wo.getWorkOrderID().toString();
+							String formulaIdStr = wo.getFormulaId().toString();
+							//String batchIDVal = BLKey_x("BatchID",j);
+							String batchIDResultJOStr = getItem(BatchTest.BL_BATCH_ID+j);
+							JSONObject batchIDResultJO = new JSONObject(batchIDResultJOStr);
+							String batchIDVal = batchIDResultJO.getString("data");
+							System.out.println("batchIDVal==="+batchIDVal);
+							//batchIDVal = batchIDVal.substring(0, batchIDVal.indexOf(Constant.END_SUCCESS));
+							if(formulaIdStr.equals(batchIDVal)) {
+								if(allowRestoreRun) {//重启运行
 									//String createIDVal = BLKey_x("CreateID",j);
 									String createIDResultJOStr = getItem(BatchTest.BL_CREATE_ID+j);
 									JSONObject createIDResultJO = new JSONObject(createIDResultJOStr);
 									String createIDVal = createIDResultJO.getString("data");
 									//createIDVal = createIDVal.substring(0, createIDVal.indexOf(Constant.END_SUCCESS));
 									System.out.println("createIDVal==="+createIDVal);
-									
+
 									//调用batch环境的重启接口
 									commandBatch(createIDVal,BatchTest.RESTART);
-									
-									String stateResultJOStr = getItem(BatchTest.BL_STATE+j);
-									JSONObject stateResultJO = new JSONObject(stateResultJOStr);
-									String stateVal = stateResultJO.getString("data");
-									//stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
-									if(BatchTest.RUNNING.equals(stateVal)) {
+								}
+								
+								String stateResultJOStr = getItem(BatchTest.BL_STATE+j);
+								JSONObject stateResultJO = new JSONObject(stateResultJOStr);
+								String stateVal = stateResultJO.getString("data");
+								//stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
+								if(BatchTest.RUNNING.equals(stateVal)) {
+									if(allowRestoreRun) {
 										workOrderService.updateStateById(WorkOrder.BYX, wo.getID());
 										
 										String qdBodyStr = getChaOrdStaBodyStr(wo.getWorkOrderID(),WorkOrder.PRODUCTION,updateUser);
@@ -290,7 +292,14 @@ public class BatchController {
 										
 										addWOPreStateInList(WorkOrder.BYX,workOrderIDStr);
 									}
+									else {
+										boolean existRunWOBYX=Boolean.valueOf(woMap.get("existRunWO").toString());//是否正在运行状态
+										if(!existRunWOBYX) {//若不是运行状态，可能是java中间件意外关闭导致本机运行中标志还原了，需要重新复位为运行中，以防本机上其他启动的订单运行
+											woMap.put("existRunWO", true);
+										}
+									}
 								}
+								
 							}
 						}
 						break;
@@ -502,7 +511,7 @@ public class BatchController {
 										}
 										
 										boolean existRunWO=Boolean.valueOf(woMap.get("existRunWO").toString());//是否正在运行状态
-										if(!existRunWO) {//若不是运行状态，可能是java中间件意外关闭导致本机运行中标志还原了，需要重新复位为运行中，以防本机上其他启动的订单运行
+										if(!existRunWO) {//若不是运行状态，可能是其他原因导致，需要重新复位为运行中，以防本机上其他启动的订单运行
 											woMap.put("existRunWO", true);
 										}
 										
@@ -517,7 +526,7 @@ public class BatchController {
 										}
 										
 										boolean existRunWO=Boolean.valueOf(woMap.get("existRunWO").toString());//是否正在运行状态
-										if(!existRunWO) {//若不是运行状态，可能是java中间件意外关闭导致本机运行中标志还原了，需要重新复位为运行中，以防本机上其他启动的订单运行
+										if(!existRunWO) {//若不是运行状态，可能是其他原因导致，需要重新复位为运行中，以防本机上其他启动的订单运行
 											woMap.put("existRunWO", true);
 										}
 									}
