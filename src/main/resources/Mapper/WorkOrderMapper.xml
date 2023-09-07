@@ -127,6 +127,17 @@
 		and DATEDIFF(hh,CreateTime,GETDATE())&lt;72
 		order by CreateTime
 	</select>
+	<select id="getSendToMesListByStateListTest" resultType="com.batchMesComDK.entity.WorkOrder">
+		select * from WorkOrder where 1=1
+		<foreach collection="workOrderIDList" item="workOrderID" open=" and cast(workOrderID as char) in (" separator="," close=")">
+		#{workOrderID}
+		</foreach>
+		<foreach collection="stateList" item="state" open=" and cast(state as char) in (" separator="," close=")">
+		#{state}
+		</foreach>
+		and DATEDIFF(hh,CreateTime,GETDATE())&lt;72
+		order by CreateTime
+	</select>
 	<update id="edit" parameterType="com.batchMesComDK.entity.WorkOrder">
 		update WorkOrder set 
 		<trim suffixOverrides=",">

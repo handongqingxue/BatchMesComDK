@@ -2501,14 +2501,9 @@ public class BatchController {
 			
 
 			/*
-			sendToMesWOList=workOrderService.getSendToMesList();
-			for (WorkOrder sendToMesWO : sendToMesWOList) {
-				String sendToMesWOID = sendToMesWO.getWorkOrderID();
-				sendToMesWOIDList.add(sendToMesWOID);
-			}
+			sendToMesWOIDList.add("Z92309040204");//调试时针对单个工单发批记录
+			sendToMesWOList=workOrderService.getSendToMesListTest(sendToMesWOIDList);
 			*/
-			
-			//sendToMesWOIDList.add("Z92309040204");
 			
 			int count=0;
 			/*
@@ -2522,6 +2517,7 @@ public class BatchController {
 			
 			
 			List<BatchRecord> brList=batchRecordService.getSendToMesData(sendToMesWOIDList);
+			System.out.println("brListSize==============="+brList.size());
 			System.out.println("sendToMesWOIDListSize==="+sendToMesWOIDList.size());
 			System.out.println("sendToMesWOListSize==="+sendToMesWOList.size());
 			
@@ -2550,8 +2546,10 @@ public class BatchController {
 					for (int j = 0; j < brList.size(); j++) {
 						BatchRecord sendToMesBR = brList.get(j);
 						String sendToMesBRWorkOrderID = sendToMesBR.getWorkOrderID();
+						//System.out.println("workOrderID===="+workOrderID+",sendToMesBRWorkOrderID======="+sendToMesBRWorkOrderID);
 						if(workOrderID.equals(sendToMesBRWorkOrderID)) {
 							Integer recordType = Integer.valueOf(sendToMesBR.getRecordType());
+							//System.out.println("工单表和批记录表共同的workOrderID======="+workOrderID);
 							if(BatchRecord.PCJL==recordType) {
 								JSONObject bodyParamDevJO=new JSONObject();
 								bodyParamDevJO.put("id", sendToMesBR.getID());
@@ -2567,12 +2565,15 @@ public class BatchController {
 								bodyParamDevJO.put("deviationName", sendToMesBR.getPMName());
 								bodyParamDevJO.put("remark", "");
 
-								System.out.println("bodyParamDevJOStr==="+bodyParamDevJO.toString());
-								APIUtil.doHttpMes("devicationRecord",bodyParamDevJO);
+								String bodyParamDevJOStr = bodyParamDevJO.toString();
+								System.out.println("bodyParamDevJOStr==="+bodyParamDevJOStr);
+								addTestLog(createTestLogByParams("bodyParamDevJOStr","","",bodyParamDevJOStr));
+								//APIUtil.doHttpMes("devicationRecord",bodyParamDevJO);
 							}
 							else {
 								JSONObject electtonBatchRecordJO=new JSONObject();
 								electtonBatchRecordJO.put("materialCode",sendToMesBR.getPMCode());
+								electtonBatchRecordJO.put("pMName",sendToMesBR.getPMName());
 								electtonBatchRecordJO.put("materialName",sendToMesBR.getPMCName());
 								electtonBatchRecordJO.put("recordType", sendToMesBR.getRecordType());
 								electtonBatchRecordJO.put("recordEvent", sendToMesBR.getRecordEvent());
@@ -2598,8 +2599,10 @@ public class BatchController {
 					
 					if(electtonBatchRecordBRJA.length()>0) {
 						bodyParamBRJO.put("electtonBatchRecord", electtonBatchRecordBRJA);
-						System.out.println("bodyParamBRJOStr==="+bodyParamBRJO.toString());
-						APIUtil.doHttpMes("electronicBatchRecord",bodyParamBRJO);
+						String bodyParamBRJOStr = bodyParamBRJO.toString();
+						System.out.println("bodyParamBRJOStr==="+bodyParamBRJOStr);
+						addTestLog(createTestLogByParams("bodyParamBRJOStr","","",bodyParamBRJOStr));
+						//APIUtil.doHttpMes("electronicBatchRecord",bodyParamBRJO);
 					}
 				}
 				//System.out.println("brListSize==="+brList.size());

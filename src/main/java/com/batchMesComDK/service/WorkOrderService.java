@@ -18,6 +18,13 @@ public interface WorkOrderService {
 
 	List<WorkOrder> getSendToMesList();
 
+	/**
+	 * 这个方法供调试用，手动创建工单号集合，防止出现越界情况
+	 * @param workOrderIDList
+	 * @return
+	 */
+	List<WorkOrder> getSendToMesListTest(List<String> workOrderIDList);
+
 	int edit(WorkOrder wo);
 
 	WorkOrder getById(Integer id);
