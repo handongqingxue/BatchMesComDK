@@ -2130,48 +2130,121 @@ public class BatchController {
 	 * @param mesBody
 	 * @return
 	 */
-	private List<ManFeed> convertMesFeedIssusDownToJava(String mesBody) {
+	private Map<String, Object> convertMesFeedIssusDownToJava(String mesBody) {
 
-		List<ManFeed> mfList=new ArrayList<ManFeed>();
-		ManFeed mf=null;
-		net.sf.json.JSONArray fidMesJA = net.sf.json.JSONArray.fromObject(mesBody);
-		int fidMesJASize = fidMesJA.size();
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		
-		boolean stepMesIfExp = DateUtil.checkStepMesIfExp(sdf.format(new Date()));
-		for(int i=0;i<fidMesJASize;i++) {
-			net.sf.json.JSONObject fidMesJO = (net.sf.json.JSONObject)fidMesJA.get(i);
-			String workOrder = fidMesJO.getString("workOrder");
-			String feedportCode = fidMesJO.getString("feedportCode");
-			String feedTime = fidMesJO.getString("feedTime");
-			String materialCode = fidMesJO.getString("materialCode");
-			String materialName = fidMesJO.getString("materialName");
-			Float suttle = Float.valueOf(fidMesJO.getString("suttle"));
-			String unit = fidMesJO.getString("unit");
-			Integer runStep = null;
-			Integer stepMes = null;
-			String step = fidMesJO.getString("step");
-			if(!StringUtils.isEmpty(step)) {
-				if(stepMesIfExp)
-					runStep = Integer.valueOf(step);
-				else
-					stepMes = Integer.valueOf(step);
+		try {
+			List<ManFeed> mfList = new ArrayList<ManFeed>();
+			ManFeed mf=null;
+			net.sf.json.JSONArray fidMesJA = net.sf.json.JSONArray.fromObject(mesBody);
+			int fidMesJASize = fidMesJA.size();
+			
+			boolean isError=false;
+			String msgPre="缺少";
+			String msgSuf="字段";
+			String msg=null;
+			boolean stepMesIfExp = DateUtil.checkStepMesIfExp(sdf.format(new Date()));
+			for(int i=0;i<fidMesJASize;i++) {
+				net.sf.json.JSONObject fidMesJO = (net.sf.json.JSONObject)fidMesJA.get(i);
+				Object workOrderObj = fidMesJO.get("workOrder");
+				Object feedportCodeObj = fidMesJO.get("feedportCode");
+				Object feedTimeObj = fidMesJO.get("feedTime");
+				Object materialCodeObj = fidMesJO.get("materialCode");
+				Object materialNameObj = fidMesJO.get("materialName");
+				Object suttleObj = fidMesJO.get("suttle");
+				Object unitObj = fidMesJO.get("unit");
+				Object stepObj = fidMesJO.get("step");
+				
+				if(workOrderObj==null) {
+					isError=true;
+					msg="workOrder";
+					break;
+				}
+				else if(feedportCodeObj==null) {
+					isError=true;
+					msg="feedportCode";
+					break;
+				}
+				else if(feedTimeObj==null) {
+					isError=true;
+					msg="feedTime";
+					break;
+				}
+				else if(materialCodeObj==null) {
+					isError=true;
+					msg="materialCode";
+					break;
+				}
+				else if(materialNameObj==null) {
+					isError=true;
+					msg="materialName";
+					break;
+				}
+				else if(suttleObj==null) {
+					isError=true;
+					msg="suttle";
+					break;
+				}
+				else if(unitObj==null) {
+					isError=true;
+					msg="unit";
+					break;
+				}
+				else if(stepObj==null) {
+					isError=true;
+					msg="step";
+					break;
+				}
+				
+				String workOrder = workOrderObj.toString();
+				String feedportCode = feedportCodeObj.toString();
+				String feedTime = feedTimeObj.toString();
+				String materialCode = materialCodeObj.toString();
+				String materialName = materialNameObj.toString();
+				Float suttle = Float.valueOf(suttleObj.toString());
+				String unit = unitObj.toString();
+				Integer runStep = null;
+				Integer stepMes = null;
+				String step = stepObj.toString();
+				if(!StringUtils.isEmpty(step)) {
+					if(stepMesIfExp)
+						runStep = Integer.valueOf(step);
+					else
+						stepMes = Integer.valueOf(step);
+				}
+				
+				mf=new ManFeed();
+				mf.setWorkOrderID(workOrder);
+				mf.setFeedPort(feedportCode);
+				mf.setFeedTime(feedTime);
+				mf.setMaterialCode(materialCode);
+				mf.setMaterialName(materialName);
+				mf.setSuttle(suttle);
+				mf.setUnit(unit);
+				mf.setRunStep(runStep);
+				mf.setStepMes(stepMes);
+				
+				mfList.add(mf);
 			}
 			
-			mf=new ManFeed();
-			mf.setWorkOrderID(workOrder);
-			mf.setFeedPort(feedportCode);
-			mf.setFeedTime(feedTime);
-			mf.setMaterialCode(materialCode);
-			mf.setMaterialName(materialName);
-			mf.setSuttle(suttle);
-			mf.setUnit(unit);
-			mf.setRunStep(runStep);
-			mf.setStepMes(stepMes);
-			
-			mfList.add(mf);
+			if(isError) {
+				jsonMap.put(APIUtil.STATE, "no");
+				jsonMap.put(APIUtil.MSG, msgPre+msg+msgSuf);
+			}
+			else {
+				jsonMap.put(APIUtil.STATE, "ok");
+				jsonMap.put("mfList", mfList);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			jsonMap.put(APIUtil.STATE, "no");
+			jsonMap.put(APIUtil.MSG, e.getMessage());
 		}
-		
-		return mfList;
+		finally {
+			return jsonMap;
+		}
 	}
 	
 	/**
@@ -2387,49 +2460,77 @@ public class BatchController {
 	@ResponseBody
 	public Map<String, Object> feedIssusDown(@RequestBody String bodyEnc) {
 
-		/*
-		 * 原先定的方案：
-		 * 除了ManFeed表里加设定值，RecipePM表里也要加设定值。工单创建时，要从RecipePM表里根据工单id获取相关的配方参数，这些属于物料参数，放入ManFeed表里。
-		 * 放入后在操作员扫码之前这个阶段只有物料名、FeedPort（投料口）、MarkBit（是否投料结束为0）、MaterialSV这些字段有数据，其他字段要在操作员扫码填入数后才能填充进去。
-		           当操作员扫码时，填入数量、单位，根据系统时间作进料时间。mes端调用人工投料接口，把填入的数据根据工单id和FeedPort（投料口）两个字段，从人工投料表里查询出符合条件的数据，
-		           把数量、单位那些之前为空的数据填充进去。填充完毕，markbit置1，wincc端就不再读取了，又将markbit置2，便于继续投料时与新的投料信息区分开。
-		 * */
-
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
-		System.out.println("bodyEnc==="+bodyEnc);
-
-		List<ManFeed> mfList=convertMesFeedIssusDownToJava(bodyEnc);
-		
-		/*
-		 * 为了测试暂时屏蔽掉
-		*/
-		int c=manFeedService.editByWorkOrderIDFeedPortList(mfList);
-		//int c=manFeedService.addTestFromList(mfList);
 		
 		boolean success=false;
 		String state=null;
-		if(c>0) {
-			success=APIUtil.SUCCESS_TRUE;
-			state=APIUtil.STATE_001;
+		try {
+			/*
+			 * 原先定的方案：
+			 * 除了ManFeed表里加设定值，RecipePM表里也要加设定值。工单创建时，要从RecipePM表里根据工单id获取相关的配方参数，这些属于物料参数，放入ManFeed表里。
+			 * 放入后在操作员扫码之前这个阶段只有物料名、FeedPort（投料口）、MarkBit（是否投料结束为0）、MaterialSV这些字段有数据，其他字段要在操作员扫码填入数后才能填充进去。
+			           当操作员扫码时，填入数量、单位，根据系统时间作进料时间。mes端调用人工投料接口，把填入的数据根据工单id和FeedPort（投料口）两个字段，从人工投料表里查询出符合条件的数据，
+			           把数量、单位那些之前为空的数据填充进去。填充完毕，markbit置1，wincc端就不再读取了，又将markbit置2，便于继续投料时与新的投料信息区分开。
+			 * */
+			System.out.println("bodyEnc==="+bodyEnc);
+
+			Map<String, Object> jsonMapCMFIDTJ = convertMesFeedIssusDownToJava(bodyEnc);
+			String stateCMFIDTJ = jsonMapCMFIDTJ.get(APIUtil.STATE).toString();
+			if("ok".equals(stateCMFIDTJ)) {
+				List<ManFeed> mfList = (List<ManFeed>)jsonMapCMFIDTJ.get("mfList");
+				
+				/*
+				 * 为了测试暂时屏蔽掉
+				*/
+				int c=manFeedService.editByWorkOrderIDFeedPortList(mfList);
+				//int c=manFeedService.addTestFromList(mfList);
 			
-			jsonMap.put(APIUtil.SUCCESS, success);
-			jsonMap.put(APIUtil.STATE, state);
-			jsonMap.put(APIUtil.MSG, APIUtil.MSG_NORMAL);
-			
-		}
-		else {
+				if(c>0) {
+					success=APIUtil.SUCCESS_TRUE;
+					state=APIUtil.STATE_001;
+					
+					jsonMap.put(APIUtil.SUCCESS, success);
+					jsonMap.put(APIUtil.STATE, state);
+					jsonMap.put(APIUtil.MSG, APIUtil.MSG_NORMAL);
+					
+				}
+				else {
+					success=APIUtil.SUCCESS_FALSE;
+					state=APIUtil.STATE_002;
+					
+					jsonMap.put(APIUtil.SUCCESS, success);
+					jsonMap.put(APIUtil.STATE, state);
+					jsonMap.put(APIUtil.MSG, APIUtil.MSG_DATA_FORMAT_ERROR);
+					
+				}
+			}
+			else {
+				String msgCMFIDTJ = jsonMapCMFIDTJ.get(APIUtil.MSG).toString();
+				
+				success=APIUtil.SUCCESS_FALSE;
+				state=APIUtil.STATE_003;
+				
+				jsonMap.put(APIUtil.SUCCESS, success);
+				jsonMap.put(APIUtil.STATE, state);
+				jsonMap.put(APIUtil.MSG, msgCMFIDTJ);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+
 			success=APIUtil.SUCCESS_FALSE;
 			state=APIUtil.STATE_002;
 			
 			jsonMap.put(APIUtil.SUCCESS, success);
 			jsonMap.put(APIUtil.STATE, state);
 			jsonMap.put(APIUtil.MSG, APIUtil.MSG_DATA_FORMAT_ERROR);
-			
 		}
-
-		addTestLog(createTestLogByParams("feedIssusDown",success+"",state,bodyEnc+"---"+c));
-		
-		return jsonMap;
+		finally {
+			
+			addTestLog(createTestLogByParams("feedIssusDown",success+"",state,bodyEnc));
+			
+			return jsonMap;
+		}
 	}
 	
 	/**
