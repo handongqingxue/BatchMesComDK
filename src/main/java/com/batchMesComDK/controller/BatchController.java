@@ -121,7 +121,8 @@ public class BatchController {
 				initUnitIDWOMap();
 			//printUnitIDWOMap();
 			
-			List<WorkOrder> woList=workOrderService.getKeepWatchList();
+			List<String> woPreEndIDList = getWOPreEndIDList();
+			List<WorkOrder> woList=workOrderService.getKeepWatchList(woPreEndIDList);
 			System.out.println("woListSize==="+woList.size());
 			String workOrderIDs="";
 			String formulaIds="";
@@ -447,9 +448,9 @@ public class BatchController {
 							woMap.put("existRunWO", false);
 	
 							getSendToMesBRData();//检索是否存在给mes端推送批记录的工单
-							
-							addWOPreStateInList(WorkOrder.PJLSCCG,workOrderID);
 						}
+						
+						addWOPreStateInList(WorkOrder.PJLSCCG,workOrderID);
 						break;
 					}
 					
@@ -602,7 +603,8 @@ public class BatchController {
 	public Map<String, Object> keepWatchOnWorkOrderTest() {
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		try {
-			List<WorkOrder> woList=workOrderService.getKeepWatchList();
+			List<String> woPreEndIDList = getWOPreEndIDList();
+			List<WorkOrder> woList=workOrderService.getKeepWatchList(woPreEndIDList);
 			System.out.println("woListSize==="+woList.size());
 			String workOrderIDs="";
 			String formulaIds="";
@@ -842,6 +844,22 @@ public class BatchController {
 		}
 		//System.out.println("preState==="+state);
 		return state;
+	}
+	
+	/**
+	 * 获取工单前一个状态里结束的工单号集合(一旦结束下次就不需要再巡回了，节省资源占用)
+	 * @return
+	 */
+	private List<String> getWOPreEndIDList() {
+		List<String> workOrderIDList=new ArrayList<String>();
+		for (Map<String, Object> woPreStateMap : woPreStateList) {
+			String preWorkOrderID = woPreStateMap.get("workOrderID").toString();
+			Integer preState = Integer.valueOf(woPreStateMap.get("state").toString());
+			if(preState==WorkOrder.BYWZZ||preState==WorkOrder.PJLSCCG) {
+				workOrderIDList.add(preWorkOrderID);
+			}
+		}
+		return workOrderIDList;
 	}
 	
 	/**

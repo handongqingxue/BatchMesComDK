@@ -47,12 +47,12 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	}
 
 	@Override
-	public List<WorkOrder> getKeepWatchList() {
+	public List<WorkOrder> getKeepWatchList(List<String> woEndIDList) {
 		// TODO Auto-generated method stub
 		String states = WorkOrder.CSQRWB+","+WorkOrder.BQD+","+WorkOrder.BYX+","+WorkOrder.BQX+","+WorkOrder.BZT+","+WorkOrder.GDLXZXQX+","+WorkOrder.GDSGCJ+","+WorkOrder.PJLSCCG;
 		String[] stateArr = states.split(",");
 		List<String> stateList = Arrays.asList(stateArr);
-		return workOrderDao.getListByStateList(stateList);
+		return workOrderDao.getListByWOEndIDStateList(woEndIDList,stateList);
 	}
 
 	@Override
