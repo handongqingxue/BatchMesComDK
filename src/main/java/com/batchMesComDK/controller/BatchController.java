@@ -151,14 +151,26 @@ public class BatchController {
 					String identifier = wo.getIdentifier();
 					String updateUser = wo.getUpdateUser();
 					
-					System.out.println("workOrderID==="+workOrderID);
-					System.out.println("productCode==="+productCode);
-					System.out.println("productName==="+productName);
-					System.out.println("recipeID==="+recipeID);
-					System.out.println("formulaId==="+formulaId);
-					System.out.println("state==="+state);
-					System.out.println("identifier==="+identifier);
-					System.out.println("updateUser==="+updateUser);
+					StringBuilder woSB=new StringBuilder();
+					woSB.append("workOrderID=");
+					woSB.append(workOrderID);
+					woSB.append(",productCode=");
+					woSB.append(productCode);
+					woSB.append(",productName=");
+					woSB.append(productName);
+					woSB.append("recipeID=");
+					woSB.append(recipeID);
+					woSB.append("formulaId=");
+					woSB.append(formulaId);
+					woSB.append("state=");
+					woSB.append(state);
+					woSB.append("identifier=");
+					woSB.append(identifier);
+					woSB.append("updateUser===");
+					woSB.append(updateUser);
+					
+					String woStr=woSB.toString();
+					System.out.println(woStr);
 					
 					Map<String, Object> woMap=unitIDWOMap.get(unitID);//根据主机id获取工单状态map
 					switch (state) {
@@ -2687,7 +2699,7 @@ public class BatchController {
 								String bodyParamDevJOStr = bodyParamDevJO.toString();
 								System.out.println("bodyParamDevJOStr==="+bodyParamDevJOStr);
 								addTestLog(createTestLogByParams("bodyParamDevJOStr","","",bodyParamDevJOStr));
-								//APIUtil.doHttpMes("devicationRecord",bodyParamDevJO);
+								APIUtil.doHttpMes("devicationRecord",bodyParamDevJO);
 							}
 							else {
 								JSONObject electtonBatchRecordJO=new JSONObject();
@@ -2721,7 +2733,7 @@ public class BatchController {
 						String bodyParamBRJOStr = bodyParamBRJO.toString();
 						System.out.println("bodyParamBRJOStr==="+bodyParamBRJOStr);
 						addTestLog(createTestLogByParams("bodyParamBRJOStr","","",bodyParamBRJOStr));
-						//APIUtil.doHttpMes("electronicBatchRecord",bodyParamBRJO);
+						APIUtil.doHttpMes("electronicBatchRecord",bodyParamBRJO);
 					}
 				}
 				//System.out.println("brListSize==="+brList.size());
