@@ -12,6 +12,8 @@ public interface RecipePM_TMPMapper {
 
 	List<RecipePM_TMP> getByRecipeID(@Param("recipeID") String recipeID);
 
+	Integer getCountByRecipeID(@Param("recipeID") String recipeID);
+
 	int add(RecipePM_TMP rPM_TMP);
 
 	int deleteByList(@Param("idList") List<String> idList);

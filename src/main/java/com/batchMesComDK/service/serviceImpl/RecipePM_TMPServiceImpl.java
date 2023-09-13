@@ -41,4 +41,10 @@ public class RecipePM_TMPServiceImpl implements RecipePM_TMPService {
 		// TODO Auto-generated method stub
 		return recipePM_TMPDao.getById(id);
 	}
+
+	@Override
+	public boolean checkIfExistByRecipeID(String recipeID) {
+		// TODO Auto-generated method stub
+		return recipePM_TMPDao.getCountByRecipeID(recipeID)==0?false:true;
+	}
 }

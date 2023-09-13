@@ -223,37 +223,45 @@ public class BatchController {
 								//batchIDVal = batchIDVal.substring(0, batchIDVal.indexOf(Constant.END_SUCCESS));
 								if(formulaId.equals(batchIDVal)) {
 									existQDInBatchList=true;//存在启动状态的工单，说明该工单待运行，状态同步正确
-									//String createIDVal = BLKey_x("CreateID",j);
-									String createIDResultJOStr = getItem(BatchTest.BL_CREATE_ID+j);
-									JSONObject createIDResultJO = new JSONObject(createIDResultJOStr);
-									String createIDVal = createIDResultJO.getString("data");
-									//createIDVal = createIDVal.substring(0, createIDVal.indexOf(Constant.END_SUCCESS));
-									System.out.println("createIDVal==="+createIDVal);
+									String qdBodyStr=getChaOrdStaBodyStr(workOrderID,WorkOrder.PRODUCTION,updateUser);
+									Map<String, Object> qdCOSMap = changeOrderStatus(qdBodyStr);
+									boolean qdCOSSuccess = Boolean.valueOf(qdCOSMap.get(APIUtil.SUCCESS).toString());
+									if(qdCOSSuccess) {
+										//String createIDVal = BLKey_x("CreateID",j);
+										String createIDResultJOStr = getItem(BatchTest.BL_CREATE_ID+j);
+										JSONObject createIDResultJO = new JSONObject(createIDResultJOStr);
+										String createIDVal = createIDResultJO.getString("data");
+										//createIDVal = createIDVal.substring(0, createIDVal.indexOf(Constant.END_SUCCESS));
+										System.out.println("createIDVal==="+createIDVal);
+										
+										//调用batch环境的启动接口
+										commandBatch(createIDVal,BatchTest.START);
 									
-									//调用batch环境的启动接口
-									commandBatch(createIDVal,BatchTest.START);
-									
-									//String stateVal = BLKey_x("State",j);
-									String stateResultJOStr = getItem(BatchTest.BL_STATE+j);
-									JSONObject stateResultJO = new JSONObject(stateResultJOStr);
-									String stateVal = stateResultJO.getString("data");
-									//stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
-									if(BatchTest.RUNNING.equals(stateVal)) {
-										workOrderService.updateStateById(WorkOrder.BYX, id);
-										
-										woMap.put("existRunWO", true);//工单运行了，就把存在运行中的状态值1，其他启动了的工单就无法运行了，直到状态置0才能运行下一个时间点的工单
-										
-										String qdBodyStr=getChaOrdStaBodyStr(wo.getWorkOrderID(),WorkOrder.PRODUCTION,updateUser);
-										changeOrderStatus(qdBodyStr);
-										
-										addWOPreStateInList(WorkOrder.BYX,workOrderID);
-									}
-									else if(BatchTest.HELD.equals(stateVal)) {
-										workOrderService.updateStateById(WorkOrder.BZT, id);
-										
-										woMap.put("existRunWO", true);
-
-										addWOPreStateInList(WorkOrder.BZT,workOrderID);
+										//String stateVal = BLKey_x("State",j);
+										String stateResultJOStr = getItem(BatchTest.BL_STATE+j);
+										JSONObject stateResultJO = new JSONObject(stateResultJOStr);
+										String stateVal = stateResultJO.getString("data");
+										//stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
+										if(BatchTest.RUNNING.equals(stateVal)) {
+											workOrderService.updateStateById(WorkOrder.BYX, id);
+											
+											woMap.put("existRunWO", true);//工单运行了，就把存在运行中的状态值1，其他启动了的工单就无法运行了，直到状态置0才能运行下一个时间点的工单
+											
+											/*
+											 * 现在逻辑改成先调用推送给mes的工单状态变更接口，验证是否产检完成再运行工单，这块逻辑放在上面了，这块先屏蔽掉
+											 * String qdBodyStr=getChaOrdStaBodyStr(workOrderID,WorkOrder.PRODUCTION,updateUser);
+											 * changeOrderStatus(qdBodyStr);
+											 */
+											
+											addWOPreStateInList(WorkOrder.BYX,workOrderID);
+										}
+										else if(BatchTest.HELD.equals(stateVal)) {
+											workOrderService.updateStateById(WorkOrder.BZT, id);
+											
+											woMap.put("existRunWO", true);
+	
+											addWOPreStateInList(WorkOrder.BZT,workOrderID);
+										}
 									}
 								}
 							}
@@ -599,12 +607,19 @@ public class BatchController {
 	 * 打印出不同主机上是否存在运行中的工单标志
 	 */
 	private void printUnitIDWOMap() {
+		StringBuilder unitIDWOSB=new StringBuilder();
 		Set<String> keySet = unitIDWOMap.keySet();
 		for (String unitID : keySet) {
 			Map<String, Object> woMap = unitIDWOMap.get(unitID);
 			Boolean existRunWO = Boolean.valueOf(woMap.get("existRunWO").toString());
-			System.out.println("unitID==="+unitID+",existRunWO==="+existRunWO);
+			unitIDWOSB.append("unitID===");
+			unitIDWOSB.append(unitID);
+			unitIDWOSB.append(",existRunWO===");
+			unitIDWOSB.append(existRunWO);
+			unitIDWOSB.append("\n");
 		}
+		String unitIDWOStr = unitIDWOSB.toString();
+		System.out.println(unitIDWOStr);
 	}
 
 	/**
@@ -1802,6 +1817,9 @@ public class BatchController {
 
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		
+		boolean success = false;
+		String state = null;
+		String msg = null;
 		try {
 			System.out.println("bodyEnc==="+bodyEnc);
 			String bodyDec = bodyEnc;
@@ -1835,40 +1853,28 @@ public class BatchController {
 			}
 			
 			JSONObject resultJO = APIUtil.doHttpMes("changeOrderStatus", bodyParamJA);
-			boolean success = resultJO.getBoolean("success");
-			int state = resultJO.getInt("state");
-			String msg = resultJO.getString("msg");
-			/*
-			boolean success = true;
-			int state = 1;
-			String msg = "操作成功!";
+			success = resultJO.getBoolean("success");
+			state = resultJO.getInt("state")+"";
+			msg = resultJO.getString("msg");
+			
 			System.out.println("success=========="+success);
 			System.out.println("state=========="+state);
 			System.out.println("msg=========="+msg);
-			
-			TestLog testLog=new TestLog();
-			testLog.setAction("changeOrderStatus");
-			testLog.setSuccess(success+"");
-			testLog.setState(state+"");
-			testLog.setMsg(msg);
-			testLogService.add(testLog);
-			*/
-			
-			if(success) {
-				jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_TRUE);
-				jsonMap.put(APIUtil.STATE, APIUtil.STATE_001);//001正常 002数据格式有误 003数据不完整
-				jsonMap.put(APIUtil.MSG, APIUtil.MSG_NORMAL);
-			}
-			else {
-				jsonMap.put(APIUtil.SUCCESS, APIUtil.SUCCESS_FALSE);
-				jsonMap.put(APIUtil.STATE, APIUtil.STATE_002);
-				jsonMap.put(APIUtil.MSG, APIUtil.MSG_DATA_FORMAT_ERROR);
-			}
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			
+			success = APIUtil.SUCCESS_FALSE;
+			state = APIUtil.STATE_002;
+			msg = APIUtil.MSG_DATA_FORMAT_ERROR;
 		}
 		finally {
+			addTestLog(createTestLogByParams("changeOrderStatus",success+"",state+"",bodyEnc));
+			
+			jsonMap.put(APIUtil.SUCCESS, success);
+			jsonMap.put(APIUtil.STATE, state);//001正常 002数据格式有误 003数据不完整
+			jsonMap.put(APIUtil.MSG, msg);
+			
 			return jsonMap;
 		}
 	}
@@ -1927,49 +1933,60 @@ public class BatchController {
 			String stateCMWODTJ = jsonMapCMWODTJ.get(APIUtil.STATE).toString();
 			if("ok".equals(stateCMWODTJ)) {
 				WorkOrder wo = (WorkOrder)jsonMapCMWODTJ.get("workOrder");
-				int c=workOrderService.add(wo);
-				if(c>0) {
-					String workOrderID = wo.getWorkOrderID();
-					String recipeID = wo.getRecipeID();
-					c=recipePMService.addFromTMP(workOrderID, recipeID);
-					//c=recipePMService.addFromWORecipePMList(workOrderID, wo.getRecipePMList());
+				String recipeID = wo.getRecipeID();
+				boolean rPMTMPExist=recipePM_TMPService.checkIfExistByRecipeID(recipeID);
+				if(rPMTMPExist) {
+					int c=workOrderService.add(wo);
 					if(c>0) {
-						List<RecipePM> recipePMList = wo.getRecipePMList();
-						List<ManFeed> manFeedList = wo.getManFeedList();
-						/*
-						 * 为了测试这块先屏蔽掉
-						 */
-						//c=recipePMService.updateDosageXByPMParam(workOrderID, recipePMList);
-						boolean dosageLastIfExp = DateUtil.checkDosageLastIfExp(sdf.format(new Date()));
-						if(dosageLastIfExp) {
-							c=recipePMService.updateDosageByPMParam(workOrderID, recipePMList);
+						String workOrderID = wo.getWorkOrderID();
+						c=recipePMService.addFromTMP(workOrderID, recipeID);
+						//c=recipePMService.addFromWORecipePMList(workOrderID, wo.getRecipePMList());
+						if(c>0) {
+							List<RecipePM> recipePMList = wo.getRecipePMList();
+							List<ManFeed> manFeedList = wo.getManFeedList();
+							/*
+							 * 为了测试这块先屏蔽掉
+							 */
+							//c=recipePMService.updateDosageXByPMParam(workOrderID, recipePMList);
+							boolean dosageLastIfExp = DateUtil.checkDosageLastIfExp(sdf.format(new Date()));
+							if(dosageLastIfExp) {
+								c=recipePMService.updateDosageByPMParam(workOrderID, recipePMList);
+							}
+							else
+								c=recipePMService.updateDosageLastByPMParam(workOrderID, recipePMList);
+							
+							c=manFeedService.addFromList(manFeedList);
+							
+							boolean stepMesIfExp = DateUtil.checkStepMesIfExp(sdf.format(new Date()));
+							if(!stepMesIfExp) {
+								c=manFeedService.updateStepMesByWOID(workOrderID);
+							}
+							c=workOrderService.updateStateByWorkOrderID(WorkOrder.WLQTWB,workOrderID);
 						}
-						else
-							c=recipePMService.updateDosageLastByPMParam(workOrderID, recipePMList);
 						
-						c=manFeedService.addFromList(manFeedList);
+						success=APIUtil.SUCCESS_TRUE;
+						state=APIUtil.STATE_001;
 						
-						boolean stepMesIfExp = DateUtil.checkStepMesIfExp(sdf.format(new Date()));
-						if(!stepMesIfExp) {
-							c=manFeedService.updateStepMesByWOID(workOrderID);
-						}
-						c=workOrderService.updateStateByWorkOrderID(WorkOrder.WLQTWB,workOrderID);
+						jsonMap.put(APIUtil.SUCCESS, success);
+						jsonMap.put(APIUtil.STATE, state);
+						jsonMap.put(APIUtil.MSG, APIUtil.MSG_NORMAL);
 					}
-					
-					success=APIUtil.SUCCESS_TRUE;
-					state=APIUtil.STATE_001;
-					
-					jsonMap.put(APIUtil.SUCCESS, success);
-					jsonMap.put(APIUtil.STATE, state);
-					jsonMap.put(APIUtil.MSG, APIUtil.MSG_NORMAL);
+					else {
+						success=APIUtil.SUCCESS_FALSE;
+						state=APIUtil.STATE_002;
+								
+						jsonMap.put(APIUtil.SUCCESS, success);
+						jsonMap.put(APIUtil.STATE, state);
+						jsonMap.put(APIUtil.MSG, APIUtil.MSG_DATA_FORMAT_ERROR);
+					}
 				}
 				else {
 					success=APIUtil.SUCCESS_FALSE;
-					state=APIUtil.STATE_002;
-							
+					state=APIUtil.STATE_003;
+					
 					jsonMap.put(APIUtil.SUCCESS, success);
 					jsonMap.put(APIUtil.STATE, state);
-					jsonMap.put(APIUtil.MSG, APIUtil.MSG_DATA_FORMAT_ERROR);
+					jsonMap.put(APIUtil.MSG, "TMP表配方参数未配置");
 				}
 			}
 			else {
@@ -2011,67 +2028,141 @@ public class BatchController {
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		
 		try {
+			boolean isError=false;
+			String msg=null;
+			WorkOrder wo=new WorkOrder();
+			
 			net.sf.json.JSONObject wodMesJO = net.sf.json.JSONObject.fromObject(mesBody);
 			//WorkOrder wo=(WorkOrder)net.sf.json.JSONObject.toBean(woJO, WorkOrder.class);
-			String identifier = wodMesJO.getString("identifier");
-			String lotNo = wodMesJO.getString("lotNo");
-			String planStartTime = wodMesJO.getString("planStartTime");
-			String productName = wodMesJO.getString("productName");
-			//String productName = getProductNameByIdentifierTest(identifier);
-			String productcode = wodMesJO.getString("productcode");
-			String qty = wodMesJO.getString("qty");
-			String unit = wodMesJO.getString("unit");
-			String workOrder = wodMesJO.getString("workOrder");
-			String workcenterId = wodMesJO.getString("workcenterId");
-			String formulaIdMes = wodMesJO.getString("formulaId");//mes那边发来的formulaId对应java端的FormulaIdMes
-			//以前对应配方表里的recipeId,为了手动创建配方选择recipeId时容易识别配方，就把recipeId和Identifier改为一样的
-			//mes那边的formulaId在batch这边暂时用不到，但工单完成后还得返回给mes，就保存到工单表的FormulaIdMes字段里
+			Object identifierObj = wodMesJO.get("identifier");
+			Object lotNoObj = wodMesJO.get("lotNo");
+			Object planStartTimeObj = wodMesJO.get("planStartTime");
+			Object productNameObj = wodMesJO.get("productName");
+			Object productcodeObj = wodMesJO.get("productcode");
+			Object qtyObj = wodMesJO.get("qty");
+			Object unitObj = wodMesJO.get("unit");
+			Object workOrderObj = wodMesJO.get("workOrder");
+			Object workcenterIdObj = wodMesJO.get("workcenterId");
+			Object formulaIdMesObj = wodMesJO.get("formulaId");
+			Object materialListObj = wodMesJO.get("materialList");
 			
-			String materialListStr = wodMesJO.getString("materialList");
-			Map<String,Object> materialListMap=convertMesMaterialListStrToMaterialListMap(workOrder,materialListStr);
-			List<RecipePM> recipePMList=(List<RecipePM>)materialListMap.get("recipePMList");
-			List<ManFeed> manFeedList=(List<ManFeed>)materialListMap.get("manFeedList");
-			
-			WorkOrder wo=new WorkOrder();
-			//RecipeHeader recipeHeader=recipeHeaderService.getByProductParam(productcode, productName);
-			RecipeHeader recipeHeader=recipeHeaderService.getByIdentifier(identifier);//这个配方名是mes那边下发的，以前是根据配方id查询配方，后来wincc上为了手工创建配方时选择配方方便，就把batch这边的配方id和配方名改为一样的，batch这边的配方id和mes下发的配方id不是同一个字段了，就改为用配方名查询配方
-			if(recipeHeader==null) {
-				jsonMap.put(APIUtil.STATE, "no");
-				jsonMap.put(APIUtil.MSG, "配方"+identifier+"不存在");
+			if(identifierObj==null) {
+				isError=true;
+				msg="缺少identifier字段";
+			}
+			else if(lotNoObj==null) {
+				isError=true;
+				msg="缺少lotNo字段";
+			}
+			else if(planStartTimeObj==null) {
+				isError=true;
+				msg="缺少planStartTime字段";
+			}
+			else if(productNameObj==null) {
+				isError=true;
+				msg="缺少productName字段";
+			}
+			else if(productcodeObj==null) {
+				isError=true;
+				msg="缺少productcode字段";
+			}
+			else if(qtyObj==null) {
+				isError=true;
+				msg="缺少qty字段";
+			}
+			else if(unitObj==null) {
+				isError=true;
+				msg="缺少unit字段";
+			}
+			else if(workOrderObj==null) {
+				isError=true;
+				msg="缺少workOrder字段";
+			}
+			else if(workcenterIdObj==null) {
+				isError=true;
+				msg="缺少workcenterId字段";
+			}
+			else if(formulaIdMesObj==null) {
+				isError=true;
+				msg="缺少formulaId字段";
+			}
+			else if(materialListObj==null) {
+				isError=true;
+				msg="缺少materialList字段";
 			}
 			else {
-				String dev1 = recipeHeader.getDev1();
-				String dev2 = recipeHeader.getDev2();
-				
-				for (ManFeed manFeed : manFeedList) {
-					manFeed.setDev1(dev1);
-					manFeed.setDev2(dev2);
+				String workOrder = workOrderObj.toString();
+				String materialListStr = materialListObj.toString();
+				Map<String,Object> materialListMap=convertMesMaterialListStrToMaterialListMap(workOrder,materialListStr);
+				String materialListMapState = materialListMap.get(APIUtil.STATE).toString();
+				if("ok".equals(materialListMapState)) {
+					String identifier = identifierObj.toString();
+					//RecipeHeader recipeHeader=recipeHeaderService.getByProductParam(productcode, productName);
+					RecipeHeader recipeHeader=recipeHeaderService.getByIdentifier(identifier);//这个配方名是mes那边下发的，以前是根据配方id查询配方，后来wincc上为了手工创建配方时选择配方方便，就把batch这边的配方id和配方名改为一样的，batch这边的配方id和mes下发的配方id不是同一个字段了，就改为用配方名查询配方
+					if(recipeHeader==null) {
+						isError=true;
+						msg="配方"+identifier+"不存在";
+					}
+					else {
+						String lotNo = lotNoObj.toString();
+						String planStartTime = planStartTimeObj.toString();
+						String productName = productNameObj.toString();
+						//String productName = getProductNameByIdentifierTest(identifier);
+						String productcode = productcodeObj.toString();
+						String qty = qtyObj.toString();
+						String unit = unitObj.toString();
+						String workcenterId = workcenterIdObj.toString();
+						String formulaIdMes = formulaIdMesObj.toString();//mes那边发来的formulaId对应java端的FormulaIdMes
+						//以前对应配方表里的recipeId,为了手动创建配方选择recipeId时容易识别配方，就把recipeId和Identifier改为一样的
+						//mes那边的formulaId在batch这边暂时用不到，但工单完成后还得返回给mes，就保存到工单表的FormulaIdMes字段里
+					
+						List<RecipePM> recipePMList=(List<RecipePM>)materialListMap.get("recipePMList");
+						List<ManFeed> manFeedList=(List<ManFeed>)materialListMap.get("manFeedList");
+			
+						String dev1 = recipeHeader.getDev1();
+						String dev2 = recipeHeader.getDev2();
+						
+						for (ManFeed manFeed : manFeedList) {
+							manFeed.setDev1(dev1);
+							manFeed.setDev2(dev2);
+						}
+						
+						String formulaId=workOrderService.createFormulaIdByDateYMD(identifier);
+						
+						String recipeID=recipeHeader.getRecipeID();
+		
+						wo.setIdentifier(identifier);
+						wo.setFormulaId(formulaId);
+						wo.setRecipeID(recipeID);
+						//wo.setID(Integer.valueOf(id));
+						wo.setCreateTime(planStartTime);
+						wo.setProductName(productName);
+						wo.setProductCode(productcode);
+						wo.setTotalOutput(qty);
+						wo.setWorkOrderID(workOrder);
+						wo.setRecipePMList(recipePMList);
+						wo.setManFeedList(manFeedList);
+						wo.setLotNo(lotNo);
+						wo.setWorkcenterId(workcenterId);
+						wo.setFormulaIdMes(formulaIdMes);
+						
+						String unitID = recipeHeader.getUnitID();
+						if(StringUtils.isEmpty(unitID))
+							unitID = createUnitIDByIdentifier(recipeHeader.getIdentifier());
+						wo.setUnitID(unitID);
+					}
 				}
-				
-				String formulaId=workOrderService.createFormulaIdByDateYMD(identifier);
-				
-				String recipeID=recipeHeader.getRecipeID();
-				
-				wo.setIdentifier(identifier);
-				wo.setFormulaId(formulaId);
-				wo.setRecipeID(recipeID);
-				//wo.setID(Integer.valueOf(id));
-				wo.setCreateTime(planStartTime);
-				wo.setProductName(productName);
-				wo.setProductCode(productcode);
-				wo.setTotalOutput(qty);
-				wo.setWorkOrderID(workOrder);
-				wo.setRecipePMList(recipePMList);
-				wo.setManFeedList(manFeedList);
-				wo.setLotNo(lotNo);
-				wo.setWorkcenterId(workcenterId);
-				wo.setFormulaIdMes(formulaIdMes);
-				
-				String unitID = recipeHeader.getUnitID();
-				if(StringUtils.isEmpty(unitID))
-					unitID = createUnitIDByIdentifier(recipeHeader.getIdentifier());
-				wo.setUnitID(unitID);
-				
+				else {
+					isError=true;
+					msg=materialListMap.get(APIUtil.MSG).toString();
+				}
+			}
+			
+			if(isError) {
+				jsonMap.put(APIUtil.STATE, "no");
+				jsonMap.put(APIUtil.MSG, msg);
+			}
+			else {
 				jsonMap.put(APIUtil.STATE, "ok");
 				jsonMap.put("workOrder", wo);
 			}
@@ -2091,68 +2182,127 @@ public class BatchController {
 	 * @return
 	 */
 	private Map<String,Object> convertMesMaterialListStrToMaterialListMap(String workOrderID, String materialListStr){
-		Map<String,Object> materialListMap=new HashMap<>();
-		
-		List<RecipePM> recipePMList=new ArrayList<>();
-		List<ManFeed> manFeedList=new ArrayList<>();
-		
-		net.sf.json.JSONArray materialListJA = net.sf.json.JSONArray.fromObject(materialListStr);
-		int materialListJASize = materialListJA.size();
-		
-		RecipePM recipePM=null;
-		ManFeed manFeed=null;
 
-		boolean stepMesIfExp = DateUtil.checkStepMesIfExp(sdf.format(new Date()));
-		for (int i = 0; i < materialListJASize; i++) {
-			net.sf.json.JSONObject materialListJO = (net.sf.json.JSONObject)materialListJA.get(i);
-			String materialCode = materialListJO.getString("materialCode");
-			String materialName = materialListJO.getString("materialName");
-			//String materialName = getMaterialNameByCodeTest(materialCode);
-			String qty = materialListJO.getString("qty");
-			String unit = materialListJO.getString("unit");
-			//String upperDeviation = materialListJO.getString("upperDeviation");
-			//String lowerDeviation = materialListJO.getString("lowerDeviation");
-			String feedportCode = materialListJO.getString("feedportCode");
+		Map<String,Object> materialListMap=new HashMap<>();
+
+		try {
+			List<RecipePM> recipePMList=new ArrayList<>();
+			List<ManFeed> manFeedList=new ArrayList<>();
 			
-			Integer runStep = null;
-			Integer stepMes = null;
-			String step = materialListJO.getString("step");
-			if(!StringUtils.isEmpty(step)) {
-				if(stepMesIfExp)
-					runStep = Integer.valueOf(step);
-				else
-					stepMes = Integer.valueOf(step);
-			}
+			net.sf.json.JSONArray materialListJA = net.sf.json.JSONArray.fromObject(materialListStr);
+			int materialListJASize = materialListJA.size();
 			
-			if(StringUtils.isEmpty(feedportCode)) {//没有投料口说明是大料或工艺参数
-				recipePM=new RecipePM();
-				recipePM.setPMCode(materialCode);
-				//recipePM.setPMName(materialName);
-				recipePM.setCName(materialName);
-				recipePM.setDosage(qty);
+			RecipePM recipePM=null;
+			ManFeed manFeed=null;
+	
+			boolean isError=false;
+			String msgPre="缺少";
+			String msgSuf="字段";
+			String msg=null;
+			boolean stepMesIfExp = DateUtil.checkStepMesIfExp(sdf.format(new Date()));
+			for (int i = 0; i < materialListJASize; i++) {
+				net.sf.json.JSONObject materialListJO = (net.sf.json.JSONObject)materialListJA.get(i);
+				Object materialCodeObj = materialListJO.get("materialCode");
+				Object materialNameObj = materialListJO.get("materialName");
+				Object qtyObj = materialListJO.get("qty");
+				Object unitObj = materialListJO.get("unit");
+				Object feedportCodeObj = materialListJO.get("feedportCode");
+				Object stepObj = materialListJO.get("step");
 				
-				recipePMList.add(recipePM);
-			}
-			else {//有投料口说明是小料
-				manFeed=new ManFeed();
-				manFeed.setWorkOrderID(workOrderID);
-				manFeed.setMaterialCode(materialCode);
-				manFeed.setMaterialName(materialName);
-				manFeed.setUnit(unit);
-				manFeed.setFeedPort(feedportCode);
-				manFeed.setMarkBit(ManFeed.WJS+"");
-				manFeed.setMaterialSV(qty);
-				manFeed.setRunStep(runStep);
-				manFeed.setStepMes(stepMes);
+				if(materialCodeObj==null) {
+					isError=true;
+					msg="materialCode";
+					break;
+				}
+				else if(materialNameObj==null) {
+					isError=true;
+					msg="materialName";
+					break;
+				}
+				else if(qtyObj==null) {
+					isError=true;
+					msg="qty";
+					break;
+				}
+				else if(unitObj==null) {
+					isError=true;
+					msg="unit";
+					break;
+				}
+				else if(feedportCodeObj==null) {
+					isError=true;
+					msg="feedportCode";
+					break;
+				}
+				else if(stepObj==null) {
+					isError=true;
+					msg="step";
+					break;
+				}
 				
-				manFeedList.add(manFeed);
+				String materialCode = materialCodeObj.toString();
+				String materialName = materialNameObj.toString();
+				//String materialName = getMaterialNameByCodeTest(materialCode);
+				String qty = qtyObj.toString();
+				String unit = unitObj.toString();
+				//String upperDeviation = materialListJO.getString("upperDeviation");
+				//String lowerDeviation = materialListJO.getString("lowerDeviation");
+				String feedportCode = feedportCodeObj.toString();
+				
+				Integer runStep = null;
+				Integer stepMes = null;
+				String step = stepObj.toString();
+				if(!StringUtils.isEmpty(step)) {
+					if(stepMesIfExp)
+						runStep = Integer.valueOf(step);
+					else
+						stepMes = Integer.valueOf(step);
+				}
+				
+				if(StringUtils.isEmpty(feedportCode)) {//没有投料口说明是大料或工艺参数
+					recipePM=new RecipePM();
+					recipePM.setPMCode(materialCode);
+					//recipePM.setPMName(materialName);
+					recipePM.setCName(materialName);
+					recipePM.setDosage(qty);
+					
+					recipePMList.add(recipePM);
+				}
+				else {//有投料口说明是小料
+					manFeed=new ManFeed();
+					manFeed.setWorkOrderID(workOrderID);
+					manFeed.setMaterialCode(materialCode);
+					manFeed.setMaterialName(materialName);
+					manFeed.setUnit(unit);
+					manFeed.setFeedPort(feedportCode);
+					manFeed.setMarkBit(ManFeed.WJS+"");
+					manFeed.setMaterialSV(qty);
+					manFeed.setRunStep(runStep);
+					manFeed.setStepMes(stepMes);
+					
+					manFeedList.add(manFeed);
+				}
 			}
+	
+			if(isError) {
+				materialListMap.put(APIUtil.STATE, "no");
+				materialListMap.put(APIUtil.MSG, msgPre+msg+msgSuf);
+			}
+			else {
+				materialListMap.put(APIUtil.STATE, "ok");
+				materialListMap.put("recipePMList", recipePMList);
+				materialListMap.put("manFeedList", manFeedList);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			
+			materialListMap.put(APIUtil.STATE, "no");
+			materialListMap.put(APIUtil.MSG, e.getMessage());
 		}
-		
-		materialListMap.put("recipePMList", recipePMList);
-		materialListMap.put("manFeedList", manFeedList);
-		
-		return materialListMap;
+		finally {
+			return materialListMap;
+		}
 	}
 	
 	/**
@@ -2632,7 +2782,7 @@ public class BatchController {
 			
 
 			/*
-			sendToMesWOIDList.add("Z92309040204");//调试时针对单个工单发批记录
+			sendToMesWOIDList.add("zj2309110302");//调试时针对单个工单发批记录
 			sendToMesWOList=workOrderService.getSendToMesListTest(sendToMesWOIDList);
 			*/
 			
@@ -2705,7 +2855,7 @@ public class BatchController {
 								JSONObject electtonBatchRecordJO=new JSONObject();
 								electtonBatchRecordJO.put("materialCode",sendToMesBR.getPMCode());
 								electtonBatchRecordJO.put("pMName",sendToMesBR.getPMName());
-								electtonBatchRecordJO.put("materialName",sendToMesBR.getPMCName());
+								electtonBatchRecordJO.put("materialName",sendToMesBR.getPMCName().replaceAll("进料量_", "_"));
 								electtonBatchRecordJO.put("recordType", sendToMesBR.getRecordType());
 								electtonBatchRecordJO.put("recordEvent", sendToMesBR.getRecordEvent());
 								electtonBatchRecordJO.put("recordContent", sendToMesBR.getRecordContent());
@@ -2736,9 +2886,6 @@ public class BatchController {
 						APIUtil.doHttpMes("electronicBatchRecord",bodyParamBRJO);
 					}
 				}
-				//System.out.println("brListSize==="+brList.size());
-				
-				
 			}
 
 			/*
