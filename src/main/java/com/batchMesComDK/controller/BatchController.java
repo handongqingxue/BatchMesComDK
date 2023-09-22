@@ -31,7 +31,9 @@ import com.batchMesComDK.service.*;
 import com.batchMesComDK.util.*;
 import com.thingworx.sdk.batch.BatchComBridge;
 
+//jacob文件的配置
 //https://blog.csdn.net/SHBWeiXiao/article/details/78392382
+//https://blog.csdn.net/weixin_38120360/article/details/125602902
 @Controller
 @RequestMapping("/batch")
 public class BatchController {
@@ -121,17 +123,16 @@ public class BatchController {
 				initUnitIDWOMap();
 			//printUnitIDWOMap();
 			
-			List<String> woPreEndIDList = getWOPreEndIDList();
-			List<WorkOrder> woList=workOrderService.getKeepWatchList(woPreEndIDList);
+			//List<String> woPreEndIDList = getWOPreEndIDList();
+			//List<WorkOrder> woList=workOrderService.getKeepWatchList(woPreEndIDList);
+			List<WorkOrder> woList=workOrderService.getKeepWatchList(null);
 			System.out.println("woListSize==="+woList.size());
 			String workOrderIDs="";
 			String formulaIds="";
 			String unitIDs="";
 			String updateUsers="";
 			
-			String batchCountResultStr = getItem(BatchTest.BATCH_LIST_CT);
-			System.out.println("batchCountResultStr==="+batchCountResultStr);
-			JSONObject batchCountResultJO = new JSONObject(batchCountResultStr);
+			JSONObject batchCountResultJO = getItemJO(BatchTest.BATCH_LIST_CT);
 			int status = batchCountResultJO.getInt("status");
 			boolean success = batchCountResultJO.getBoolean("success");
 			if(status==1) {
@@ -191,7 +192,7 @@ public class BatchController {
 						JSONObject createBatchResultJO = new JSONObject(createBatchResultStr);
 						String createBatchData = createBatchResultJO.getString("data");
 						System.out.println("createBatchData==="+createBatchData);
-						if(createBatchData.contains(BatchTest.SUCCESS_RESULT)) {
+						if(createBatchData.contains(BatchTest.SUCCESS_RESULT)) {//这个判断是否创建batch成功的逻辑已屏蔽，避免创建失败时一直巡回创建，导致没有创建成功而batch那边的id却一直增长的情况
 						 */
 							workOrderService.updateStateById(WorkOrder.BCJWB, id);
 							
@@ -213,60 +214,61 @@ public class BatchController {
 						System.out.println("existRunWO===="+existRunWO);
 						if(!existRunWO) {//没有正在运行的工单，则运行下一个时间点的工单
 							//启动执行配方
-							boolean existQDInBatchList=false;//在batchview里是否存在启动状态的工单
+							boolean existInBatchList=false;//在batchview里是否存在该工单
 							for (int j = 1; j <= batchCount; j++) {
-								//String batchIDVal = BLKey_x("BatchID",j);
-								String batchIDResultJOStr = getItem(BatchTest.BL_BATCH_ID+j);
-								JSONObject batchIDResultJO = new JSONObject(batchIDResultJOStr);
-								String batchIDVal = batchIDResultJO.getString("data");
+								String batchIDVal = getItemVal(BatchTest.BL_BATCH_ID,j);
 								System.out.println("batchIDVal==="+batchIDVal);
-								//batchIDVal = batchIDVal.substring(0, batchIDVal.indexOf(Constant.END_SUCCESS));
 								if(formulaId.equals(batchIDVal)) {
-									existQDInBatchList=true;//存在启动状态的工单，说明该工单待运行，状态同步正确
-									String qdBodyStr=getChaOrdStaBodyStr(workOrderID,WorkOrder.PRODUCTION,updateUser);
-									Map<String, Object> qdCOSMap = changeOrderStatus(qdBodyStr);
-									boolean qdCOSSuccess = Boolean.valueOf(qdCOSMap.get(APIUtil.SUCCESS).toString());
-									if(qdCOSSuccess) {
-										//String createIDVal = BLKey_x("CreateID",j);
-										String createIDResultJOStr = getItem(BatchTest.BL_CREATE_ID+j);
-										JSONObject createIDResultJO = new JSONObject(createIDResultJOStr);
-										String createIDVal = createIDResultJO.getString("data");
-										//createIDVal = createIDVal.substring(0, createIDVal.indexOf(Constant.END_SUCCESS));
-										System.out.println("createIDVal==="+createIDVal);
-										
-										//调用batch环境的启动接口
-										commandBatch(createIDVal,BatchTest.START);
+									existInBatchList=true;//工单存在于batchList中，接下来验证工单在batch端的状态
 									
-										//String stateVal = BLKey_x("State",j);
-										String stateResultJOStr = getItem(BatchTest.BL_STATE+j);
-										JSONObject stateResultJO = new JSONObject(stateResultJOStr);
-										String stateVal = stateResultJO.getString("data");
-										//stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
-										if(BatchTest.RUNNING.equals(stateVal)) {
-											workOrderService.updateStateById(WorkOrder.BYX, id);
+									String stateVal = getItemVal(BatchTest.BL_STATE,j);
+									if(BatchTest.READY.equals(stateVal)) {//存在准备状态的工单，说明该工单待运行，状态同步正确
+										String qdBodyStr=getChaOrdStaBodyStr(workOrderID,WorkOrder.PRODUCTION,updateUser);
+										Map<String, Object> qdCOSMap = changeOrderStatus(qdBodyStr);
+										boolean qdCOSSuccess = Boolean.valueOf(qdCOSMap.get(APIUtil.SUCCESS).toString());
+										if(qdCOSSuccess) {
+											String createIDVal = getItemVal(BatchTest.BL_CREATE_ID,j);
+											System.out.println("createIDVal==="+createIDVal);
 											
-											woMap.put("existRunWO", true);//工单运行了，就把存在运行中的状态值1，其他启动了的工单就无法运行了，直到状态置0才能运行下一个时间点的工单
-											
-											/*
-											 * 现在逻辑改成先调用推送给mes的工单状态变更接口，验证是否产检完成再运行工单，这块逻辑放在上面了，这块先屏蔽掉
-											 * String qdBodyStr=getChaOrdStaBodyStr(workOrderID,WorkOrder.PRODUCTION,updateUser);
-											 * changeOrderStatus(qdBodyStr);
-											 */
-											
-											addWOPreStateInList(WorkOrder.BYX,workOrderID);
+											//调用batch环境的启动接口
+											commandBatch(createIDVal,BatchTest.START);
+										
+											if(BatchTest.RUNNING.equals(getItemVal(BatchTest.BL_STATE,j))) {
+												workOrderService.updateStateById(WorkOrder.BYX, id);
+												
+												woMap.put("existRunWO", true);//工单运行了，就把存在运行中的状态值1，其他启动了的工单就无法运行了，直到状态置0才能运行下一个时间点的工单
+												
+												/*
+												 * 现在逻辑改成先调用推送给mes的工单状态变更接口，验证是否产检完成再运行工单，这块逻辑放在上面了，这块先屏蔽掉
+												 * String qdBodyStr=getChaOrdStaBodyStr(workOrderID,WorkOrder.PRODUCTION,updateUser);
+												 * changeOrderStatus(qdBodyStr);
+												 */
+												
+												addWOPreStateInList(WorkOrder.BYX,workOrderID);
+											}
+											else if(BatchTest.HELD.equals(stateVal)) {
+												workOrderService.updateStateById(WorkOrder.BZT, id);
+												
+												woMap.put("existRunWO", true);
+		
+												addWOPreStateInList(WorkOrder.BZT,workOrderID);
+											}
 										}
-										else if(BatchTest.HELD.equals(stateVal)) {
-											workOrderService.updateStateById(WorkOrder.BZT, id);
-											
-											woMap.put("existRunWO", true);
-	
-											addWOPreStateInList(WorkOrder.BZT,workOrderID);
-										}
+									}
+									else if(BatchTest.STOPPED.equals(stateVal)) {
+										workOrderService.updateStateById(WorkOrder.BYWZZ, id);
+
+										addWOPreStateInList(WorkOrder.BYWZZ,workOrderID);
+									}
+									else if(BatchTest.COMPLETE.equals(stateVal)) {
+										workOrderService.updateStateById(WorkOrder.BJS, id);
+
+										addWOPreStateInList(WorkOrder.BJS,workOrderID);
 									}
 								}
 							}
 							
-							if(!existQDInBatchList) {//在batchview里不存在启动状态的工单，说明该工单对应的批次可能在batchview里已被删除，就还原状态到2，下一轮重新创建批次
+							if(!existInBatchList) {//在batchview里不存在启动状态的工单，说明该工单对应的批次可能在batchview里已被删除，就还原状态到2，下一轮重新创建批次
 								workOrderService.updateStateById(WorkOrder.CSQRWB, id);
 							}
 						}
@@ -281,29 +283,18 @@ public class BatchController {
 						for (int j = 1; j <= batchCount; j++) {
 							String workOrderIDStr = wo.getWorkOrderID().toString();
 							String formulaIdStr = wo.getFormulaId().toString();
-							//String batchIDVal = BLKey_x("BatchID",j);
-							String batchIDResultJOStr = getItem(BatchTest.BL_BATCH_ID+j);
-							JSONObject batchIDResultJO = new JSONObject(batchIDResultJOStr);
-							String batchIDVal = batchIDResultJO.getString("data");
+							String batchIDVal = getItemVal(BatchTest.BL_BATCH_ID,j);
 							System.out.println("batchIDVal==="+batchIDVal);
-							//batchIDVal = batchIDVal.substring(0, batchIDVal.indexOf(Constant.END_SUCCESS));
 							if(formulaIdStr.equals(batchIDVal)) {
 								if(allowRestoreRun) {//重启运行
-									//String createIDVal = BLKey_x("CreateID",j);
-									String createIDResultJOStr = getItem(BatchTest.BL_CREATE_ID+j);
-									JSONObject createIDResultJO = new JSONObject(createIDResultJOStr);
-									String createIDVal = createIDResultJO.getString("data");
-									//createIDVal = createIDVal.substring(0, createIDVal.indexOf(Constant.END_SUCCESS));
+									String createIDVal = getItemVal(BatchTest.BL_CREATE_ID,j);
 									System.out.println("createIDVal==="+createIDVal);
 
 									//调用batch环境的重启接口
 									commandBatch(createIDVal,BatchTest.RESTART);
 								}
 								
-								String stateResultJOStr = getItem(BatchTest.BL_STATE+j);
-								JSONObject stateResultJO = new JSONObject(stateResultJOStr);
-								String stateVal = stateResultJO.getString("data");
-								//stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
+								String stateVal = getItemVal(BatchTest.BL_STATE,j);
 								if(BatchTest.RUNNING.equals(stateVal)) {
 									if(allowRestoreRun) {
 										workOrderService.updateStateById(WorkOrder.BYX, wo.getID());
@@ -329,23 +320,13 @@ public class BatchController {
 						boolean existQXInBatchList=false;//在batchview里是否存在取消状态的工单
 						for (int j = 1; j <= batchCount; j++) {
 							String formulaIdStr = wo.getFormulaId().toString();
-							//String batchIDVal = BLKey_x("BatchID",j);
-							String batchIDResultJOStr = getItem(BatchTest.BL_BATCH_ID+j);
-							JSONObject batchIDResultJO = new JSONObject(batchIDResultJOStr);
-							String batchIDVal = batchIDResultJO.getString("data");
-							//batchIDVal = batchIDVal.substring(0, batchIDVal.indexOf(Constant.END_SUCCESS));
+							String batchIDVal = getItemVal(BatchTest.BL_BATCH_ID,j);
 							if(formulaIdStr.equals(batchIDVal)) {
 								existQXInBatchList=true;//存在取消状态的工单，说明该工单待终止，状态同步正确
-								//String createIDVal = BLKey_x("CreateID",j);
-								String createIDResultJOStr = getItem(BatchTest.BL_CREATE_ID+j);
-								JSONObject createIDResultJO = new JSONObject(createIDResultJOStr);
-								String createIDVal = createIDResultJO.getString("data");
-								//createIDVal = createIDVal.substring(0, createIDVal.indexOf(Constant.END_SUCCESS));
+								String createIDVal = getItemVal(BatchTest.BL_CREATE_ID,j);
 								System.out.println("createIDVal==="+createIDVal);
 
-								String stateResultJOStr = getItem(BatchTest.BL_STATE+j);
-								JSONObject stateResultJO = new JSONObject(stateResultJOStr);
-								String stateVal = stateResultJO.getString("data");
+								String stateVal = getItemVal(BatchTest.BL_STATE,j);
 								if(BatchTest.READY.equals(stateVal)) {//工单取消时，若batch状态是已创建，还未执行，就没必要停止batch，直接移除batch就行
 									removeBatch(createIDVal);
 									
@@ -356,11 +337,7 @@ public class BatchController {
 								else {//若工单已经执行了，就得停止batch运行
 									commandBatch(createIDVal,BatchTest.STOP);
 		
-									//String stateVal = BLKey_x("State",j);
-									stateResultJOStr = getItem(BatchTest.BL_STATE+j);
-									stateResultJO = new JSONObject(stateResultJOStr);
-									stateVal = stateResultJO.getString("data");
-									//stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
+									stateVal = getItemVal(BatchTest.BL_STATE,j);
 									if(BatchTest.STOPPED.equals(stateVal)) {
 										workOrderService.updateStateById(WorkOrder.BYWZZ, wo.getID());
 										
@@ -391,17 +368,9 @@ public class BatchController {
 						if(allowHold) {
 							for (int j = 1; j <= batchCount; j++) {
 								String formulaIdStr = wo.getFormulaId().toString();
-								//String batchIDVal = BLKey_x("BatchID",j);
-								String batchIDResultJOStr = getItem(BatchTest.BL_BATCH_ID+j);
-								JSONObject batchIDResultJO = new JSONObject(batchIDResultJOStr);
-								String batchIDVal = batchIDResultJO.getString("data");
-								//batchIDVal = batchIDVal.substring(0, batchIDVal.indexOf(Constant.END_SUCCESS));
+								String batchIDVal = getItemVal(BatchTest.BL_BATCH_ID,j);
 								if(formulaIdStr.equals(batchIDVal)) {
-									//String createIDVal = BLKey_x("CreateID",j);
-									String createIDResultJOStr = getItem(BatchTest.BL_CREATE_ID+j);
-									JSONObject createIDResultJO = new JSONObject(createIDResultJOStr);
-									String createIDVal = createIDResultJO.getString("data");
-									//createIDVal = createIDVal.substring(0, createIDVal.indexOf(Constant.END_SUCCESS));
+									String createIDVal = getItemVal(BatchTest.BL_CREATE_ID,j);
 									System.out.println("createIDVal==="+createIDVal);
 									
 									commandBatch(createIDVal,BatchTest.HOLD);
@@ -458,6 +427,8 @@ public class BatchController {
 						}
 						
 						break;
+						/*
+						 * 现在批记录上传成功状态(14)去掉了，工单完成后直接给mes推送批记录。暂时屏蔽掉这块代码，以后可能还会用到
 					case WorkOrder.PJLSCCG:
 						boolean allowPJLSCCG=false;
 						if(WorkOrder.BJS==getWOPreStateByWOID(workOrderID)) {//若工单前一个状态是结束，说明wincc端批记录刚上传成功，就执行一次下面的逻辑
@@ -472,6 +443,7 @@ public class BatchController {
 						
 						addWOPreStateInList(WorkOrder.PJLSCCG,workOrderID);
 						break;
+						*/
 					}
 					
 					if(state==WorkOrder.BYX||state==WorkOrder.BQX||state==WorkOrder.BZT) {
@@ -499,9 +471,7 @@ public class BatchController {
 						Map<String, Object> woMap = unitIDWOMap.get(unitID);
 						woMap.put("existInBatchList", false);
 						for (int j = 1; j <= batchCount; j++) {
-							//String batchIDVal = BLKey_x("BatchID",j);
-							String batchIDResultJOStr = getItem(BatchTest.BL_BATCH_ID+j);
-							JSONObject batchIDResultJO = new JSONObject(batchIDResultJOStr);
+							JSONObject batchIDResultJO = getItemJO(BatchTest.BL_BATCH_ID,j);
 							int blBatchIDStatus = batchIDResultJO.getInt("status");
 							if(blBatchIDStatus==1) {
 								String batchIDVal = batchIDResultJO.getString("data");
@@ -509,20 +479,16 @@ public class BatchController {
 								if(formulaId.equals(batchIDVal)) {
 									woMap.put("existInBatchList", true);
 									
-									//String stateVal = BLKey_x("State",j);
-									String stateResultJOStr = getItem(BatchTest.BL_STATE+j);
-									JSONObject stateResultJO = new JSONObject(stateResultJOStr);
-									String stateVal = stateResultJO.getString("data");
-									//stateVal = stateVal.substring(0, stateVal.indexOf(Constant.END_SUCCESS));
+									String stateVal = getItemVal(BatchTest.BL_STATE,j);
 									if(BatchTest.COMPLETE.equals(stateVal)) {
 										workOrderService.updateStateByFormulaId(WorkOrder.BJS, formulaId);
 										
-										//woMap.put("existRunWO", false);
+										woMap.put("existRunWO", false);
 										
 										String wcBodyStr = getChaOrdStaBodyStr(workOrderID,WorkOrder.CREAMFINISH,updateUser);
 										changeOrderStatus(wcBodyStr);
 										
-										//getSendToMesBRData();//检索是否存在给mes端推送批记录的工单
+										getSendToMesBRData();//检索是否存在给mes端推送批记录的工单
 										
 										addWOPreStateInList(WorkOrder.BJS,workOrderID);
 									}
@@ -874,7 +840,7 @@ public class BatchController {
 	}
 	
 	/**
-	 * 获取工单前一个状态里结束的工单号集合(一旦结束下次就不需要再巡回了，节省资源占用)
+	 * 获取工单前一个状态里结束的工单号集合(一旦结束下次就不需要再巡回了，节省资源占用。现在批记录上传成功的状态(14)不在巡回的状态范围内，这个方法暂时用不到了)
 	 * @return
 	 */
 	private List<String> getWOPreEndIDList() {
@@ -882,7 +848,7 @@ public class BatchController {
 		for (Map<String, Object> woPreStateMap : woPreStateList) {
 			String preWorkOrderID = woPreStateMap.get("workOrderID").toString();
 			Integer preState = Integer.valueOf(woPreStateMap.get("state").toString());
-			if(preState==WorkOrder.BYWZZ||preState==WorkOrder.PJLSCCG) {
+			if(preState==WorkOrder.BYWZZ||preState==WorkOrder.BJS) {
 				workOrderIDList.add(preWorkOrderID);
 			}
 		}
@@ -1728,6 +1694,27 @@ public class BatchController {
 		testLog.setMsg(msg);
 		
 		return testLog;
+	}
+	
+	public String getItemVal(String key, int rowNumber) throws JSONException {
+		//val = BLKey_x("key",rowNumber);
+		String resultJOStr = getItem(key+rowNumber);
+		JSONObject resultJO = new JSONObject(resultJOStr);
+		String val = resultJO.getString("data");
+		//val = val.substring(0, val.indexOf(Constant.END_SUCCESS));
+		return val;
+	}
+	
+	public JSONObject getItemJO(String key, int rowNumber) throws JSONException {
+		String resultJOStr = getItem(key+rowNumber);
+		JSONObject resultJO = new JSONObject(resultJOStr);
+		return resultJO;
+	}
+	
+	public JSONObject getItemJO(String key) throws JSONException {
+		String resultJOStr = getItem(key);
+		JSONObject resultJO = new JSONObject(resultJOStr);
+		return resultJO;
 	}
 	
 	/**

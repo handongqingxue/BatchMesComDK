@@ -49,17 +49,21 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	@Override
 	public List<WorkOrder> getKeepWatchList(List<String> woEndIDList) {
 		// TODO Auto-generated method stub
-		String states = WorkOrder.CSQRWB+","+WorkOrder.BQD+","+WorkOrder.BYX+","+WorkOrder.BQX+","+WorkOrder.BZT+","+WorkOrder.GDLXZXQX+","+WorkOrder.GDSGCJ+","+WorkOrder.PJLSCCG;
+		String states = WorkOrder.CSQRWB+","+WorkOrder.BQD+","+WorkOrder.BYX+","+WorkOrder.BQX+","+WorkOrder.BZT+","+WorkOrder.GDLXZXQX+","+WorkOrder.GDSGCJ;
 		String[] stateArr = states.split(",");
 		List<String> stateList = Arrays.asList(stateArr);
-		return workOrderDao.getListByWOEndIDStateList(woEndIDList,stateList);
+		List<WorkOrder> kwwoList=null;
+		if(woEndIDList==null)//若工单上次id集合没有，则调用这个方法
+			kwwoList=workOrderDao.getListByStateList(stateList);
+		else
+			kwwoList=workOrderDao.getListByWOEndIDStateList(woEndIDList,stateList);
+		return kwwoList;
 	}
 
 	@Override
 	public List<WorkOrder> getSendToMesList() {
 		// TODO Auto-generated method stub
-		//String states = WorkOrder.BYWZZ+","+WorkOrder.BJS;
-		String states = WorkOrder.BYWZZ+","+WorkOrder.PJLSCCG;
+		String states = WorkOrder.BYWZZ+","+WorkOrder.BJS;
 		String[] stateArr = states.split(",");
 		List<String> stateList = Arrays.asList(stateArr);
 		return workOrderDao.getSendToMesListByStateList(stateList);
@@ -68,7 +72,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	@Override
 	public List<WorkOrder> getSendToMesListTest(List<String> workOrderIDList) {
 		// TODO Auto-generated method stub
-		String states = WorkOrder.BYWZZ+","+WorkOrder.PJLSCCG;
+		String states = WorkOrder.BYWZZ+","+WorkOrder.BJS;
 		String[] stateArr = states.split(",");
 		List<String> stateList = Arrays.asList(stateArr);
 		return workOrderDao.getSendToMesListByStateListTest(workOrderIDList,stateList);

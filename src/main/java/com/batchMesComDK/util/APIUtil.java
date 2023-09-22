@@ -26,7 +26,14 @@ public class APIUtil {
 	public static final String SERVICE_URL="http://localhost:8080/ZnczLfyl/gkj/";
 	//public static final String SERVICE_URL_MES="https://385n683i90.imdo.co/mesPlatform/api/remote/batch/";
 	
-	public static final String SERVICE_URL_MES="http://10.0.3.135:80/mesPlatform/api/remote/batch/";
+	/**
+	 * 测试环境ip
+	 */
+	//public static final String SERVICE_URL_MES="http://10.0.3.135:80/mesPlatform/api/remote/batch/";
+	/**
+	 * 正式环境ip
+	 */
+	public static final String SERVICE_URL_MES="http://10.0.3.142:80/mesPlatform/api/remote/batch/";
 	//public static final String SERVICE_URL_MES="http://10.0.3.136:19888/mesPlatform/api/remote/batch/";
 	//public static final String SERVICE_URL_MES="http://172.25.10.13:19888/mesPlatform/api/remote/batch/";
 	

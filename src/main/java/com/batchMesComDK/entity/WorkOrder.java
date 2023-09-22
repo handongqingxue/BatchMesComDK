@@ -48,10 +48,6 @@ public class WorkOrder {
 	 * 工单手工创建
 	 */
 	public static final int GDSGCJ=13;
-	/**
-	 * 批记录上传成功
-	 */
-	public static final int PJLSCCG=14;
 	
 	/**
 	 * 物料齐套完毕名称
