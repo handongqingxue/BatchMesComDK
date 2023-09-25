@@ -34,6 +34,7 @@ import com.thingworx.sdk.batch.BatchComBridge;
 //jacob文件的配置
 //https://blog.csdn.net/SHBWeiXiao/article/details/78392382
 //https://blog.csdn.net/weixin_38120360/article/details/125602902
+//附加数据库出错解决方案:https://www.exyb.cn/news/show-329981.html?action=onClick
 @Controller
 @RequestMapping("/batch")
 public class BatchController {

@@ -29,11 +29,11 @@ public class APIUtil {
 	/**
 	 * 测试环境ip
 	 */
-	//public static final String SERVICE_URL_MES="http://10.0.3.135:80/mesPlatform/api/remote/batch/";
+	public static final String SERVICE_URL_MES="http://10.0.3.135:80/mesPlatform/api/remote/batch/";
 	/**
 	 * 正式环境ip
 	 */
-	public static final String SERVICE_URL_MES="http://10.0.3.142:80/mesPlatform/api/remote/batch/";
+	//public static final String SERVICE_URL_MES="http://10.0.3.160:80/mesPlatform/api/remote/batch/";
 	//public static final String SERVICE_URL_MES="http://10.0.3.136:19888/mesPlatform/api/remote/batch/";
 	//public static final String SERVICE_URL_MES="http://172.25.10.13:19888/mesPlatform/api/remote/batch/";
 	
