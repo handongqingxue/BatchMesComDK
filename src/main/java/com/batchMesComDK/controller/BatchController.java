@@ -5,6 +5,7 @@ import java.net.URLDecoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -344,7 +345,7 @@ public class BatchController {
 										
 										woMap.put("existRunWO", false);
 										
-										getSendToMesBRData();//检索是否存在给mes端推送批记录的工单
+										getSendToMesBRData(null);//检索是否存在给mes端推送批记录的工单
 										
 										String jsBodyStr = getChaOrdStaBodyStr(workOrderID,WorkOrder.PRODUCTBREAK,updateUser);
 										changeOrderStatus(jsBodyStr);
@@ -489,7 +490,7 @@ public class BatchController {
 										String wcBodyStr = getChaOrdStaBodyStr(workOrderID,WorkOrder.CREAMFINISH,updateUser);
 										changeOrderStatus(wcBodyStr);
 										
-										getSendToMesBRData();//检索是否存在给mes端推送批记录的工单
+										getSendToMesBRData(null);//检索是否存在给mes端推送批记录的工单
 										
 										addWOPreStateInList(WorkOrder.BJS,workOrderID);
 									}
@@ -523,7 +524,7 @@ public class BatchController {
 										if(WorkOrder.BYWZZ!=getWOPreStateByWOID(workOrderID)) {
 											workOrderService.updateStateByFormulaId(WorkOrder.BYWZZ, formulaId);
 											
-											getSendToMesBRData();//检索是否存在给mes端推送批记录的工单
+											getSendToMesBRData(null);//检索是否存在给mes端推送批记录的工单
 											
 											String jsBodyStr = getChaOrdStaBodyStr(workOrderID,WorkOrder.PRODUCTBREAK,updateUser);
 											changeOrderStatus(jsBodyStr);
@@ -744,7 +745,7 @@ public class BatchController {
 								jsSB.append("\"updateTime\":\"2022-1-13 12:14:13\",\"updateBy\":\"OPR2\"}]");
 								changeOrderStatus(jsSB.toString());//当batch环境里的批次完成时，通知mes端工单状态已经改变
 								
-								getSendToMesBRData();//检索是否存在给mes端推送批记录的工单
+								getSendToMesBRData(null);//检索是否存在给mes端推送批记录的工单
 								
 								addWOPreStateInList(WorkOrder.BJS,workOrderID);//把前一个工单状态存入数组里
 							}
@@ -2743,7 +2744,7 @@ public class BatchController {
 	 */
 	@RequestMapping(value="/getSendToMesBRData", method = RequestMethod.POST)
 	@ResponseBody
-	public Map<String, Object> getSendToMesBRData() {
+	public Map<String, Object> getSendToMesBRData(@RequestBody String bodyEnc) {
 
 		//phaseRecord phase过程记录        batchRecord 批次过程记录     devicationRecord 偏差记录    materialRecord 物料参数记录
 		//按8 9 3 2这样顺序发
@@ -2769,21 +2770,46 @@ public class BatchController {
 			}
 			
 
-			/*
-			sendToMesWOIDList.add("zj2309110302");//调试时针对单个工单发批记录
-			sendToMesWOList=workOrderService.getSendToMesListTest(sendToMesWOIDList);
-			*/
-			
 			int count=0;
+			if(StringUtils.isEmpty(bodyEnc)) {
+				/*
+				sendToMesWOIDList.add("ZK2309230101");//调试时针对单个工单发批记录
+				sendToMesWOList=workOrderService.getSendToMesListTest(sendToMesWOIDList);
+				*/
+				
+				count=batchRecordService.addTechFromBHBatchHis(sendToMesWOIDList);
+				count=batchRecordService.addMaterialFromBHBatchHis(sendToMesWOIDList);
+				count=batchRecordService.addPhaseFromBHBatchHis(sendToMesWOIDList);
+				//count=batchRecordService.addBatchFromBHBatch(sendToMesWOIDList);
+			}
+			else {
+				//{"workOrderIDs":"ZI2309220101,ZJ2309220101,ZL2309230101","recordTypeNames":"tech,mater,phase"}
+				net.sf.json.JSONObject bodyJO = net.sf.json.JSONObject.fromObject(bodyEnc);
+				String workOrderIDs = bodyJO.getString("workOrderIDs");
+				String[] workOrderIDArr = workOrderIDs.split(",");
+				List<String> workOrderIDList = Arrays.asList(workOrderIDArr);
+				for (String workOrderID : workOrderIDList) {
+					sendToMesWOIDList.add(workOrderID);//调试时针对单个工单发批记录
+				}
+				sendToMesWOList=workOrderService.getSendToMesListTest(sendToMesWOIDList);
+				
+				String recordTypeNames = bodyJO.getString("recordTypeNames");
+				String[] recordTypeNameArr = recordTypeNames.split(",");
+				for (String recordTypeName : recordTypeNameArr) {
+					if("tech".equals(recordTypeName)) {
+						count=batchRecordService.addTechFromBHBatchHis(sendToMesWOIDList);
+					}
+					else if("mater".equals(recordTypeName)) {
+						count=batchRecordService.addMaterialFromBHBatchHis(sendToMesWOIDList);
+					}
+					else if("phase".equals(recordTypeName)) {
+						count=batchRecordService.addPhaseFromBHBatchHis(sendToMesWOIDList);
+					}
+				}
+			}
 			/*
 			System.out.println("count===="+count);
 			*/
-			count=batchRecordService.addTechFromBHBatchHis(sendToMesWOIDList);
-			count=batchRecordService.addMaterialFromBHBatchHis(sendToMesWOIDList);
-			count=batchRecordService.addPhaseFromBHBatchHis(sendToMesWOIDList);
-			//count=batchRecordService.addBatchFromBHBatch(sendToMesWOIDList);
-			
-			
 			
 			List<BatchRecord> brList=batchRecordService.getSendToMesData(sendToMesWOIDList);
 			System.out.println("brListSize==============="+brList.size());
@@ -2843,7 +2869,10 @@ public class BatchController {
 								JSONObject electtonBatchRecordJO=new JSONObject();
 								electtonBatchRecordJO.put("materialCode",sendToMesBR.getPMCode());
 								electtonBatchRecordJO.put("pMName",sendToMesBR.getPMName());
-								electtonBatchRecordJO.put("materialName",sendToMesBR.getPMCName().replaceAll("进料量_", "_"));
+								String pMCName = sendToMesBR.getPMCName();
+								if(!StringUtils.isEmpty(pMCName))
+									pMCName = pMCName.replaceAll("进料量_", "_");
+								electtonBatchRecordJO.put("materialName",pMCName);
 								electtonBatchRecordJO.put("recordType", sendToMesBR.getRecordType());
 								electtonBatchRecordJO.put("recordEvent", sendToMesBR.getRecordEvent());
 								electtonBatchRecordJO.put("recordContent", sendToMesBR.getRecordContent());
