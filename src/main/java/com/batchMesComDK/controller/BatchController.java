@@ -2770,7 +2770,7 @@ public class BatchController {
 			
 
 			int count=0;
-			if(StringUtils.isEmpty(bodyEnc)) {
+			if(StringUtils.isEmpty(bodyEnc)) {//自动推送给mes的逻辑
 				/*
 				sendToMesWOIDList.add("ZK2309230101");//调试时针对单个工单发批记录
 				sendToMesWOList=workOrderService.getSendToMesListTest(sendToMesWOIDList);
@@ -2781,7 +2781,7 @@ public class BatchController {
 				count=batchRecordService.addPhaseFromBHBatchHis(sendToMesWOIDList);
 				//count=batchRecordService.addBatchFromBHBatch(sendToMesWOIDList);
 			}
-			else {
+			else {//手动推送给mes的逻辑
 				//{"workOrderIDs":"ZI2309220101,ZJ2309220101,ZL2309230101","recordTypeNames":"tech,mater,phase"}
 				net.sf.json.JSONObject bodyJO = net.sf.json.JSONObject.fromObject(bodyEnc);
 				String workOrderIDs = bodyJO.getString("workOrderIDs");
@@ -2869,7 +2869,7 @@ public class BatchController {
 								electtonBatchRecordJO.put("materialCode",sendToMesBR.getPMCode());
 								electtonBatchRecordJO.put("pMName",sendToMesBR.getPMName());
 								String pMCName = sendToMesBR.getPMCName();
-								//if(!StringUtils.isEmpty(pMCName))
+								//if(!StringUtils.isEmpty(pMCName))//现在不给mes推送batch端参数中文名(CName)了,推送的是mes那边发来的参数中文名(CNameMes),里面不包含进料量三个字，就不用去掉了
 									//pMCName = pMCName.replaceAll("进料量_", "_");
 								electtonBatchRecordJO.put("materialName",pMCName);
 								electtonBatchRecordJO.put("recordType", sendToMesBR.getRecordType());

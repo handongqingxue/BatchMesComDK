@@ -9,7 +9,7 @@ import com.batchMesComDK.entity.*;
 public interface BHBatchHisMapper {
 	
 	/**
-	 * 获得原料记录
+	 * 获得原料记录(这个方法以前给mes推送batch端的参数中文名时用，现在给mes推送mes那边发的中文名暂时不用这个方法了，用下面的方法)
 	 * @param workOrderIDList
 	 * @return
 	 */
