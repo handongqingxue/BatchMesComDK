@@ -13,6 +13,13 @@ public interface BHBatchHisMapper {
 	 * @param workOrderIDList
 	 * @return
 	 */
+	List<BHBatchHis> getMaterialListByWOIDListOld(@Param("workOrderIDList") List<String> workOrderIDList);
+
+	/**
+	 * 获得原料记录
+	 * @param workOrderIDList
+	 * @return
+	 */
 	List<BHBatchHis> getMaterialListByWOIDList(@Param("workOrderIDList") List<String> workOrderIDList);
 
 	/**

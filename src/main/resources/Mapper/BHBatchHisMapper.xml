@@ -3,7 +3,7 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.batchMesComDK.dao.BHBatchHisMapper">
-	<select id="getMaterialListByWOIDList" resultType="com.batchMesComDK.entity.BHBatchHis">
+	<select id="getMaterialListByWOIDListOld" resultType="com.batchMesComDK.entity.BHBatchHis">
 		<!-- 
 		 select rPM.CName,brTr.PhaseName,wo.WorkOrderID,rPM.PMCode,his.* from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo,BatchRecordTr brTr,RecipePM rPM
 		 where his.BatchID=wo.FormulaId collate chinese_prc_ci_as and his.Descript=brTr.PMName collate chinese_prc_ci_as and his.Phase=brTr.PhaseName collate chinese_prc_ci_as
@@ -25,6 +25,25 @@
 		 and t.AddIndex=substring(rPM.PMName,len(rPM.PMName),1) collate chinese_prc_ci_as and t.WorkOrderID=rPM.WorkOrderID
 		 union all
 		 select REPLACE(rPM.CName,'进料量','设定量') CName,rPM.PMCode,t.* from(select brTr.PhaseName,brTr.PMDisc,wo.WorkOrderID,dense_rank() OVER (partition by SUBSTRING(his.Recipe,charindex('ADD_',his.Recipe) ,len(his.Recipe)) ORDER BY his.RecordNo) as AddIndex,his.* from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo,BatchRecordTr brTr
+		 where his.BatchID=wo.FormulaId collate chinese_prc_ci_as and his.Descript=brTr.PMName collate chinese_prc_ci_as and his.Phase=brTr.PhaseName collate chinese_prc_ci_as
+		 <foreach collection="workOrderIDList" item="workOrderID" open=" and cast(wo.WorkOrderID as char) in (" separator="," close=")">
+		 #{workOrderID}
+		 </foreach>
+		 and his.Descript='ADD_AMOUNT' and his.Event='Recipe Value') t,RecipePM rPM where 1=1
+		  and t.PMDisc=case when charindex('_',rPM.CName)>0 then REPLACE(substring(rPM.CName,0,charindex('_',rPM.CName)),'进料量','设定量') else rPM.CName end collate chinese_prc_ci_as
+		 and t.AddIndex=substring(rPM.PMName,len(rPM.PMName),1) collate chinese_prc_ci_as and t.WorkOrderID=rPM.WorkOrderID
+	</select>
+	<select id="getMaterialListByWOIDList" resultType="com.batchMesComDK.entity.BHBatchHis">
+		 select rPM.CNameMes,rPM.PMCode,t.* from(select brTr.PhaseName,brTr.PMDisc,wo.WorkOrderID,dense_rank() OVER (partition by SUBSTRING(his.Recipe,charindex('ADD_',his.Recipe) ,len(his.Recipe)) ORDER BY his.RecordNo) as AddIndex,his.* from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo,BatchRecordTr brTr
+		 where his.BatchID=wo.FormulaId collate chinese_prc_ci_as and his.Descript=brTr.PMName collate chinese_prc_ci_as and his.Phase=brTr.PhaseName collate chinese_prc_ci_as
+		 <foreach collection="workOrderIDList" item="workOrderID" open=" and cast(wo.WorkOrderID as char) in (" separator="," close=")">
+		 #{workOrderID}
+		 </foreach>
+		 and his.Descript='ADDED_AMOUNT' and his.Event='report') t,RecipePM rPM where 1=1
+		  and t.PMDisc=case when charindex('_',rPM.CName)>0 then substring(rPM.CName,0,charindex('_',rPM.CName)) else rPM.CName end collate chinese_prc_ci_as
+		 and t.AddIndex=substring(rPM.PMName,len(rPM.PMName),1) collate chinese_prc_ci_as and t.WorkOrderID=rPM.WorkOrderID
+		 union all
+		 select CONCAT(rPM.CNameMes,'设定量') CNameMes,rPM.PMCode,t.* from(select brTr.PhaseName,brTr.PMDisc,wo.WorkOrderID,dense_rank() OVER (partition by SUBSTRING(his.Recipe,charindex('ADD_',his.Recipe) ,len(his.Recipe)) ORDER BY his.RecordNo) as AddIndex,his.* from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo,BatchRecordTr brTr
 		 where his.BatchID=wo.FormulaId collate chinese_prc_ci_as and his.Descript=brTr.PMName collate chinese_prc_ci_as and his.Phase=brTr.PhaseName collate chinese_prc_ci_as
 		 <foreach collection="workOrderIDList" item="workOrderID" open=" and cast(wo.WorkOrderID as char) in (" separator="," close=")">
 		 #{workOrderID}

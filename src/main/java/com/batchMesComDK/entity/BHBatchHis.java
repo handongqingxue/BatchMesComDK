@@ -231,6 +231,12 @@ public class BHBatchHis {
 	public void setCName(String cName) {
 		CName = cName;
 	}
+	public String getCNameMes() {
+		return CNameMes;
+	}
+	public void setCNameMes(String cNameMes) {
+		CNameMes = cNameMes;
+	}
 	public String getPhaseDisc() {
 		return PhaseDisc;
 	}
@@ -322,6 +328,7 @@ public class BHBatchHis {
 	private String RecordID;
 	private String WorkOrderID;
 	private String CName;
+	private String CNameMes;
 	private String PhaseDisc;
 	private String PMCode;
 	private String PMName;

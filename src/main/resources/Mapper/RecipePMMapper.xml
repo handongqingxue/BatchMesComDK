@@ -48,6 +48,9 @@
 			<if test="Step!=null">
 				Step,
 			</if>
+			<if test="CNameMes!=null">
+				CNameMes,
+			</if>
 		</trim>
 		values
 		<trim prefix="(" suffix=")" suffixOverrides=",">
@@ -93,11 +96,14 @@
 			<if test="Step!=null">
 				#{Step},
 			</if>
+			<if test="CNameMes!=null">
+				#{CNameMes},
+			</if>
 		</trim>
 	</insert>
 	<insert id="addFromList">
 		insert into RecipePM(PMCode,PMName,Lot,Dosage,Unit,HLimit,LLimit,PMType,WorkOrderID,
-		CName,HH,LL,PMSort,Step) values
+		CName,HH,LL,PMSort,Step,CNameMes) values
 		<foreach collection="rPMList" item="rPM" separator=",">
 			<trim prefix="(" suffix=")" suffixOverrides=",">
 				<choose>
@@ -207,6 +213,14 @@
 				<choose>
 					<when test="rPM.step!=null">
 						#{rPM.step},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="rPM.CNameMes!=null">
+						#{rPM.CNameMes},
 					</when>
 					<otherwise>
 						'',

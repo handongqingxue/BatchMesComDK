@@ -424,7 +424,7 @@ public class BatchController {
 						
 						int sgcjEditCount=workOrderService.edit(woSGCJ);
 						if(sgcjEditCount>0) {
-							recipePMService.addFromTMP(workOrderIDSGCJ, recipeID);
+							recipePMService.addFromTMP(workOrderIDSGCJ, recipeID, null);
 							workOrderService.updateStateByWorkOrderID(WorkOrder.WLQTWB,workOrderIDSGCJ);
 						}
 						
@@ -1296,7 +1296,7 @@ public class BatchController {
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		
 		try {
-			int count=recipePMService.addFromTMP(workOrderID, recipeID);
+			int count=recipePMService.addFromTMP(workOrderID, recipeID, null);
 			if(count>0) {
 				jsonMap.put("message", "ok");
 				jsonMap.put("info", "添加配方参数成功");
@@ -1911,7 +1911,7 @@ public class BatchController {
 	@RequestMapping(value="/workOrderDown", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> workOrderDown(@RequestBody String bodyEnc) {
-
+		
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		boolean success=false;
 		String state=null;
@@ -1928,10 +1928,10 @@ public class BatchController {
 					int c=workOrderService.add(wo);
 					if(c>0) {
 						String workOrderID = wo.getWorkOrderID();
-						c=recipePMService.addFromTMP(workOrderID, recipeID);
+						List<RecipePM> recipePMList = wo.getRecipePMList();
+						c=recipePMService.addFromTMP(workOrderID, recipeID, recipePMList);
 						//c=recipePMService.addFromWORecipePMList(workOrderID, wo.getRecipePMList());
 						if(c>0) {
-							List<RecipePM> recipePMList = wo.getRecipePMList();
 							List<ManFeed> manFeedList = wo.getManFeedList();
 							/*
 							 * 为了测试这块先屏蔽掉
@@ -2251,8 +2251,7 @@ public class BatchController {
 				if(StringUtils.isEmpty(feedportCode)) {//没有投料口说明是大料或工艺参数
 					recipePM=new RecipePM();
 					recipePM.setPMCode(materialCode);
-					//recipePM.setPMName(materialName);
-					recipePM.setCName(materialName);
+					recipePM.setCNameMes(materialName);
 					recipePM.setDosage(qty);
 					
 					recipePMList.add(recipePM);
@@ -2870,8 +2869,8 @@ public class BatchController {
 								electtonBatchRecordJO.put("materialCode",sendToMesBR.getPMCode());
 								electtonBatchRecordJO.put("pMName",sendToMesBR.getPMName());
 								String pMCName = sendToMesBR.getPMCName();
-								if(!StringUtils.isEmpty(pMCName))
-									pMCName = pMCName.replaceAll("进料量_", "_");
+								//if(!StringUtils.isEmpty(pMCName))
+									//pMCName = pMCName.replaceAll("进料量_", "_");
 								electtonBatchRecordJO.put("materialName",pMCName);
 								electtonBatchRecordJO.put("recordType", sendToMesBR.getRecordType());
 								electtonBatchRecordJO.put("recordEvent", sendToMesBR.getRecordEvent());

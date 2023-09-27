@@ -106,6 +106,12 @@ public class RecipePM {
 	public void setStep(Integer step) {
 		Step = step;
 	}
+	public String getCNameMes() {
+		return CNameMes;
+	}
+	public void setCNameMes(String cNameMes) {
+		CNameMes = cNameMes;
+	}
 	private String PMCode;
   	private String PMName;
   	private String Lot;
@@ -120,4 +126,5 @@ public class RecipePM {
 	private String LL;
 	private Integer PMSort;
 	private Integer Step;
+	private String CNameMes;
 }

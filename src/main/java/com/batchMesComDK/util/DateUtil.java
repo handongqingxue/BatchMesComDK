@@ -18,11 +18,11 @@ public class DateUtil {
 	/**
 	 * java处理StepMes为RunStep到期时间
 	 */
-	public static final String STEP_MES_EXP_DATE="2023-09-24 00:00:00.0";
+	public static final String STEP_MES_EXP_DATE="2023-10-24 00:00:00.0";
 	/**
 	 * java拆分大料量到期时间
 	 */
-	public static final String DOSAGE_LAST_EXP_DATE="2023-09-24 00:00:00.0";
+	public static final String DOSAGE_LAST_EXP_DATE="2023-10-24 00:00:00.0";
 
 	public static int getTimeBetween(String time1, String time2, int flag) {
 		//https://blog.csdn.net/qq_41977655/article/details/125248861

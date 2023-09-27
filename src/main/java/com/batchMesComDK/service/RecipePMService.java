@@ -6,7 +6,7 @@ import com.batchMesComDK.entity.RecipePM;
 
 public interface RecipePMService {
 
-	int addFromTMP(String workOrderID, String recipeID);
+	int addFromTMP(String workOrderID, String recipeID, List<RecipePM> recipePMMesList);
 
 	/**
 	 * 测试时没有提供工艺指导书，就暂时将下单报文里的物料参数信息直接插入到配方参数表里

@@ -25,7 +25,7 @@ public class RecipePMServiceImpl implements RecipePMService {
 	RecipePMMapper recipePMDao;
 
 	@Override
-	public int addFromTMP(String workOrderID, String recipeID) {
+	public int addFromTMP(String workOrderID, String recipeID, List<RecipePM> recipePMMesList) {
 		// TODO Auto-generated method stub
 		//System.out.println("recipeIDlength==="+recipeID.length());
 		//System.out.println("recipeID==="+recipeID);
@@ -38,8 +38,9 @@ public class RecipePMServiceImpl implements RecipePMService {
 		RecipePM rPM=null;
 		for(int i=0;i<rPMTmpList.size();i++) {
 			RecipePM_TMP rPMTmp = rPMTmpList.get(i);
+			String pMCodeTmp = rPMTmp.getPMCode();
 			rPM=new RecipePM();
-			rPM.setPMCode(rPMTmp.getPMCode());
+			rPM.setPMCode(pMCodeTmp);
 			rPM.setPMName(rPMTmp.getPMName());
 			rPM.setLot(rPMTmp.getLot());
 			rPM.setDosage(rPMTmp.getDosage());
@@ -53,6 +54,8 @@ public class RecipePMServiceImpl implements RecipePMService {
 			rPM.setLL(rPMTmp.getLL());
 			rPM.setPMSort(rPMTmp.getPMSort());
 			rPM.setStep(rPMTmp.getStep());
+			if(recipePMMesList!=null)
+				rPM.setCNameMes(getCNameMes(pMCodeTmp,recipePMMesList));
 			
 			rPMList.add(rPM);
 			//count+=recipePMDao.add(rPM);
@@ -61,6 +64,19 @@ public class RecipePMServiceImpl implements RecipePMService {
 		count=recipePMDao.addFromList(rPMList);
 		
 		return count;
+	}
+	
+	public String getCNameMes(String pMCode, List<RecipePM> recipePMMesList) {
+		String cNameMes=null;
+		for (int i = 0; i < recipePMMesList.size(); i++) {
+			RecipePM recipePMMes = recipePMMesList.get(i);
+			String pMCodeMes = recipePMMes.getPMCode();
+			if(pMCode.equals(pMCodeMes)) {
+				cNameMes=recipePMMes.getCNameMes();
+				break;
+			}
+		}
+		return cNameMes;
 	}
 
 	@Override

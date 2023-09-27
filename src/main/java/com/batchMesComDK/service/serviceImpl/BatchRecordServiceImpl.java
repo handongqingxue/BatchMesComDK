@@ -175,7 +175,7 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 			String batchID = bhBatchHis.getBatchID();
 			String pValue = bhBatchHis.getPValue();
 			String eu = bhBatchHis.getEU();
-			String cName = bhBatchHis.getCName();
+			String cNameMes = bhBatchHis.getCNameMes();
 			String feedPort = bhBatchHis.getFeedPort();
 			String phase = bhBatchHis.getPhase();
 			String recipe = bhBatchHis.getRecipe();
@@ -191,7 +191,7 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 			batchRecord.setRecordStartTime(recordStartTime);
 			batchRecord.setRecordEndTime(recordEndTime);
 			batchRecord.setRecordType(BatchRecord.WLCSJL+"");
-			batchRecord.setPMCName(cName);
+			batchRecord.setPMCName(cNameMes);
 			batchRecord.setFeedPort(feedPort);
 			
 			batchRecordList.add(batchRecord);
