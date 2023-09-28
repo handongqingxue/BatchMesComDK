@@ -2782,7 +2782,7 @@ public class BatchController {
 				//count=batchRecordService.addBatchFromBHBatch(sendToMesWOIDList);
 			}
 			else {//手动推送给mes的逻辑
-				//{"workOrderIDs":"ZI2309220101,ZJ2309220101,ZL2309230101","recordTypeNames":"tech,mater,phase"}
+				//{"workOrderIDs":"ZI2309220101,ZJ2309220101,ZL2309230101","hoursAgo":72,"recordTypeNames":"tech,mater,phase"}
 				net.sf.json.JSONObject bodyJO = net.sf.json.JSONObject.fromObject(bodyEnc);
 				String workOrderIDs = bodyJO.getString("workOrderIDs");
 				String[] workOrderIDArr = workOrderIDs.split(",");
@@ -2790,7 +2790,8 @@ public class BatchController {
 				for (String workOrderID : workOrderIDList) {
 					sendToMesWOIDList.add(workOrderID);//调试时针对单个工单发批记录
 				}
-				sendToMesWOList=workOrderService.getSendToMesListTest(sendToMesWOIDList);
+				Integer hoursAgo = bodyJO.getInt("hoursAgo");
+				sendToMesWOList=workOrderService.getSendToMesListTest(sendToMesWOIDList,hoursAgo);
 				
 				String recordTypeNames = bodyJO.getString("recordTypeNames");
 				String[] recordTypeNameArr = recordTypeNames.split(",");

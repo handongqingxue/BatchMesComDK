@@ -23,7 +23,7 @@ public interface WorkOrderService {
 	 * @param workOrderIDList
 	 * @return
 	 */
-	List<WorkOrder> getSendToMesListTest(List<String> workOrderIDList);
+	List<WorkOrder> getSendToMesListTest(List<String> workOrderIDList, Integer hoursAgo);
 
 	int edit(WorkOrder wo);
 
