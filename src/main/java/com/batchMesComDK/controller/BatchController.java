@@ -1,5 +1,8 @@
 package com.batchMesComDK.controller;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.ParseException;
@@ -1648,7 +1651,7 @@ public class BatchController {
 			return jsonMap;
 		}
 	}
-
+	
 	/**
 	 * 添加日志记录
 	 * @param tl
@@ -1661,14 +1664,34 @@ public class BatchController {
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		
 		try {
-			int count=testLogService.add(tl);
-			if(count>0) {
-				jsonMap.put("message", "ok");
-				jsonMap.put("info", "添加日志记录成功");
+			if("bodyParamBRJOStr".equals(tl.getAction())) {
+				String msg = tl.getMsg();
+				net.sf.json.JSONObject msgJO = net.sf.json.JSONObject.fromObject(msg);
+				String workOrder = msgJO.getString("workOrder");
+				String testLogDirStr=Constant.RESOURCES_DIR+"/TestLog/";
+				File testLogDir = new File(testLogDirStr);
+				if(!testLogDir.exists())
+					testLogDir.mkdir();
+				File workOrderBRFile=new File(testLogDirStr+workOrder+".txt");
+				workOrderBRFile.createNewFile();
+				
+				byte bytes[]=new byte[512];
+				bytes=msg.getBytes();
+				int b=bytes.length; //是字节的长度，不是字符串的长度
+				FileOutputStream fos=new FileOutputStream(workOrderBRFile);
+				fos.write(bytes,0,b);
+				fos.close();
 			}
 			else {
-				jsonMap.put("message", "no");
-				jsonMap.put("info", "添加日志记录失败");
+				int count=testLogService.add(tl);
+				if(count>0) {
+					jsonMap.put("message", "ok");
+					jsonMap.put("info", "添加日志记录成功");
+				}
+				else {
+					jsonMap.put("message", "no");
+					jsonMap.put("info", "添加日志记录失败");
+				}
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -2861,7 +2884,7 @@ public class BatchController {
 								bodyParamDevJO.put("remark", "");
 
 								String bodyParamDevJOStr = bodyParamDevJO.toString();
-								System.out.println("bodyParamDevJOStr==="+bodyParamDevJOStr);
+								//System.out.println("bodyParamDevJOStr==="+bodyParamDevJOStr);
 								addTestLog(createTestLogByParams("bodyParamDevJOStr","","",bodyParamDevJOStr));
 								APIUtil.doHttpMes("devicationRecord",bodyParamDevJO);
 							}
@@ -2898,7 +2921,7 @@ public class BatchController {
 					if(electtonBatchRecordBRJA.length()>0) {
 						bodyParamBRJO.put("electtonBatchRecord", electtonBatchRecordBRJA);
 						String bodyParamBRJOStr = bodyParamBRJO.toString();
-						System.out.println("bodyParamBRJOStr==="+bodyParamBRJOStr);
+						//System.out.println("bodyParamBRJOStr==="+bodyParamBRJOStr);
 						addTestLog(createTestLogByParams("bodyParamBRJOStr","","",bodyParamBRJOStr));
 						APIUtil.doHttpMes("electronicBatchRecord",bodyParamBRJO);
 					}
