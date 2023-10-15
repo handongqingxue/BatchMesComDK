@@ -557,6 +557,12 @@ function initUbtsStateSel(){
 
 function getItem(){
 	var item=$("#item_sel").val();
+	if(item=="CreateIDBatchStepDataList"){
+		if(!checkCreateID())
+			return false;
+		var createID=$("#inpFor_div #createID").val();
+		item=item.replace("CreateID",createID);
+	}
 	$.post(path+"batch/getItem",
 		{item:item},
 		function(result){
@@ -571,6 +577,16 @@ function getItem(){
 function execute(){
 	var command=$("#command_sel").val();
 	//var command="[REMOVE(Item,batchsvr1\ADMINISTRATOR,7)]";
+	if(command.indexOf("[COMMAND(")!=-1){
+		if(!checkProcedureID())
+			return false;
+		if(!checkCmd())
+			return false;
+		var procedureID=$("#inpFor_div #procedureID").val();
+		command=command.replace("ProcedureID",procedureID);
+		var cmd=$("#inpFor_div #cmd_sel").val();
+		command=command.replace("Cmd",cmd);
+	}
 	$.post(path+"batch/execute",
 		{command:command},
 		function(result){
@@ -578,13 +594,44 @@ function execute(){
 		}
 	,"json");
 }
+function checkCreateID(){
+	var createID=$("#inpFor_div #createID").val();
+	if(createID==""||createID==null){
+		alert("请输入CreateID");
+		return false;
+	}
+	else
+		return true;
+}
+
+//47\tCLS_SWEETCREAM_OP:1
+function checkProcedureID(){
+	var procedureID=$("#inpFor_div #procedureID").val();
+	if(procedureID==""||procedureID==null){
+		alert("请输入ProcedureID");
+		return false;
+	}
+	else
+		return true;
+}
+
+//CLEAR_FAILURES
+function checkCmd(){
+	var cmd=$("#inpFor_div #cmd_sel").val();
+	if(cmd==""||cmd==null){
+		alert("请选择Cmd");
+		return false;
+	}
+	else
+		return true;
+}
 
 function splitData(item,data){
 	if(item=="Batchlist")
 		splitBatchlist(data);
 	else if(item=="BatchOverrides")
 		splitBatchOverrides(data);
-	else if(item=="5BatchStepDataList")
+	else if(item=="47BatchStepDataList")
 		splitBatchStepDataList(data);
 	else if(item=="5EventData")
 		splitEventData(data);
@@ -1124,6 +1171,32 @@ function splitUnitTagData(data){
 </script>
 </head>
 <body>
+<div id="inpFor_div">
+	<div>
+		CreateID:<input type="text" id="createID"/>
+	</div>
+	<div>
+		ProcedureID:<input type="text" id="procedureID"/>
+	</div>
+	<div>
+		Cmd:
+		<select id="cmd_sel">
+			<option value="">请选择</option>
+			<option value="START">START</option>
+			<option value="STOP">STOP</option>
+			<option value="AUTO-MODE">AUTO-MODE</option>
+			<option value="PAUSE">PAUSE</option>
+			<option value="HOLD">HOLD</option>
+			<option value="RESTART">RESTART</option>
+			<option value="MAN-MODE">MAN-MODE</option>
+			<option value="RESUME">RESUME</option>
+			<option value="ABORT">ABORT</option>
+			<option value="RESET">RESET</option>
+			<option value="DOWNLOAD">DOWNLOAD</option>
+			<option value="CLEAR_FAILURES">CLEAR_FAILURES</option>
+		</select>
+	</div>
+</div>
 <div>
 	<select id="item_sel">
 		<option value="BadTagCount">BadTagCount</option>
@@ -1142,7 +1215,7 @@ function splitUnitTagData(data){
 		<option value="BLType_3">BLType_3-?</option>
 		<option value="COMClientCount">COMClientCount</option>
 		<option value="CPRVersion">CPRVersion</option>
-		<option value="5BatchStepDataList">5BatchStepDataList</option>
+		<option value="CreateIDBatchStepDataList">CreateIDBatchStepDataList</option>
 		<option value="5EventData">5EventData</option>
 		<option value="5EventDataFile">5EventDataFile</option>
 		<option value="5scale">5scale</option>
@@ -1265,6 +1338,7 @@ function splitUnitTagData(data){
 <div>
 	<select id="command_sel">
 		<option value="[BATCH(Item,batchsvr1\ADMINISTRATOR,CLS_FRENCHVANILLA.BPC,BATCH_ID,100,FRENCHVANILLA PREMIUM -CLASSBASED,FREEZER,4,MIXER,2,PARMS,CREAM_AMOUNT,2001,EGG_AMOUNT,200,FLAVOR_AMOUNT,50,MILK_AMOUNT,1999,SUGAR_AMOUNT, 750)]">Batch</option>
+		<option value="[COMMAND(Item,batchsvr1\ADMINISTRATOR,ProcedureID,Cmd)]">COMMAND</option>
 		<option value="[REMOVE(Item,batchsvr1\ADMINISTRATOR,7)]">REMOVE</option>
 		<option value="[FORMULATIONS_INFO(<Item>,batchsvr1\ADMINISTRATOR,PRODUCT_X.BPC)]">Formulations_Info</option>
 		<option value="[INFO2(<Item>,batchsvr1\ADMINISTRATOR,PRODUCT_X.BPC)]">Info2</option>

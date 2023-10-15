@@ -1667,7 +1667,9 @@ public class BatchController {
 			if("bodyParamBRJOStr".equals(tl.getAction())) {
 				String msg = tl.getMsg();
 				net.sf.json.JSONObject msgJO = net.sf.json.JSONObject.fromObject(msg);
-				String workOrder = msgJO.getString("workOrder");
+				String bodyMsg = msgJO.getString("bodyMsg");
+				net.sf.json.JSONObject bodyMsgJO = net.sf.json.JSONObject.fromObject(bodyMsg);
+				String workOrder = bodyMsgJO.getString("workOrder");
 				String testLogDirStr=Constant.RESOURCES_DIR+"/TestLog/";
 				File testLogDir = new File(testLogDirStr);
 				if(!testLogDir.exists())
@@ -1681,21 +1683,25 @@ public class BatchController {
 				FileOutputStream fos=new FileOutputStream(workOrderBRFile);
 				fos.write(bytes,0,b);
 				fos.close();
+				
+				String apiMsg = msgJO.getString("apiMsg");
+				tl.setMsg(apiMsg+"详见工单号对应的日志记录txt文件");
+			}
+			
+			int count=testLogService.add(tl);
+			if(count>0) {
+				jsonMap.put("message", "ok");
+				jsonMap.put("info", "添加日志记录成功");
 			}
 			else {
-				int count=testLogService.add(tl);
-				if(count>0) {
-					jsonMap.put("message", "ok");
-					jsonMap.put("info", "添加日志记录成功");
-				}
-				else {
-					jsonMap.put("message", "no");
-					jsonMap.put("info", "添加日志记录失败");
-				}
+				jsonMap.put("message", "no");
+				jsonMap.put("info", "添加日志记录失败");
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			jsonMap.put("message", "no");
+			jsonMap.put("info", "添加日志记录失败");
 		}
 		finally {
 			return jsonMap;
@@ -2885,8 +2891,11 @@ public class BatchController {
 
 								String bodyParamDevJOStr = bodyParamDevJO.toString();
 								//System.out.println("bodyParamDevJOStr==="+bodyParamDevJOStr);
-								addTestLog(createTestLogByParams("bodyParamDevJOStr","","",bodyParamDevJOStr));
-								APIUtil.doHttpMes("devicationRecord",bodyParamDevJO);
+								JSONObject dhmJO = APIUtil.doHttpMes("devicationRecord",bodyParamDevJO);
+								boolean success = dhmJO.getBoolean("success");
+								String msg = dhmJO.getString("msg");
+								int state = dhmJO.getInt("state");
+								addTestLog(createTestLogByParams("bodyParamDevJOStr",success+"",state+"",msg+bodyParamDevJOStr));
 							}
 							else {
 								JSONObject electtonBatchRecordJO=new JSONObject();
@@ -2922,8 +2931,17 @@ public class BatchController {
 						bodyParamBRJO.put("electtonBatchRecord", electtonBatchRecordBRJA);
 						String bodyParamBRJOStr = bodyParamBRJO.toString();
 						//System.out.println("bodyParamBRJOStr==="+bodyParamBRJOStr);
-						addTestLog(createTestLogByParams("bodyParamBRJOStr","","",bodyParamBRJOStr));
-						APIUtil.doHttpMes("electronicBatchRecord",bodyParamBRJO);
+						
+						JSONObject dhmJO = APIUtil.doHttpMes("electronicBatchRecord",bodyParamBRJO);
+						boolean success = dhmJO.getBoolean("success");
+						String apiMsg = dhmJO.getString("msg");
+						int state = dhmJO.getInt("state");
+						
+						JSONObject msgJO = new JSONObject();
+						msgJO.put("apiMsg", apiMsg);
+						msgJO.put("bodyMsg", bodyParamBRJOStr);
+						
+						addTestLog(createTestLogByParams("bodyParamBRJOStr",success+"",state+"",msgJO.toString()));
 					}
 				}
 			}

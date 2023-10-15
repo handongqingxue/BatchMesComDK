@@ -33,8 +33,8 @@ public class APIUtil {
 	/**
 	 * 正式环境ip
 	 */
-	public static final String SERVICE_URL_MES="http://10.0.3.160:80/mesPlatform/api/remote/batch/";
-	//public static final String SERVICE_URL_MES="http://10.0.3.136:19888/mesPlatform/api/remote/batch/";
+	//public static final String SERVICE_URL_MES="http://10.0.3.160:80/mesPlatform/api/remote/batch/";
+	public static final String SERVICE_URL_MES="http://10.0.3.136:19888/mesPlatform/api/remote/batch/";
 	//public static final String SERVICE_URL_MES="http://172.25.10.13:19888/mesPlatform/api/remote/batch/";
 	
 	public static final String ITEM_RESULT="item";
@@ -161,6 +161,10 @@ public class APIUtil {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			resultJO = new JSONObject();
+			resultJO.put("success", SUCCESS_FALSE);
+			resultJO.put("msg", e.getMessage());
+			resultJO.put("state", 0);
 		}
 		finally {
 			return resultJO;
