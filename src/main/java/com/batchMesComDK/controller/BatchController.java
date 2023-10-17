@@ -2855,6 +2855,8 @@ public class BatchController {
 					String lotNo = sendToMesWO.getLotNo();
 					String workcenterId = sendToMesWO.getWorkcenterId();
 					String formulaIdMes = sendToMesWO.getFormulaIdMes();
+
+					List<JSONObject> bodyParamDevJOList=new ArrayList<JSONObject>();
 					
 					JSONObject bodyParamBRJO=new JSONObject();
 					bodyParamBRJO.put("id", id);
@@ -2889,13 +2891,7 @@ public class BatchController {
 								bodyParamDevJO.put("deviationName", sendToMesBR.getPMName());
 								bodyParamDevJO.put("remark", "");
 
-								String bodyParamDevJOStr = bodyParamDevJO.toString();
-								//System.out.println("bodyParamDevJOStr==="+bodyParamDevJOStr);
-								JSONObject dhmJO = APIUtil.doHttpMes("devicationRecord",bodyParamDevJO);
-								boolean success = dhmJO.getBoolean("success");
-								String msg = dhmJO.getString("msg");
-								int state = dhmJO.getInt("state");
-								addTestLog(createTestLogByParams("bodyParamDevJOStr",success+"",state+"",msg+bodyParamDevJOStr));
+								bodyParamDevJOList.add(bodyParamDevJO);
 							}
 							else {
 								JSONObject electtonBatchRecordJO=new JSONObject();
@@ -2927,21 +2923,15 @@ public class BatchController {
 						}
 					}
 					
+					if(bodyParamDevJOList.size()>0) {
+						SendRecThre srt=new SendRecThre(BatchController.this,bodyParamDevJOList,SendRecThre.DEV);
+						new Thread(srt).start();
+					}
 					if(electtonBatchRecordBRJA.length()>0) {
 						bodyParamBRJO.put("electtonBatchRecord", electtonBatchRecordBRJA);
-						String bodyParamBRJOStr = bodyParamBRJO.toString();
-						//System.out.println("bodyParamBRJOStr==="+bodyParamBRJOStr);
 						
-						JSONObject dhmJO = APIUtil.doHttpMes("electronicBatchRecord",bodyParamBRJO);
-						boolean success = dhmJO.getBoolean("success");
-						String apiMsg = dhmJO.getString("msg");
-						int state = dhmJO.getInt("state");
-						
-						JSONObject msgJO = new JSONObject();
-						msgJO.put("apiMsg", apiMsg);
-						msgJO.put("bodyMsg", bodyParamBRJOStr);
-						
-						addTestLog(createTestLogByParams("bodyParamBRJOStr",success+"",state+"",msgJO.toString()));
+						SendRecThre srt=new SendRecThre(BatchController.this,bodyParamBRJO,SendRecThre.BR);
+						new Thread(srt).start();
 					}
 				}
 			}
