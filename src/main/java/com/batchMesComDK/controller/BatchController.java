@@ -136,6 +136,7 @@ public class BatchController {
 			String formulaIds="";
 			String unitIDs="";
 			String updateUsers="";
+			String clearFaults="";
 			
 			JSONObject batchCountResultJO = getItemJO(BatchTest.BATCH_LIST_CT);
 			int status = batchCountResultJO.getInt("status");
@@ -457,6 +458,7 @@ public class BatchController {
 						workOrderIDs+=","+wo.getWorkOrderID();
 						unitIDs+=","+wo.getUnitID();
 						updateUsers+=","+wo.getUpdateUser();
+						clearFaults+=","+wo.getClearFault();
 					}
 				}
 	
@@ -466,16 +468,21 @@ public class BatchController {
 					String[] workOrderIDArr = workOrderIDs.substring(1).split(",");
 					String[] unitIDArr = unitIDs.substring(1).split(",");
 					String[] updateUserArr = updateUsers.substring(1).split(",");
+					String[] clearFaultArr = clearFaults.substring(1).split(",");
 					
 					for (int i = 0; i < formulaIdArr.length; i++) {
 						String formulaId = formulaIdArr[i];
 						String workOrderID = workOrderIDArr[i];
 						String unitID = unitIDArr[i];
 						String updateUser = updateUserArr[i];
+						Integer clearFault = Integer.valueOf(clearFaultArr[i]);
 						
 						Map<String, Object> woMap = unitIDWOMap.get(unitID);
 						woMap.put("existInBatchList", false);
 						for (int j = 1; j <= batchCount; j++) {
+							JSONObject createIDResultJO = getItemJO(BatchTest.BL_CREATE_ID,j);
+							String createIDVal = createIDResultJO.getString("data");
+							
 							JSONObject batchIDResultJO = getItemJO(BatchTest.BL_BATCH_ID,j);
 							int blBatchIDStatus = batchIDResultJO.getInt("status");
 							if(blBatchIDStatus==1) {
@@ -485,59 +492,68 @@ public class BatchController {
 									woMap.put("existInBatchList", true);
 									
 									String stateVal = getItemVal(BatchTest.BL_STATE,j);
-									if(BatchTest.COMPLETE.equals(stateVal)) {
-										workOrderService.updateStateByFormulaId(WorkOrder.BJS, formulaId);
-										
-										woMap.put("existRunWO", false);
-										
-										String wcBodyStr = getChaOrdStaBodyStr(workOrderID,WorkOrder.CREAMFINISH,updateUser);
-										changeOrderStatus(wcBodyStr);
-										
-										getSendToMesBRData(null);//检索是否存在给mes端推送批记录的工单
-										
-										addWOPreStateInList(WorkOrder.BJS,workOrderID);
-									}
-									else if(BatchTest.RUNNING.equals(stateVal)) {
-										if(WorkOrder.BZT==getWOPreStateByWOID(workOrderID)) {
-											workOrderService.updateStateByFormulaId(WorkOrder.BYX, formulaId);
+									if(clearFault==WorkOrder.FAULT) {
+										if(BatchTest.RUNNING.equals(stateVal)) {
+											commandBatch(createIDVal,BatchTest.HOLD);
 										}
-										
-										boolean existRunWO=Boolean.valueOf(woMap.get("existRunWO").toString());//是否正在运行状态
-										if(!existRunWO) {//若不是运行状态，可能是其他原因导致，需要重新复位为运行中，以防本机上其他启动的订单运行
-											woMap.put("existRunWO", true);
-										}
-										
-										addWOPreStateInList(WorkOrder.BYX,workOrderID);
+										commandBatch(createIDVal,BatchTest.CLEAR_FAILURES);
+										workOrderService.updateClearFaultByFormulaId(WorkOrder.NO_FAULT, formulaId);
 									}
-									else if(BatchTest.HELD.equals(stateVal)) {
-	
-										if(WorkOrder.BZT!=getWOPreStateByWOID(workOrderID)) {
-											workOrderService.updateStateByFormulaId(WorkOrder.BZT, formulaId);
+									else {
+										if(BatchTest.COMPLETE.equals(stateVal)) {
+											workOrderService.updateStateByFormulaId(WorkOrder.BJS, formulaId);
 											
-											addWOPreStateInList(WorkOrder.BZT,workOrderID);
-										}
-										
-										boolean existRunWO=Boolean.valueOf(woMap.get("existRunWO").toString());//是否正在运行状态
-										if(!existRunWO) {//若不是运行状态，可能是其他原因导致，需要重新复位为运行中，以防本机上其他启动的订单运行
-											woMap.put("existRunWO", true);
-										}
-									}
-									else if(BatchTest.STOPPED.equals(stateVal)||
-											BatchTest.ABORTED.equals(stateVal)) {
-										if(WorkOrder.BYWZZ!=getWOPreStateByWOID(workOrderID)) {
-											workOrderService.updateStateByFormulaId(WorkOrder.BYWZZ, formulaId);
+											woMap.put("existRunWO", false);
+											
+											String wcBodyStr = getChaOrdStaBodyStr(workOrderID,WorkOrder.CREAMFINISH,updateUser);
+											changeOrderStatus(wcBodyStr);
 											
 											getSendToMesBRData(null);//检索是否存在给mes端推送批记录的工单
 											
-											String jsBodyStr = getChaOrdStaBodyStr(workOrderID,WorkOrder.PRODUCTBREAK,updateUser);
-											changeOrderStatus(jsBodyStr);
-											
-											addWOPreStateInList(WorkOrder.BYWZZ,workOrderID);
+											addWOPreStateInList(WorkOrder.BJS,workOrderID);
 										}
-										
-										boolean existRunWO=Boolean.valueOf(woMap.get("existRunWO").toString());//是否正在运行状态
-										if(existRunWO) {
-											woMap.put("existRunWO", false);
+										else if(BatchTest.RUNNING.equals(stateVal)) {
+											if(WorkOrder.BZT==getWOPreStateByWOID(workOrderID)) {
+												workOrderService.updateStateByFormulaId(WorkOrder.BYX, formulaId);
+											}
+											
+											boolean existRunWO=Boolean.valueOf(woMap.get("existRunWO").toString());//是否正在运行状态
+											if(!existRunWO) {//若不是运行状态，可能是其他原因导致，需要重新复位为运行中，以防本机上其他启动的订单运行
+												woMap.put("existRunWO", true);
+											}
+											
+											addWOPreStateInList(WorkOrder.BYX,workOrderID);
+										}
+										else if(BatchTest.HELD.equals(stateVal)) {
+		
+											if(WorkOrder.BZT!=getWOPreStateByWOID(workOrderID)) {
+												workOrderService.updateStateByFormulaId(WorkOrder.BZT, formulaId);
+												
+												addWOPreStateInList(WorkOrder.BZT,workOrderID);
+											}
+											
+											boolean existRunWO=Boolean.valueOf(woMap.get("existRunWO").toString());//是否正在运行状态
+											if(!existRunWO) {//若不是运行状态，可能是其他原因导致，需要重新复位为运行中，以防本机上其他启动的订单运行
+												woMap.put("existRunWO", true);
+											}
+										}
+										else if(BatchTest.STOPPED.equals(stateVal)||
+												BatchTest.ABORTED.equals(stateVal)) {
+											if(WorkOrder.BYWZZ!=getWOPreStateByWOID(workOrderID)) {
+												workOrderService.updateStateByFormulaId(WorkOrder.BYWZZ, formulaId);
+												
+												getSendToMesBRData(null);//检索是否存在给mes端推送批记录的工单
+												
+												String jsBodyStr = getChaOrdStaBodyStr(workOrderID,WorkOrder.PRODUCTBREAK,updateUser);
+												changeOrderStatus(jsBodyStr);
+												
+												addWOPreStateInList(WorkOrder.BYWZZ,workOrderID);
+											}
+											
+											boolean existRunWO=Boolean.valueOf(woMap.get("existRunWO").toString());//是否正在运行状态
+											if(existRunWO) {
+												woMap.put("existRunWO", false);
+											}
 										}
 									}
 									break;

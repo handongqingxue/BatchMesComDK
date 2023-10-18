@@ -50,6 +50,15 @@ public class WorkOrder {
 	public static final int GDSGCJ=13;
 	
 	/**
+	 * 无故障
+	 */
+	public static final int NO_FAULT=0;
+	/**
+	 * 故障
+	 */
+	public static final int FAULT=1;
+	
+	/**
 	 * 物料齐套完毕名称
 	 */
 	public static final String WLQTWB_TEXT="物料齐套完毕";//1
@@ -225,6 +234,12 @@ public class WorkOrder {
 	public void setFormulaIdMes(String formulaIdMes) {
 		FormulaIdMes = formulaIdMes;
 	}
+	public Integer getClearFault() {
+		return ClearFault;
+	}
+	public void setClearFault(Integer clearFault) {
+		ClearFault = clearFault;
+	}
 	private String WorkOrderID;
 	private String ProductCode;
 	private String ProductName;
@@ -242,6 +257,7 @@ public class WorkOrder {
 	private String Identifier;
 	private String UpdateUser;
 	private String FormulaIdMes;
+	private Integer ClearFault;
 	private List<RecipePM> recipePMList;//用来存放mes那边下发的大料和工艺参数
 	private List<ManFeed> manFeedList;//用来存放mes那边下发的小料参数
 	public List<RecipePM> getRecipePMList() {
