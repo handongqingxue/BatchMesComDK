@@ -20,6 +20,7 @@ public class BatchTest {
 	public static final String BL_BATCH_ID="BLBatchID_";
 	public static final String BL_CREATE_ID="BLCreateID_";
 	public static final String BL_STATE="BLState_";
+	public static final String BL_FAILURE="BLFailure_";
 	
 	public static final String SUCCESS_RESULT="SUCCESS:";
 	

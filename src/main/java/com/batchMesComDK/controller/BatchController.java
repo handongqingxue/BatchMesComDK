@@ -475,7 +475,10 @@ public class BatchController {
 						String workOrderID = workOrderIDArr[i];
 						String unitID = unitIDArr[i];
 						String updateUser = updateUserArr[i];
-						Integer clearFault = Integer.valueOf(clearFaultArr[i]);
+						Integer clearFault = 0;
+						String clearFaultStr = clearFaultArr[i];
+						if(!StringUtils.isEmpty(clearFaultStr))
+							clearFault = Integer.valueOf(clearFaultStr);
 						
 						Map<String, Object> woMap = unitIDWOMap.get(unitID);
 						woMap.put("existInBatchList", false);
@@ -493,11 +496,16 @@ public class BatchController {
 									
 									String stateVal = getItemVal(BatchTest.BL_STATE,j);
 									if(clearFault==WorkOrder.FAULT) {
-										if(BatchTest.RUNNING.equals(stateVal)) {
-											commandBatch(createIDVal,BatchTest.HOLD);
+										String failureVal = getItemVal(BatchTest.BL_FAILURE,j);
+										//System.out.println("failureVal==="+failureVal.length());
+										if(StringUtils.isEmpty(failureVal.trim()))
+											workOrderService.updateClearFaultByFormulaId(WorkOrder.NO_FAULT, formulaId);
+										else {
+											if(BatchTest.RUNNING.equals(stateVal)) {
+												commandBatch(createIDVal,BatchTest.HOLD);
+											}
+											commandBatch(createIDVal,BatchTest.CLEAR_FAILURES);
 										}
-										commandBatch(createIDVal,BatchTest.CLEAR_FAILURES);
-										workOrderService.updateClearFaultByFormulaId(WorkOrder.NO_FAULT, formulaId);
 									}
 									else {
 										if(BatchTest.COMPLETE.equals(stateVal)) {
