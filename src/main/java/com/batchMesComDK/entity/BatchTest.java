@@ -12,6 +12,7 @@ public class BatchTest {
 	public static final String STOPPED="STOPPED";
 	public static final String ABORT="ABORT";
 	public static final String ABORTED="ABORTED";
+	public static final String RESET="RESET";
 	public static final String COMPLETE="COMPLETE";
 	public static final String CLEAR_FAILURES="CLEAR_FAILURES";
 	

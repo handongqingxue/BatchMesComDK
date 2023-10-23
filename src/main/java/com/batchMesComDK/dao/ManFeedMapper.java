@@ -34,7 +34,17 @@ public interface ManFeedMapper {
 
 	List<ManFeed> getListByWorkOrderIDList(@Param("workOrderIDList") List<String> workOrderIDList);
 
-	List<ManFeed> getStepMesListByWOID(@Param("workOrderID") String workOrderID);
+	/**
+	 * 根据工单号获取投料步骤(mes和batch端的投料步骤都有)
+	 * @param workOrderID
+	 * @return
+	 */
+	List<ManFeed> getStepListByWOID(@Param("workOrderID") String workOrderID);
 
-	int updateStepMesByList(@Param("mfList") List<ManFeed> mfList);
+	/**
+	 * 根据投料信息集合里的工单号、物料编码，更新batch端的投料步骤号
+	 * @param mfList
+	 * @return
+	 */
+	int updateRunStepByList(@Param("mfList") List<ManFeed> mfList);
 }

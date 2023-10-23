@@ -52,7 +52,10 @@
 			<if test="FormulaIdMes!=null">
 				FormulaIdMes,
 			</if>
-				ClearFault
+				ClearFault,
+			<if test="CreateType!=null">
+				CreateType,
+			</if>
 		</trim>
 		values
 		<trim prefix="(" suffix=")" suffixOverrides=",">
@@ -102,7 +105,10 @@
 			<if test="FormulaIdMes!=null">
 				#{FormulaIdMes},
 			</if>
-				0
+				0,
+			<if test="CreateType!=null">
+				#{CreateType},
+			</if>
 		</trim>
 	</insert>
 	<update id="updateStateById">
@@ -191,6 +197,9 @@
 			</if>
 			<if test="identifier!=null">
 				identifier=#{identifier},
+			</if>
+			<if test="createType!=null">
+				createType=#{createType},
 			</if>
 		</trim>
 		 where ID=#{ID}

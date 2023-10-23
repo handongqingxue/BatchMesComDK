@@ -243,6 +243,12 @@ public class BHBatchHis {
 	public void setPhaseDisc(String phaseDisc) {
 		PhaseDisc = phaseDisc;
 	}
+	public Integer getPhaseStep() {
+		return PhaseStep;
+	}
+	public void setPhaseStep(Integer phaseStep) {
+		PhaseStep = phaseStep;
+	}
 	public String getPMCode() {
 		return PMCode;
 	}
@@ -330,6 +336,7 @@ public class BHBatchHis {
 	private String CName;
 	private String CNameMes;
 	private String PhaseDisc;
+	private Integer PhaseStep;
 	private String PMCode;
 	private String PMName;
 	private String PMDisc;

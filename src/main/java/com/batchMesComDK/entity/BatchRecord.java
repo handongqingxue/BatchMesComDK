@@ -158,6 +158,12 @@ public class BatchRecord {
 	public void setFeedPort(String feedPort) {
 		FeedPort = feedPort;
 	}
+	public Integer getPhaseStep() {
+		return PhaseStep;
+	}
+	public void setPhaseStep(Integer phaseStep) {
+		PhaseStep = phaseStep;
+	}
 	private String WorkOrderID;
 	private String PMCode;
 	private String PMName;
@@ -176,4 +182,5 @@ public class BatchRecord {
 	private String PhaseDisc;
 	private String PhaseID;
 	private String FeedPort;//投料口
+	private Integer PhaseStep;
 }

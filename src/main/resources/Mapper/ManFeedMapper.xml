@@ -288,10 +288,10 @@
 		#{workOrderID}
 		</foreach>
 	</select>
-	<select id="getStepMesListByWOID" resultType="com.batchMesComDK.entity.ManFeed">
+	<select id="getStepListByWOID" resultType="com.batchMesComDK.entity.ManFeed">
 		select WorkOrderID,MaterialCode,FeedPort,StepMes,dense_rank() OVER (partition by FeedPort ORDER BY StepMes) RunStep from ManFeed where WorkOrderID=#{workOrderID} ORDER BY StepMes
 	</select>
-	<update id="updateStepMesByList">
+	<update id="updateRunStepByList">
 		update ManFeed set RunStep=case 
 		<foreach collection="mfList" item="mf">
 			when MaterialCode=#{mf.materialCode} then #{mf.runStep}

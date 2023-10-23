@@ -137,6 +137,7 @@ public class BatchController {
 			String unitIDs="";
 			String updateUsers="";
 			String clearFaults="";
+			String createTypes="";
 			
 			JSONObject batchCountResultJO = getItemJO(BatchTest.BATCH_LIST_CT);
 			int status = batchCountResultJO.getInt("status");
@@ -157,6 +158,7 @@ public class BatchController {
 					String unitID = wo.getUnitID();
 					String identifier = wo.getIdentifier();
 					String updateUser = wo.getUpdateUser();
+					Integer createType = wo.getCreateType();
 					
 					StringBuilder woSB=new StringBuilder();
 					woSB.append("workOrderID=");
@@ -229,9 +231,16 @@ public class BatchController {
 									
 									String stateVal = getItemVal(BatchTest.BL_STATE,j);
 									if(BatchTest.READY.equals(stateVal)) {//存在准备状态的工单，说明该工单待运行，状态同步正确
-										String qdBodyStr=getChaOrdStaBodyStr(workOrderID,WorkOrder.PRODUCTION,updateUser);
-										Map<String, Object> qdCOSMap = changeOrderStatus(qdBodyStr);
-										boolean qdCOSSuccess = Boolean.valueOf(qdCOSMap.get(APIUtil.SUCCESS).toString());
+										boolean qdCOSSuccess = false;
+										if(createType==WorkOrder.MES_DOWN) {
+											String qdBodyStr=getChaOrdStaBodyStr(workOrderID,WorkOrder.PRODUCTION,updateUser);
+											Map<String, Object> qdCOSMap = changeOrderStatus(qdBodyStr);
+											qdCOSSuccess = Boolean.valueOf(qdCOSMap.get(APIUtil.SUCCESS).toString());
+										}
+										else if(createType==WorkOrder.HAND_CREATE) {
+											qdCOSSuccess = true;
+										}
+										
 										if(qdCOSSuccess) {
 											String createIDVal = getItemVal(BatchTest.BL_CREATE_ID,j);
 											System.out.println("createIDVal==="+createIDVal);
@@ -305,8 +314,10 @@ public class BatchController {
 									if(allowRestoreRun) {
 										workOrderService.updateStateById(WorkOrder.BYX, wo.getID());
 										
-										String qdBodyStr = getChaOrdStaBodyStr(wo.getWorkOrderID(),WorkOrder.PRODUCTION,updateUser);
-										changeOrderStatus(qdBodyStr);
+										if(createType==WorkOrder.MES_DOWN) {
+											String qdBodyStr = getChaOrdStaBodyStr(wo.getWorkOrderID(),WorkOrder.PRODUCTION,updateUser);
+											changeOrderStatus(qdBodyStr);
+										}
 										
 										addWOPreStateInList(WorkOrder.BYX,workOrderIDStr);
 									}
@@ -341,20 +352,26 @@ public class BatchController {
 									addWOPreStateInList(WorkOrder.BYWZZ,wo.getWorkOrderID());
 								}
 								else {//若工单已经执行了，就得停止batch运行
-									commandBatch(createIDVal,BatchTest.STOP);
+									//commandBatch(createIDVal,BatchTest.STOP);
+									commandBatch(createIDVal,BatchTest.ABORT);
 		
 									stateVal = getItemVal(BatchTest.BL_STATE,j);
-									if(BatchTest.STOPPED.equals(stateVal)) {
+									//if(BatchTest.STOPPED.equals(stateVal)) {
+									if(BatchTest.ABORTED.equals(stateVal)) {
 										workOrderService.updateStateById(WorkOrder.BYWZZ, wo.getID());
 										
 										woMap.put("existRunWO", false);
 										
 										getSendToMesBRData(null);//检索是否存在给mes端推送批记录的工单
 										
-										String jsBodyStr = getChaOrdStaBodyStr(workOrderID,WorkOrder.PRODUCTBREAK,updateUser);
-										changeOrderStatus(jsBodyStr);
+										if(createType==WorkOrder.MES_DOWN) {
+											String jsBodyStr = getChaOrdStaBodyStr(workOrderID,WorkOrder.PRODUCTBREAK,updateUser);
+											changeOrderStatus(jsBodyStr);
+										}
 										
 										addWOPreStateInList(WorkOrder.BYWZZ,wo.getWorkOrderID());
+										
+										removeBatch(createIDVal);
 									}
 								}
 								break;
@@ -425,6 +442,7 @@ public class BatchController {
 							unitIDSGCJ = createUnitIDByIdentifier(recipeHeader.getIdentifier());
 						woSGCJ.setUnitID(unitIDSGCJ);
 						woSGCJ.setIdentifier(identifierSGCJ);
+						woSGCJ.setCreateType(WorkOrder.HAND_CREATE);
 						
 						int sgcjEditCount=workOrderService.edit(woSGCJ);
 						if(sgcjEditCount>0) {
@@ -452,13 +470,14 @@ public class BatchController {
 						*/
 					}
 					
-					if(state==WorkOrder.BYX||state==WorkOrder.BQX||state==WorkOrder.BZT) {
+					if(state==WorkOrder.BYX||state==WorkOrder.BZT) {
 						//把状态大于5的工单的可执行配方id拼接起来，可执行配方id对应batchID
 						formulaIds+=","+wo.getFormulaId();
 						workOrderIDs+=","+wo.getWorkOrderID();
 						unitIDs+=","+wo.getUnitID();
 						updateUsers+=","+wo.getUpdateUser();
 						clearFaults+=","+wo.getClearFault();
+						createTypes+=","+wo.getCreateType();
 					}
 				}
 	
@@ -469,6 +488,7 @@ public class BatchController {
 					String[] unitIDArr = unitIDs.substring(1).split(",");
 					String[] updateUserArr = updateUsers.substring(1).split(",");
 					String[] clearFaultArr = clearFaults.substring(1).split(",");
+					String[] createTypeArr = createTypes.substring(1).split(",");
 					
 					for (int i = 0; i < formulaIdArr.length; i++) {
 						String formulaId = formulaIdArr[i];
@@ -479,6 +499,7 @@ public class BatchController {
 						String clearFaultStr = clearFaultArr[i];
 						if(!StringUtils.isEmpty(clearFaultStr))
 							clearFault = Integer.valueOf(clearFaultStr);
+						Integer createType = Integer.valueOf(createTypeArr[i]);
 						
 						Map<String, Object> woMap = unitIDWOMap.get(unitID);
 						woMap.put("existInBatchList", false);
@@ -513,8 +534,10 @@ public class BatchController {
 											
 											woMap.put("existRunWO", false);
 											
-											String wcBodyStr = getChaOrdStaBodyStr(workOrderID,WorkOrder.CREAMFINISH,updateUser);
-											changeOrderStatus(wcBodyStr);
+											if(createType==WorkOrder.MES_DOWN) {
+												String wcBodyStr = getChaOrdStaBodyStr(workOrderID,WorkOrder.CREAMFINISH,updateUser);
+												changeOrderStatus(wcBodyStr);
+											}
 											
 											getSendToMesBRData(null);//检索是否存在给mes端推送批记录的工单
 											
@@ -552,10 +575,14 @@ public class BatchController {
 												
 												getSendToMesBRData(null);//检索是否存在给mes端推送批记录的工单
 												
-												String jsBodyStr = getChaOrdStaBodyStr(workOrderID,WorkOrder.PRODUCTBREAK,updateUser);
-												changeOrderStatus(jsBodyStr);
+												if(createType==WorkOrder.MES_DOWN) {
+													String jsBodyStr = getChaOrdStaBodyStr(workOrderID,WorkOrder.PRODUCTBREAK,updateUser);
+													changeOrderStatus(jsBodyStr);
+												}
 												
 												addWOPreStateInList(WorkOrder.BYWZZ,workOrderID);
+												
+												removeBatch(createIDVal);
 											}
 											
 											boolean existRunWO=Boolean.valueOf(woMap.get("existRunWO").toString());//是否正在运行状态
@@ -2187,6 +2214,7 @@ public class BatchController {
 						wo.setLotNo(lotNo);
 						wo.setWorkcenterId(workcenterId);
 						wo.setFormulaIdMes(formulaIdMes);
+						wo.setCreateType(WorkOrder.MES_DOWN);
 						
 						String unitID = recipeHeader.getUnitID();
 						if(StringUtils.isEmpty(unitID))
@@ -2879,6 +2907,7 @@ public class BatchController {
 					String lotNo = sendToMesWO.getLotNo();
 					String workcenterId = sendToMesWO.getWorkcenterId();
 					String formulaIdMes = sendToMesWO.getFormulaIdMes();
+					Integer createType = sendToMesWO.getCreateType();
 
 					List<JSONObject> bodyParamDevJOList=new ArrayList<JSONObject>();
 					
@@ -2947,15 +2976,17 @@ public class BatchController {
 						}
 					}
 					
-					if(bodyParamDevJOList.size()>0) {
-						SendRecThre srt=new SendRecThre(BatchController.this,bodyParamDevJOList,SendRecThre.DEV);
-						new Thread(srt).start();
-					}
-					if(electtonBatchRecordBRJA.length()>0) {
-						bodyParamBRJO.put("electtonBatchRecord", electtonBatchRecordBRJA);
-						
-						SendRecThre srt=new SendRecThre(BatchController.this,bodyParamBRJO,SendRecThre.BR);
-						new Thread(srt).start();
+					if(createType==WorkOrder.MES_DOWN) {
+						if(bodyParamDevJOList.size()>0) {
+							SendRecThre srt=new SendRecThre(BatchController.this,bodyParamDevJOList,SendRecThre.DEV);
+							new Thread(srt).start();
+						}
+						if(electtonBatchRecordBRJA.length()>0) {
+							bodyParamBRJO.put("electtonBatchRecord", electtonBatchRecordBRJA);
+							
+							SendRecThre srt=new SendRecThre(BatchController.this,bodyParamBRJO,SendRecThre.BR);
+							new Thread(srt).start();
+						}
 					}
 				}
 			}
