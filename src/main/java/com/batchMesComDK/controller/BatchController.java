@@ -371,7 +371,7 @@ public class BatchController {
 										
 										addWOPreStateInList(WorkOrder.BYWZZ,wo.getWorkOrderID());
 										
-										removeBatch(createIDVal);
+										removeBatch(createIDVal);//取消操作执行后,从batchview里移除batchview,便于下个batch顺利执行
 									}
 								}
 								break;
@@ -482,7 +482,7 @@ public class BatchController {
 				}
 	
 				System.out.println("formulaIds==="+formulaIds);
-				if(!StringUtils.isEmpty(formulaIds)) {
+				if(!StringUtils.isEmpty(formulaIds)) {//检测batchview端的执行配方运行状态,同步wincc端的工单状态
 					String[] formulaIdArr = formulaIds.substring(1).split(",");
 					String[] workOrderIDArr = workOrderIDs.substring(1).split(",");
 					String[] unitIDArr = unitIDs.substring(1).split(",");
@@ -516,7 +516,7 @@ public class BatchController {
 									woMap.put("existInBatchList", true);
 									
 									String stateVal = getItemVal(BatchTest.BL_STATE,j);
-									if(clearFault==WorkOrder.FAULT) {
+									if(clearFault==WorkOrder.FAULT) {//有故障的话,先清除故障
 										String failureVal = getItemVal(BatchTest.BL_FAILURE,j);
 										//System.out.println("failureVal==="+failureVal.length());
 										if(StringUtils.isEmpty(failureVal.trim()))
@@ -528,7 +528,7 @@ public class BatchController {
 											commandBatch(createIDVal,BatchTest.CLEAR_FAILURES);
 										}
 									}
-									else {
+									else {//没故障的话,才执行下面逻辑
 										if(BatchTest.COMPLETE.equals(stateVal)) {
 											workOrderService.updateStateByFormulaId(WorkOrder.BJS, formulaId);
 											
@@ -582,7 +582,7 @@ public class BatchController {
 												
 												addWOPreStateInList(WorkOrder.BYWZZ,workOrderID);
 												
-												removeBatch(createIDVal);
+												removeBatch(createIDVal);//从batchview里移除batch
 											}
 											
 											boolean existRunWO=Boolean.valueOf(woMap.get("existRunWO").toString());//是否正在运行状态
@@ -2954,7 +2954,7 @@ public class BatchController {
 								//if(!StringUtils.isEmpty(pMCName))//现在不给mes推送batch端参数中文名(CName)了,推送的是mes那边发来的参数中文名(CNameMes),里面不包含进料量三个字，就不用去掉了
 									//pMCName = pMCName.replaceAll("进料量_", "_");
 								electtonBatchRecordJO.put("materialName",pMCName);
-								electtonBatchRecordJO.put("recordType", sendToMesBR.getRecordType());
+								electtonBatchRecordJO.put("recordType", recordType);
 								electtonBatchRecordJO.put("recordEvent", sendToMesBR.getRecordEvent());
 								electtonBatchRecordJO.put("recordContent", sendToMesBR.getRecordContent());
 								electtonBatchRecordJO.put("isOver", "是");
@@ -2968,6 +2968,8 @@ public class BatchController {
 								else
 									valueDecribe=phaseDisc;
 								electtonBatchRecordJO.put("valueDecribe", valueDecribe);
+								if(BatchRecord.PGCJL==recordType)//如果是phase过程记录，就发给mesphase是第几次执行
+									electtonBatchRecordJO.put("phaseStep", sendToMesBR.getPhaseStep());
 								electtonBatchRecordJO.put("startTime", sendToMesBR.getRecordStartTime());
 								electtonBatchRecordJO.put("endTime", sendToMesBR.getRecordEndTime());
 								

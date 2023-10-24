@@ -182,5 +182,5 @@ public class BatchRecord {
 	private String PhaseDisc;
 	private String PhaseID;
 	private String FeedPort;//投料口
-	private Integer PhaseStep;
+	private Integer PhaseStep;//phase是第几次执行
 }
