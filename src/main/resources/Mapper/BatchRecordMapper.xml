@@ -60,6 +60,9 @@
 			<if test="FeedPort!=null">
 				FeedPort,
 			</if>
+			<if test="PhaseStep!=null">
+				PhaseStep,
+			</if>
 		</trim>
 		values
 		<trim prefix="(" suffix=")" suffixOverrides=",">
@@ -116,6 +119,9 @@
 			</if>
 			<if test="FeedPort!=null">
 				#{FeedPort},
+			</if>
+			<if test="PhaseStep!=null">
+				#{PhaseStep},
 			</if>
 		</trim>
 	</insert>

@@ -100,8 +100,8 @@ public class ManFeedServiceImpl implements ManFeedService {
 	public int updateStepMesByWOID(String workOrderID) {
 		// TODO Auto-generated method stub
 		int count=0;
-		List<ManFeed> manFeedList=manFeedDao.getStepMesListByWOID(workOrderID);
-		count=manFeedDao.updateStepMesByList(manFeedList);
+		List<ManFeed> manFeedList=manFeedDao.getStepListByWOID(workOrderID);
+		count=manFeedDao.updateRunStepByList(manFeedList);
 		return count;
 	}
 

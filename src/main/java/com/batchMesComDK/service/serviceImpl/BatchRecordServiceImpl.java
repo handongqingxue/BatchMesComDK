@@ -268,6 +268,7 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 			String eu = phase.getEU();
 			String phaseDisc = phase.getPhaseDisc();
 			String phaseID = phase.getPhaseID();
+			Integer phaseStep = phase.getPhaseStep();
 			String lclStartTime = phase.getLclStartTime();
 			String lclCompleteTime = phase.getLclCompleteTime();
 			String recipe = phase.getRecipe();
@@ -286,6 +287,7 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 			else
 				batchRecord.setPhaseDisc(phaseDisc);
 			batchRecord.setPhaseID(phaseID);
+			batchRecord.setPhaseStep(phaseStep);
 			batchRecord.setRecordStartTime(lclStartTime);
 			batchRecord.setRecordEndTime(lclCompleteTime);
 			
@@ -293,7 +295,10 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 			
 			//count+=batchRecordDao.add(batchRecord);
 		}
-		return batchRecordDao.addFromList(batchRecordList);
+		System.out.println("batchRecordListSize==="+batchRecordList.size());
+		if(batchRecordList.size()>0)
+			count=batchRecordDao.addFromList(batchRecordList);
+		return count;
 	}
 	
 	private boolean checkIfExistInList(String phaseID, List<BHBatchHis> phaseList) {

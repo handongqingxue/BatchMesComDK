@@ -124,6 +124,15 @@ public class WorkOrder {
 	 * 状态有误
 	 */
 	public static final String STATE_ERROR="状态有误";
+	
+	/**
+	 * mes下单
+	 */
+	public static final int MES_DOWN=1;
+	/**
+	 * 手动创建
+	 */
+	public static final int HAND_CREATE=2;
 
 	private Integer ID;
 	public Integer getID() {
@@ -240,6 +249,12 @@ public class WorkOrder {
 	public void setClearFault(Integer clearFault) {
 		ClearFault = clearFault;
 	}
+	public Integer getCreateType() {
+		return CreateType;
+	}
+	public void setCreateType(Integer createType) {
+		CreateType = createType;
+	}
 	private String WorkOrderID;
 	private String ProductCode;
 	private String ProductName;
@@ -258,6 +273,7 @@ public class WorkOrder {
 	private String UpdateUser;
 	private String FormulaIdMes;
 	private Integer ClearFault;
+	private Integer CreateType;
 	private List<RecipePM> recipePMList;//用来存放mes那边下发的大料和工艺参数
 	private List<ManFeed> manFeedList;//用来存放mes那边下发的小料参数
 	public List<RecipePM> getRecipePMList() {

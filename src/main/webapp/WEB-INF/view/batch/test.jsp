@@ -593,6 +593,12 @@ function execute(){
 		var cmd=$("#inpFor_div #cmd_sel").val();
 		command=command.replace("Cmd",cmd);
 	}
+	else if(command.indexOf("[REMOVE(")!=-1){
+		if(!checkCreateID())
+			return false;
+		var createID=$("#inpFor_div #createID").val();
+		command=command.replace("CreateID",createID);
+	}
 	$.post(path+"batch/execute",
 		{command:command},
 		function(result){
@@ -1345,7 +1351,7 @@ function splitUnitTagData(data){
 	<select id="command_sel">
 		<option value="[BATCH(Item,batchsvr1\ADMINISTRATOR,CLS_FRENCHVANILLA.BPC,BATCH_ID,100,FRENCHVANILLA PREMIUM -CLASSBASED,FREEZER,4,MIXER,2,PARMS,CREAM_AMOUNT,2001,EGG_AMOUNT,200,FLAVOR_AMOUNT,50,MILK_AMOUNT,1999,SUGAR_AMOUNT, 750)]">Batch</option>
 		<option value="[COMMAND(Item,batchsvr1\ADMINISTRATOR,ProcedureID,Cmd)]">COMMAND</option>
-		<option value="[REMOVE(Item,batchsvr1\ADMINISTRATOR,7)]">REMOVE</option>
+		<option value="[REMOVE(Item,batchsvr1\ADMINISTRATOR,CreateID)]">REMOVE</option>
 		<option value="[FORMULATIONS_INFO(<Item>,batchsvr1\ADMINISTRATOR,PRODUCT_X.BPC)]">Formulations_Info</option>
 		<option value="[INFO2(<Item>,batchsvr1\ADMINISTRATOR,PRODUCT_X.BPC)]">Info2</option>
 		<option value="[MESSAGES(Item,batchsvr1\ADMINISTRATOR,5)]">Messages</option>
