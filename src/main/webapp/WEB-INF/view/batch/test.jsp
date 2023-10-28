@@ -563,6 +563,12 @@ function getItem(){
 		var createID=$("#inpFor_div #createID").val();
 		item=item.replace("CreateID",createID);
 	}
+	else if(item=="ProcedureIDData"){
+		if(!checkProcedureID())
+			return false;
+		var procedureID=$("#inpFor_div #procedureID").val();
+		item=item.replace("ProcedureID",procedureID);
+	}
 	$.post(path+"batch/getItem",
 		{item:item},
 		function(result){
@@ -1207,7 +1213,7 @@ function splitUnitTagData(data){
 		<option value="BatchOverrides">BLCMDMask_3</option>
 		<option value="BLCreateID_1">BLCreateID_1-?</option>
 		<option value="BLDESC_3">BLDESC_3-?</option>
-		<option value="BLFailure_3">BLFailure_3-?</option>
+		<option value="BLFailure_1">BLFailure_1-?</option>
 		<option value="BLMode_3">BLMode_3-?</option>
 		<option value="BLRecipe_3">BLRecipe_3-?</option>
 		<option value="BLStartTime_3">BLStartTime_3-?</option>
@@ -1264,7 +1270,7 @@ function splitUnitTagData(data){
 		<option value="PhasesList">PhasesList</option>
 		<option value="PhasesList2">PhasesList2</option>
 		<option value="PhasesList3">PhasesList3</option>
-		<option value="5Data">5Data</option>
+		<option value="ProcedureIDData">ProcedureIDData</option>
 		<option value="5Data2">5Data2</option>
 		<option value="5Data3">5Data3</option>
 		<option value="5Status">5Status</option>
