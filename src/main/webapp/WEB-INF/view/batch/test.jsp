@@ -599,6 +599,13 @@ function execute(){
 		var createID=$("#inpFor_div #createID").val();
 		command=command.replace("CreateID",createID);
 	}
+	else if(command.indexOf("[MESSAGES(")!=-1){
+		if(!checkPhaseID())
+			return false;
+		var phaseID=$("#inpFor_div #phaseID").val();
+		command=command.replace("PhaseID",phaseID);
+	}
+	
 	$.post(path+"batch/execute",
 		{command:command},
 		function(result){
@@ -621,6 +628,16 @@ function checkProcedureID(){
 	var procedureID=$("#inpFor_div #procedureID").val();
 	if(procedureID==""||procedureID==null){
 		alert("请输入ProcedureID");
+		return false;
+	}
+	else
+		return true;
+}
+
+function checkPhaseID(){
+	var phaseID=$("#inpFor_div #phaseID").val();
+	if(phaseID==""||phaseID==null){
+		alert("请输入PhaseID");
 		return false;
 	}
 	else
@@ -1191,6 +1208,9 @@ function splitUnitTagData(data){
 		ProcedureID:<input type="text" id="procedureID"/>
 	</div>
 	<div>
+		PhaseID:<input type="text" id="phaseID"/>
+	</div>
+	<div>
 		Cmd:
 		<select id="cmd_sel">
 			<option value="">请选择</option>
@@ -1354,7 +1374,7 @@ function splitUnitTagData(data){
 		<option value="[REMOVE(Item,batchsvr1\ADMINISTRATOR,CreateID)]">REMOVE</option>
 		<option value="[FORMULATIONS_INFO(<Item>,batchsvr1\ADMINISTRATOR,PRODUCT_X.BPC)]">Formulations_Info</option>
 		<option value="[INFO2(<Item>,batchsvr1\ADMINISTRATOR,PRODUCT_X.BPC)]">Info2</option>
-		<option value="[MESSAGES(Item,batchsvr1\ADMINISTRATOR,5)]">Messages</option>
+		<option value="[MESSAGES(Item,batchsvr1\ADMINISTRATOR,PhaseID)]">Messages</option>
 		<option value="[MTRL_INFO(Item,batchsvr1\ADMINISTRATOR,PRODUCT_X.BPC)]">Mtrl_Info</option>
 		<option value="[PARMS(Item,batchsvr1\ADMINISTRATOR,5)]">Parms</option>
 		<option value="[PARMS2(Item,batchsvr1\ADMINISTRATOR,5)]">Parms2</option>
