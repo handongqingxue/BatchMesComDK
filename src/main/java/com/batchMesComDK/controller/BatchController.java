@@ -351,6 +351,11 @@ public class BatchController {
 									
 									addWOPreStateInList(WorkOrder.BYWZZ,wo.getWorkOrderID());
 								}
+								else if(BatchTest.COMPLETE.equals(stateVal)) {//工单取消时，若工单对应的batch已完成，就把数据库的工单状态也改为已完成
+									workOrderService.updateStateById(WorkOrder.BJS, wo.getID());
+									
+									addWOPreStateInList(WorkOrder.BJS,wo.getWorkOrderID());
+								}
 								else {//若工单已经执行了，就得停止batch运行
 									//commandBatch(createIDVal,BatchTest.STOP);
 									commandBatch(createIDVal,BatchTest.ABORT);
@@ -497,8 +502,15 @@ public class BatchController {
 						String updateUser = updateUserArr[i];
 						Integer clearFault = 0;
 						String clearFaultStr = clearFaultArr[i];
-						if(!StringUtils.isEmpty(clearFaultStr))
-							clearFault = Integer.valueOf(clearFaultStr);
+						System.out.println("clearFaultStr="+clearFaultStr);
+						if(!StringUtils.isEmpty(clearFaultStr)) {
+							try {
+								clearFault = Integer.valueOf(clearFaultStr);
+							} catch (Exception e) {
+								// TODO Auto-generated catch block
+								clearFault=0;
+							}
+						}
 						Integer createType = Integer.valueOf(createTypeArr[i]);
 						
 						Map<String, Object> woMap = unitIDWOMap.get(unitID);
