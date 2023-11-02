@@ -70,12 +70,12 @@
 		 group by brTr.PhaseDisc,wo.WorkOrderID,his.BatchID,his.Recipe,his.Phase,brTr.PMDisc,his.Descript,his.PValue,his.LclTime
 	</select>
 	<select id="getPhaseListByWOIDList" resultType="com.batchMesComDK.entity.BHBatchHis">
-		select brTr.PhaseDisc,wo.WorkOrderID,his.BatchID,his.Recipe,Phase,dense_rank() OVER (partition by Phase ORDER BY lclTime) PhaseStep from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo,BatchRecordTr brTr
+		select brTr.PhaseDisc,wo.WorkOrderID,his.BatchID,his.Recipe,Phase,dense_rank() OVER (partition by Phase ORDER BY Recipe) PhaseStep from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo,BatchRecordTr brTr
 		 where his.BatchID=wo.FormulaId collate chinese_prc_ci_as and his.Phase=brTr.PhaseName collate chinese_prc_ci_as and EU!=''
 		<foreach collection="workOrderIDList" item="workOrderID" open=" and cast(wo.WorkOrderID as char) in (" separator="," close=")">
 		#{workOrderID}
 		</foreach>
-		 group by brTr.PhaseDisc,wo.WorkOrderID,his.BatchID,his.Recipe,his.Phase,his.lclTime
+		 group by brTr.PhaseDisc,wo.WorkOrderID,his.BatchID,his.Recipe,his.Phase
 	</select>
 	<select id="getPhaseLclTimeListByWOIDList" resultType="com.batchMesComDK.entity.BHBatchHis">
 		select * from (

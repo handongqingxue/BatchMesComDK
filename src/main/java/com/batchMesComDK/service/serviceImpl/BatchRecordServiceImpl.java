@@ -152,8 +152,11 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 			batchRecordList.add(batchRecord);
 		}
 		
-		if(batchRecordList.size()>0)
+		if(batchRecordList.size()>0) {
+			if(batchRecordDao.getExistBRCountByRE(workOrderIDList, BatchRecord.GCCSJL_TEXT)>0)
+				batchRecordDao.delExistBRListByRE(workOrderIDList,BatchRecord.GCCSJL_TEXT);
 			count=batchRecordDao.addFromList(batchRecordList);
+		}
 		return count;
 	}
 	
@@ -201,7 +204,8 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 		
 		System.out.println("batchRecordList.size()==="+batchRecordList.size());
 		if(batchRecordList.size()>0) {
-			batchRecordDao.delExistBRListByRE(workOrderIDList,BatchRecord.WLCSJL_TEXT);
+			if(batchRecordDao.getExistBRCountByRE(workOrderIDList, BatchRecord.WLCSJL_TEXT)>0)
+				batchRecordDao.delExistBRListByRE(workOrderIDList,BatchRecord.WLCSJL_TEXT);
 			count=batchRecordDao.addFromList(batchRecordList);
 		}
 		return count;
@@ -298,8 +302,13 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 			//count+=batchRecordDao.add(batchRecord);
 		}
 		System.out.println("batchRecordListSize==="+batchRecordList.size());
-		if(batchRecordList.size()>0)
+		if(batchRecordList.size()>0) {
+			if(batchRecordDao.getExistBRCountByRE(workOrderIDList, BatchRecord.PGCJL_TEXT)>0) {
+				int c = batchRecordDao.delExistBRListByRE(workOrderIDList,BatchRecord.PGCJL_TEXT);
+				System.out.println("c==="+c);
+			}
 			count=batchRecordDao.addFromList(batchRecordList);
+		}
 		return count;
 	}
 	

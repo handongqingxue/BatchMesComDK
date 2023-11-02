@@ -307,12 +307,29 @@
 		and RecordType=1 and (LotNo is not null or PMName='TEMP')
 		order by RecordStartTime,RecordType
 	</select>
+	<select id="getExistBRCountByRE" resultType="java.lang.Integer">
+		select count(*) from BatchRecord where 1=1
+		<foreach collection="workOrderIDList" item="workOrderID" open=" and cast(workOrderID as char) in (" separator="," close=")">
+		#{workOrderID}
+		</foreach>
+		and RecordEvent=#{recordEvent}
+		<choose>
+			<when test="recordEvent==@com.batchMesComDK.entity.BatchRecord@GCCSJL_TEXT">
+				 and (PMName='TIME' and PMCName like'%时间设定值' or PMName='VD' and PMCName like'%真空度设定值')
+			</when>
+		</choose>
+	</select>
 	<update id="delExistBRListByRE">
 		delete from BatchRecord where 1=1
 		<foreach collection="workOrderIDList" item="workOrderID" open=" and cast(workOrderID as char) in (" separator="," close=")">
 		#{workOrderID}
 		</foreach>
 		and RecordEvent=#{recordEvent}
+		<choose>
+			<when test="recordEvent==@com.batchMesComDK.entity.BatchRecord@GCCSJL_TEXT">
+				 and (PMName='TIME' and PMCName like'%时间设定值' or PMName='VD' and PMCName like'%真空度设定值')
+			</when>
+		</choose>
 	</update>
 	<update id="updateDevPMCode">
 		update BatchRecord set PMCode=#{pMCode} where PMCName=#{pMCName} and WorkOrderID=#{workOrderID} and RecordType='3'

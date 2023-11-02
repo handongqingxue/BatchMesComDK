@@ -16,6 +16,8 @@ public interface BatchRecordMapper {
 
 	List<BatchRecord> getListByWorkOrderIDList(@Param("workOrderIDList") List<String> workOrderIDList,@Param("recordTypeList") List<String> recordTypeList);
 	
+	int getExistBRCountByRE(@Param("workOrderIDList") List<String> workOrderIDList, @Param("recordEvent") String recordEvent);
+	
 	int delExistBRListByRE(@Param("workOrderIDList") List<String> workOrderIDList, @Param("recordEvent") String recordEvent);
 
 	int updateDevPMCode(@Param("pMCode") String pMCode, @Param("pMCName") String pMCName, @Param("workOrderID") String workOrderID);
