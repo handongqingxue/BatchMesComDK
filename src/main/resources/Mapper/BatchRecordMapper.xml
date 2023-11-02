@@ -307,6 +307,13 @@
 		and RecordType=1 and (LotNo is not null or PMName='TEMP')
 		order by RecordStartTime,RecordType
 	</select>
+	<update id="delExistBRListByRE">
+		delete from BatchRecord where 1=1
+		<foreach collection="workOrderIDList" item="workOrderID" open=" and cast(workOrderID as char) in (" separator="," close=")">
+		#{workOrderID}
+		</foreach>
+		and RecordEvent=#{recordEvent}
+	</update>
 	<update id="updateDevPMCode">
 		update BatchRecord set PMCode=#{pMCode} where PMCName=#{pMCName} and WorkOrderID=#{workOrderID} and RecordType='3'
 	</update>

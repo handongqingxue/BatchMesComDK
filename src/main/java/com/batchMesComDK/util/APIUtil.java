@@ -33,12 +33,12 @@ public class APIUtil {
 	/**
 	 * 正式环境ip
 	 */
-	//public static final String SERVICE_URL_MES="http://10.0.3.160:80/mesPlatform/api/remote/batch/";
+	public static final String SERVICE_URL_MES="http://10.0.3.142:19888/mesPlatform/api/remote/batch/";
 	/**
 	 * 这个ip并不存在,是为了测试网络异常情况下重发批记录给mes而设定的ip
 	 */
 	//public static final String SERVICE_URL_MES="http://10.0.3.130:19888/mesPlatform/api/remote/batch/";
-	public static final String SERVICE_URL_MES="http://10.0.3.136:19888/mesPlatform/api/remote/batch/";
+	//public static final String SERVICE_URL_MES="http://10.0.3.136:19888/mesPlatform/api/remote/batch/";
 	//public static final String SERVICE_URL_MES="http://172.25.10.13:19888/mesPlatform/api/remote/batch/";
 	
 	public static final String ITEM_RESULT="item";

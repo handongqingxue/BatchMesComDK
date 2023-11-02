@@ -534,9 +534,11 @@ public class BatchController {
 										if(StringUtils.isEmpty(failureVal.trim()))
 											workOrderService.updateClearFaultByFormulaId(WorkOrder.NO_FAULT, formulaId);
 										else {
+											/*
 											if(BatchTest.RUNNING.equals(stateVal)) {
 												commandBatch(createIDVal,BatchTest.HOLD);
 											}
+											*/
 											commandBatch(createIDVal,BatchTest.CLEAR_FAILURES);
 										}
 									}

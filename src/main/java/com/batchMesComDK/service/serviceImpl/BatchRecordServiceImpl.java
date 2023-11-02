@@ -200,8 +200,10 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 		}
 		
 		System.out.println("batchRecordList.size()==="+batchRecordList.size());
-		if(batchRecordList.size()>0)
+		if(batchRecordList.size()>0) {
+			batchRecordDao.delExistBRListByRE(workOrderIDList,BatchRecord.WLCSJL_TEXT);
 			count=batchRecordDao.addFromList(batchRecordList);
+		}
 		return count;
 	}
 	
