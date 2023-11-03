@@ -13,6 +13,8 @@
 <title>Insert title here</title>
 <script type="text/javascript">
 var path='<%=basePath %>';
+var timer=null;
+var prePhaseIDs;
 $(function(){
 	//keepWatchOnWorkOrder();
 	initUwosStateSel();
@@ -556,26 +558,47 @@ function initUbtsStateSel(){
 }
 
 function getItem(){
+	if(timer!=null){
+		clearInterval(timer);
+		timer=null;
+	}
 	var item=$("#item_sel").val();
 	if(item=="CreateIDBatchStepDataList"){
 		if(!checkCreateID())
 			return false;
 		var createID=$("#inpFor_div #createID").val();
 		item=item.replace("CreateID",createID);
+		getItemByVal(item);
+	}
+	else if(item=="PhaseDataList"){
+		timer=setInterval(function(){
+			getItemByVal(item);
+		},"3000");
+	}
+	else if(item=="PhaseIDParms"){
+		if(!checkPhaseID())
+			return false;
+		var phaseID=$("#inpFor_div #phaseID").val();
+		item=item.replace("PhaseID",phaseID);
+		getItemByVal(item);
 	}
 	else if(item=="ProcedureIDData"){
 		if(!checkProcedureID())
 			return false;
 		var procedureID=$("#inpFor_div #procedureID").val();
 		item=item.replace("ProcedureID",procedureID);
+		getItemByVal(item);
 	}
+}
+
+function getItemByVal(val){
 	$.post(path+"batch/getItem",
-		{item:item},
+		{item:val},
 		function(result){
 			console.log("result==="+JSON.stringify(result));
 			var data=JSON.stringify(result.data);
 			data=data.substring(1,data.length-1);
-			splitData(item,data);
+			splitData(val,data);
 		}
 	,"json");
 }
@@ -606,6 +629,10 @@ function execute(){
 		command=command.replace("PhaseID",phaseID);
 	}
 	
+	executeByCmd(command);
+}
+
+function executeByCmd(command){
 	$.post(path+"batch/execute",
 		{command:command},
 		function(result){
@@ -613,6 +640,7 @@ function execute(){
 		}
 	,"json");
 }
+
 function checkCreateID(){
 	var createID=$("#inpFor_div #createID").val();
 	if(createID==""||createID==null){
@@ -994,25 +1022,35 @@ function splitOperationDataList(data){
 function splitPhaseDataList(data){
 	var items=data.split("\\r\\n");
 	console.log("length==="+items.length);
+	var currPhaseIDs="";
 	for(var i=0;i<items.length-1;i++){
-		console.log("i==="+i);
+		//console.log("i==="+i);
 		var item=items[i];
 		var itemArr=item.split("\\t");
-		console.log("PhaseID==="+itemArr[0]);
-		console.log("PhaseName==="+itemArr[1]);
-		console.log("PhaseState==="+itemArr[2]);
-		console.log("Pausing==="+itemArr[3]);
-		console.log("Mode==="+itemArr[4]);
-		console.log("ArbMask==="+itemArr[5]);
-		console.log("CmdMask==="+itemArr[6]);
-		console.log("UnitID==="+itemArr[7]);
-		console.log("UnitName==="+itemArr[8]);
-		console.log("Owner==="+itemArr[9]);
-		console.log("BatchID==="+itemArr[10]);
-		console.log("FailMsg==="+itemArr[11]);
-		console.log("PhaseMsg==="+itemArr[12]);
-		console.log("StepIndex==="+itemArr[13]);
-		console.log("ValidUList==="+itemArr[14]);
+		var phaseID=itemArr[0];
+		var phaseState=itemArr[2];
+		pdlLogStr="PhaseID==="+phaseID+","+"PhaseName==="+itemArr[1]+","+"PhaseState==="+phaseState;
+		pdlLogStr+="Pausing==="+itemArr[3]+","+"Mode==="+itemArr[4]+","+"ArbMask==="+itemArr[5];
+		pdlLogStr+="CmdMask==="+itemArr[6]+","+"UnitID==="+itemArr[7]+","+"UnitName==="+itemArr[8];
+		pdlLogStr+="Owner==="+itemArr[9]+","+"BatchID==="+itemArr[10]+","+"FailMsg==="+itemArr[11];
+		pdlLogStr+="PhaseMsg==="+itemArr[12]+","+"StepIndex==="+itemArr[13]+","+"ValidUList==="+itemArr[14];
+		//console.log(pdlLogStr);
+		if("RUNNING"==phaseState){
+			currPhaseIDs+=","+phaseID;
+		}
+	}
+	if(currPhaseIDs!=""){
+		currPhaseIDs=currPhaseIDs.substring(1);
+		if(currPhaseIDs!=prePhaseIDs){
+			console.log("currPhaseIDs="+currPhaseIDs);
+			var currPhaseIDArr=currPhaseIDs.split(",");
+			for(var i=0;i<currPhaseIDArr.length;i++){
+				var currPhaseID=currPhaseIDArr[i];
+				//getItemByVal(currPhaseID+"Parms");
+				executeByCmd("[MESSAGES(Item,batchsvr1\ADMINISTRATOR,"+currPhaseID+")]");
+			}
+		}
+		prePhaseIDs=currPhaseIDs;
 	}
 }
 
@@ -1284,7 +1322,7 @@ function splitUnitTagData(data){
 		<option value="5Failure">5Failure</option>
 		<option value="5Info">5Info</option>
 		<option value="5Message">5Message</option>
-		<option value="5Parms">5Parms</option>
+		<option value="PhaseIDParms">PhaseIDParms</option>
 		<option value="5Pause">5Pause</option>
 		<option value="5Pausing">5Pausing</option>
 		<option value="5PhaseData">5PhaseData</option>
