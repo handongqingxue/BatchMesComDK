@@ -589,6 +589,10 @@ function getItem(){
 		item=item.replace("ProcedureID",procedureID);
 		getItemByVal(item);
 	}
+	else{
+		alert(item)
+		getItemByVal(item);
+	}
 }
 
 function getItemByVal(val){
