@@ -165,4 +165,16 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		List<String> workOrderIDList = Arrays.asList(workOrderArr);
 		return workOrderDao.getStateListByWOIDList(workOrderIDList);
 	}
+
+	@Override
+	public int updateBatchCreatedById(boolean batchCreated, Integer id) {
+		// TODO Auto-generated method stub
+		return workOrderDao.updateBatchCreatedById(batchCreated,id);
+	}
+
+	@Override
+	public boolean getBatchCreatedById(Integer id) {
+		// TODO Auto-generated method stub
+		return workOrderDao.getBatchCreatedById(id);
+	}
 }

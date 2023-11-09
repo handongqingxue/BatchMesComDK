@@ -240,4 +240,10 @@
 		#{workOrderID}
 		</foreach>
 	</select>
+	<update id="updateBatchCreatedById">
+		update WorkOrder set BatchCreated=#{batchCreated} where ID=#{id}
+	</update>
+	<select id="getBatchCreatedById" resultType="java.lang.Boolean">
+		select BatchCreated from WorkOrder where ID=#{id}
+	</select>
 </mapper>

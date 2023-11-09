@@ -45,4 +45,8 @@ public interface WorkOrderService {
 
 	List<Integer> getStateListByWOIDs(String workOrders);
 
+	int updateBatchCreatedById(boolean batchCreated, Integer id);
+
+	boolean getBatchCreatedById(Integer id);
+
 }

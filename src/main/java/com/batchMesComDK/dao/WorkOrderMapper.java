@@ -44,4 +44,8 @@ public interface WorkOrderMapper {
 
 	List<Integer> getStateListByWOIDList(@Param("workOrderIDList") List<String> workOrderIDList);
 
+	int updateBatchCreatedById(@Param("batchCreated") boolean batchCreated, @Param("id") Integer id);
+
+	boolean getBatchCreatedById(@Param("id") Integer id);
+
 }

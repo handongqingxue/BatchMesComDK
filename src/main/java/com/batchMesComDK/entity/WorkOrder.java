@@ -255,6 +255,12 @@ public class WorkOrder {
 	public void setCreateType(Integer createType) {
 		CreateType = createType;
 	}
+	public Boolean getBatchCreated() {
+		return BatchCreated;
+	}
+	public void setBatchCreated(Boolean batchCreated) {
+		BatchCreated = batchCreated;
+	}
 	private String WorkOrderID;
 	private String ProductCode;
 	private String ProductName;
@@ -274,6 +280,7 @@ public class WorkOrder {
 	private String FormulaIdMes;
 	private Integer ClearFault;
 	private Integer CreateType;
+	private Boolean BatchCreated;
 	private List<RecipePM> recipePMList;//用来存放mes那边下发的大料和工艺参数
 	private List<ManFeed> manFeedList;//用来存放mes那边下发的小料参数
 	public List<RecipePM> getRecipePMList() {

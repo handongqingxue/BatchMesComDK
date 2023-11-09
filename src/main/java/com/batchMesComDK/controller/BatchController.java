@@ -192,8 +192,14 @@ public class BatchController {
 						addManFeedFromRecipePM(workOrderID,productCode,productName);//工单创建时，从配方参数表里取数据，放入人工投料表
 						*/
 						
-						if(!checkBatchIfExistInList(formulaId)) {//验证batch是否已创建，避免用户重复点击确认执行配方按钮后重复创建
+						//if(!checkBatchIfExistInList(formulaId)) {//验证batch是否已创建，避免用户重复点击确认执行配方按钮后重复创建
+						boolean batchCreated=workOrderService.getBatchCreatedById(id);
+						addTestLog(createTestLogByParams("getBatchCreated","","",workOrderID+","+formulaId+","+batchCreated));
+						System.out.println("batchCreated="+batchCreated);
+						if(!batchCreated) {
+							System.out.println("111111111");
 							String createBatchResultStr = createBatch(formulaId,workOrderID,identifier);
+							workOrderService.updateBatchCreatedById(true,id);
 						}
 						
 						/*
@@ -638,7 +644,7 @@ public class BatchController {
 		}
 		
 	}
-	
+
 	/**
 	 * 打印出不同主机上是否存在运行中的工单标志
 	 */
