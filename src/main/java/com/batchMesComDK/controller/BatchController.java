@@ -454,6 +454,7 @@ public class BatchController {
 						woSGCJ.setUnitID(unitIDSGCJ);
 						woSGCJ.setIdentifier(identifierSGCJ);
 						woSGCJ.setCreateType(WorkOrder.HAND_CREATE);
+						woSGCJ.setBatchCreated(false);
 						
 						int sgcjEditCount=workOrderService.edit(woSGCJ);
 						if(sgcjEditCount>0) {
@@ -2235,6 +2236,7 @@ public class BatchController {
 						wo.setWorkcenterId(workcenterId);
 						wo.setFormulaIdMes(formulaIdMes);
 						wo.setCreateType(WorkOrder.MES_DOWN);
+						wo.setBatchCreated(false);
 						
 						String unitID = recipeHeader.getUnitID();
 						if(StringUtils.isEmpty(unitID))
