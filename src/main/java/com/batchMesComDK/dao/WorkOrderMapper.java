@@ -46,6 +46,6 @@ public interface WorkOrderMapper {
 
 	int updateBatchCreatedById(@Param("batchCreated") boolean batchCreated, @Param("id") Integer id);
 
-	boolean getBatchCreatedById(@Param("id") Integer id);
+	Boolean getBatchCreatedById(@Param("id") Integer id);
 
 }

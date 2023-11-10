@@ -334,4 +334,17 @@
 	<update id="updateDevPMCode">
 		update BatchRecord set PMCode=#{pMCode} where PMCName=#{pMCName} and WorkOrderID=#{workOrderID} and RecordType='3'
 	</update>
+	<select id="getPhaseStepList" resultType="com.batchMesComDK.entity.BatchRecord">
+		select ID,WorkOrderID,PMCode,PMName,LotNo,RecordEvent,RecordContent,Unit,RecordStartTime,RecordEndTime,HLimit,LLimit,DeviationType,RecordType,EquipmentCode,PMCName,PhaseDisc,PhaseID,FeedPort,dense_rank() OVER (partition by PhaseDisc ORDER BY RecordStartTime) PhaseStep from BatchRecord where RecordType=${@com.batchMesComDK.entity.BatchRecord@PGCJL}
+		<foreach collection="workOrderIDList" item="workOrderID" open=" and cast(workOrderID as char) in (" separator="," close=")">
+		#{workOrderID}
+		</foreach>
+	</select>
+	<update id="updatePhaseStepByList">
+		update BatchRecord set PhaseStep=case
+		<foreach collection="brList" item="br">
+			when ID=#{br.ID} then #{br.phaseStep}
+		</foreach>
+		 else PhaseStep end
+	</update>
 </mapper>

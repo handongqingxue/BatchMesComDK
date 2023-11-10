@@ -308,6 +308,10 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 				System.out.println("c==="+c);
 			}
 			count=batchRecordDao.addFromList(batchRecordList);
+			if(count>0) {
+				List<BatchRecord> psBRList=batchRecordDao.getPhaseStepList(workOrderIDList);
+				batchRecordDao.updatePhaseStepByList(psBRList);
+			}
 		}
 		return count;
 	}
