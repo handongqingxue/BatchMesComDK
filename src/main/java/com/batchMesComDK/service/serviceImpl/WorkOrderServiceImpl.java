@@ -173,7 +173,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	}
 
 	@Override
-	public boolean getBatchCreatedById(Integer id) {
+	public Boolean getBatchCreatedById(Integer id) {
 		// TODO Auto-generated method stub
 		return workOrderDao.getBatchCreatedById(id);
 	}

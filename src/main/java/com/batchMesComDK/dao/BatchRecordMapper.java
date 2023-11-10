@@ -34,4 +34,8 @@ public interface BatchRecordMapper {
 
 	int updateDevPMCode(@Param("pMCode") String pMCode, @Param("pMCName") String pMCName, @Param("workOrderID") String workOrderID);
 
+	List<BatchRecord> getPhaseStepList(@Param("workOrderIDList") List<String> workOrderIDList);
+
+	int updatePhaseStepByList(@Param("brList") List<BatchRecord> brList);
+
 }

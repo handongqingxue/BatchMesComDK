@@ -47,6 +47,6 @@ public interface WorkOrderService {
 
 	int updateBatchCreatedById(boolean batchCreated, Integer id);
 
-	boolean getBatchCreatedById(Integer id);
+	Boolean getBatchCreatedById(Integer id);
 
 }

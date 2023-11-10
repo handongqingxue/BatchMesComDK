@@ -193,11 +193,10 @@ public class BatchController {
 						*/
 						
 						//if(!checkBatchIfExistInList(formulaId)) {//验证batch是否已创建，避免用户重复点击确认执行配方按钮后重复创建
-						boolean batchCreated=workOrderService.getBatchCreatedById(id);
+						Boolean batchCreated=workOrderService.getBatchCreatedById(id);
 						addTestLog(createTestLogByParams("getBatchCreated","","",workOrderID+","+formulaId+","+batchCreated));
 						System.out.println("batchCreated="+batchCreated);
-						if(!batchCreated) {
-							System.out.println("111111111");
+						if(batchCreated!=null&&!batchCreated) {
 							String createBatchResultStr = createBatch(formulaId,workOrderID,identifier);
 							workOrderService.updateBatchCreatedById(true,id);
 						}
@@ -454,6 +453,7 @@ public class BatchController {
 						woSGCJ.setUnitID(unitIDSGCJ);
 						woSGCJ.setIdentifier(identifierSGCJ);
 						woSGCJ.setCreateType(WorkOrder.HAND_CREATE);
+						woSGCJ.setBatchCreated(false);
 						
 						int sgcjEditCount=workOrderService.edit(woSGCJ);
 						if(sgcjEditCount>0) {
@@ -2235,6 +2235,7 @@ public class BatchController {
 						wo.setWorkcenterId(workcenterId);
 						wo.setFormulaIdMes(formulaIdMes);
 						wo.setCreateType(WorkOrder.MES_DOWN);
+						wo.setBatchCreated(false);
 						
 						String unitID = recipeHeader.getUnitID();
 						if(StringUtils.isEmpty(unitID))
