@@ -110,7 +110,7 @@
 			<if test="CreateType!=null">
 				#{CreateType},
 			</if>
-				false
+				0
 		</trim>
 	</insert>
 	<update id="updateStateById">
