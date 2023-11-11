@@ -1831,6 +1831,8 @@ public class BatchController {
 		String json=null;
 		String result=null;
 		try {
+			//item="80\tCLS_SWEETCREAM_UP:1Data";
+			//80	CLS_SWEETCREAM_UP:1Data
 			System.out.println("item==="+item);
 			result = BatchComBridge.getInstance().callGetItem(item);
 			System.out.println("result==="+result);
