@@ -582,11 +582,11 @@ function getItem(){
 		item=item.replace("PhaseID",phaseID);
 		getItemByVal(item);
 	}
-	else if(item=="ProcedureIDData"||item=="ProcedureIDDATA2"){
+	else if(item=="ProcedureIDData"){
 		if(!checkProcedureID())
 			return false;
 		var procedureID=$("#inpFor_div #procedureID").val();
-		item=item.replace("ProcedureID",procedureID);
+		item=item.replace("ProcedureID",procedureID.replaceAll("\\t","	"));
 		alert(item)
 		getItemByVal(item);
 	}
@@ -1339,7 +1339,7 @@ function splitUnitTagData(data){
 		<option value="PhasesList">PhasesList</option>
 		<option value="PhasesList2">PhasesList2</option>
 		<option value="PhasesList3">PhasesList3</option>
-		<option value="ProcedureIDDATA2">ProcedureIDData2</option>
+		<option value="ProcedureIDData">ProcedureIDData</option>
 		<option value="5Data2">5Data2</option>
 		<option value="5Data3">5Data3</option>
 		<option value="5Status">5Status</option>
