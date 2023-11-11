@@ -586,7 +586,12 @@ function getItem(){
 		if(!checkProcedureID())
 			return false;
 		var procedureID=$("#inpFor_div #procedureID").val();
-		item=item.replace("ProcedureID",procedureID);
+		item=item.replace("ProcedureID",procedureID.replaceAll("\\t","	"));
+		alert(item)
+		getItemByVal(item);
+	}
+	else{
+		alert(item)
 		getItemByVal(item);
 	}
 }
@@ -1240,13 +1245,13 @@ function splitUnitTagData(data){
 <body>
 <div id="inpFor_div">
 	<div>
-		CreateID:<input type="text" id="createID"/>
+		CreateID:<input type="text" id="createID" size="50"/>
 	</div>
 	<div>
-		ProcedureID:<input type="text" id="procedureID"/>
+		ProcedureID:<input type="text" id="procedureID" size="50"/>
 	</div>
 	<div>
-		PhaseID:<input type="text" id="phaseID"/>
+		PhaseID:<input type="text" id="phaseID" size="50"/>
 	</div>
 	<div>
 		Cmd:
