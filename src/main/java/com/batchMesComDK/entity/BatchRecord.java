@@ -164,6 +164,12 @@ public class BatchRecord {
 	public void setPhaseStep(Integer phaseStep) {
 		PhaseStep = phaseStep;
 	}
+	public Integer getMaterStep() {
+		return MaterStep;
+	}
+	public void setMaterStep(Integer materStep) {
+		MaterStep = materStep;
+	}
 	private String WorkOrderID;
 	private String PMCode;
 	private String PMName;
@@ -183,4 +189,5 @@ public class BatchRecord {
 	private String PhaseID;
 	private String FeedPort;//投料口
 	private Integer PhaseStep;//phase是第几次执行
+	private Integer MaterStep;//大料是第几次执行
 }

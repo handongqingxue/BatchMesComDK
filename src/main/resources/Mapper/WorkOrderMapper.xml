@@ -56,7 +56,9 @@
 			<if test="CreateType!=null">
 				CreateType,
 			</if>
+			<if test="BatchCreated!=null">
 				BatchCreated,
+			</if>
 		</trim>
 		values
 		<trim prefix="(" suffix=")" suffixOverrides=",">
@@ -110,7 +112,9 @@
 			<if test="CreateType!=null">
 				#{CreateType},
 			</if>
-				0
+			<if test="BatchCreated!=null">
+				#{BatchCreated},
+			</if>
 		</trim>
 	</insert>
 	<update id="updateStateById">

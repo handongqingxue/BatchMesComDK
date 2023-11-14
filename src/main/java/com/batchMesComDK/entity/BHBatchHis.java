@@ -297,6 +297,12 @@ public class BHBatchHis {
 	public void setLclCompleteTime(String lclCompleteTime) {
 		this.lclCompleteTime = lclCompleteTime;
 	}
+	public Integer getAddIndex() {
+		return AddIndex;
+	}
+	public void setAddIndex(Integer addIndex) {
+		AddIndex = addIndex;
+	}
 	private String lclTime;
 	private String UniqueID;
 	private String BatchID;
@@ -345,4 +351,5 @@ public class BHBatchHis {
 	private String PhaseID;
 	private String lclStartTime;
 	private String lclCompleteTime;
+	private Integer AddIndex;//第几次加大料
 }

@@ -167,12 +167,11 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 		List<BatchRecord> batchRecordList=new ArrayList<>();
 		BatchRecord batchRecord=null;
 		List<BHBatchHis> materialList = bHBatchHisDao.getMaterialListByWOIDList(workOrderIDList);
-		List<BHBatchHis> materialCompleteList = bHBatchHisDao.getMaterialCompleteListByWOIDList(workOrderIDList);
+		List<BHBatchHis> materialConnectingList = bHBatchHisDao.getMaterialConnectingListByWOIDList(workOrderIDList);
 		for (BHBatchHis bhBatchHis : materialList) {
 			batchRecord=new BatchRecord();
 			
 			String workOrderID = bhBatchHis.getWorkOrderID();
-			String recordStartTime = bhBatchHis.getLclTime();
 			String pMCode = bhBatchHis.getPMCode();
 			String descript = bhBatchHis.getDescript();
 			String batchID = bhBatchHis.getBatchID();
@@ -182,7 +181,9 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 			String feedPort = bhBatchHis.getFeedPort();
 			String phase = bhBatchHis.getPhase();
 			String recipe = bhBatchHis.getRecipe();
-			String recordEndTime=getRecordEndTime(workOrderID,recipe,phase,materialCompleteList);
+			String recordStartTime = getRecordStartTime(workOrderID,recipe,phase,materialConnectingList);
+			String recordEndTime=bhBatchHis.getLclTime();
+			Integer addIndex = bhBatchHis.getAddIndex();
 			
 			batchRecord.setWorkOrderID(workOrderID);
 			batchRecord.setPMCode(pMCode);
@@ -196,6 +197,7 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 			batchRecord.setRecordType(BatchRecord.WLCSJL+"");
 			batchRecord.setPMCName(cNameMes);
 			batchRecord.setFeedPort(feedPort);
+			batchRecord.setMaterStep(addIndex);
 			
 			batchRecordList.add(batchRecord);
 			
@@ -211,19 +213,19 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 		return count;
 	}
 	
-	public String getRecordEndTime(String workOrderID, String recipe, String phase, List<BHBatchHis> materialCompleteList) {
-		String recordEndTime=null;
+	public String getRecordStartTime(String workOrderID, String recipe, String phase, List<BHBatchHis> materialConnectingList) {
+		String recordStartTime=null;
 		
-		for (BHBatchHis materialComplete : materialCompleteList) {
-			String mcWorkOrderID=materialComplete.getWorkOrderID(); 
-			String mcRecipe=materialComplete.getRecipe();
-			String mcPhase=materialComplete.getPhase();
+		for (BHBatchHis materialConnecting : materialConnectingList) {
+			String mcWorkOrderID=materialConnecting.getWorkOrderID(); 
+			String mcRecipe=materialConnecting.getRecipe();
+			String mcPhase=materialConnecting.getPhase();
 			if(workOrderID.equals(mcWorkOrderID)&&recipe.equals(mcRecipe)&&phase.equals(mcPhase)) {
-				recordEndTime = materialComplete.getLclTime();
+				recordStartTime = materialConnecting.getLclTime();
 				break;
 			}
 		}
-		return recordEndTime;
+		return recordStartTime;
 	}
 
 	@Override

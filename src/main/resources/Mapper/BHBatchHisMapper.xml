@@ -52,13 +52,13 @@
 		  and t.PMDisc=case when charindex('_',rPM.CName)>0 then REPLACE(substring(rPM.CName,0,charindex('_',rPM.CName)),'进料量','设定量') else rPM.CName end collate chinese_prc_ci_as
 		 and t.AddIndex=substring(rPM.PMName,len(rPM.PMName),1) collate chinese_prc_ci_as and t.WorkOrderID=rPM.WorkOrderID
 	</select>
-	<select id="getMaterialCompleteListByWOIDList" resultType="com.batchMesComDK.entity.BHBatchHis">
+	<select id="getMaterialConnectingListByWOIDList" resultType="com.batchMesComDK.entity.BHBatchHis">
 		select wo.WorkOrderID,his.* from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo,BatchRecordTr brTr 
 		 where his.BatchID=wo.FormulaId collate chinese_prc_ci_as and his.Phase=brTr.PhaseName collate chinese_prc_ci_as
 		 <foreach collection="workOrderIDList" item="workOrderID" open=" and wo.WorkOrderID in (" separator="," close=")">
 		#{workOrderID}
 		</foreach>
-		  and his.Descript='State Changed: ' and his.PValue='COMPLETE'
+		  and his.Descript='State Changed: ' and his.PValue='CONNECTING'
 	</select>
 	<select id="getTechListByWOIDList" resultType="com.batchMesComDK.entity.BHBatchHis">
 		select brTr.PhaseDisc,wo.WorkOrderID,his.BatchID,his.Recipe,Phase,brTr.PMDisc,his.Descript,his.PValue,his.LclTime from [BatchHistoryEx].[dbo].[BHBatchHis] his,WorkOrder wo,BatchRecordTr brTr

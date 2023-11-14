@@ -127,7 +127,7 @@
 	</insert>
 	<insert id="addFromList" parameterType="com.batchMesComDK.entity.BatchRecord">
 		insert into BatchRecord (WorkOrderID,PMCode,PMName,LotNo,RecordEvent,RecordContent,Unit,RecordStartTime,
-		RecordEndTime,HLimit,LLimit,DeviationType,RecordType,EquipmentCode,PMCName,PhaseDisc,PhaseID,FeedPort,PhaseStep) values
+		RecordEndTime,HLimit,LLimit,DeviationType,RecordType,EquipmentCode,PMCName,PhaseDisc,PhaseID,FeedPort,PhaseStep,MaterStep) values
 		<foreach collection="brList" item="br" separator=",">
 			<trim prefix="(" suffix=")" suffixOverrides=",">
 				<choose>
@@ -277,6 +277,14 @@
 				<choose>
 					<when test="br.phaseStep!=null">
 						#{br.phaseStep},
+					</when>
+					<otherwise>
+						'',
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="br.materStep!=null">
+						#{br.materStep},
 					</when>
 					<otherwise>
 						'',

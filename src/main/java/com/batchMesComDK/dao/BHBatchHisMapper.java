@@ -23,11 +23,11 @@ public interface BHBatchHisMapper {
 	List<BHBatchHis> getMaterialListByWOIDList(@Param("workOrderIDList") List<String> workOrderIDList);
 
 	/**
-	 * 获得原料记录完成时间
+	 * 获得原料记录开始时间
 	 * @param workOrderIDList
 	 * @return
 	 */
-	List<BHBatchHis> getMaterialCompleteListByWOIDList(@Param("workOrderIDList") List<String> workOrderIDList);
+	List<BHBatchHis> getMaterialConnectingListByWOIDList(@Param("workOrderIDList") List<String> workOrderIDList);
 
 	/**
 	 * 获得工艺参数记录
