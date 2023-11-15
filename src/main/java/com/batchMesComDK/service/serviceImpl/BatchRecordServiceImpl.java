@@ -213,6 +213,14 @@ public class BatchRecordServiceImpl implements BatchRecordService {
 		return count;
 	}
 	
+	/**
+	 * 根据工单号、phase、配方，从开始时间集合里筛选对应的开始时间(用来获取大料加料的开始时间，因为大料added_amount对应的是加料结束的时间，还得获取开始时间匹配起来)
+	 * @param workOrderID
+	 * @param recipe
+	 * @param phase
+	 * @param materialConnectingList
+	 * @return
+	 */
 	public String getRecordStartTime(String workOrderID, String recipe, String phase, List<BHBatchHis> materialConnectingList) {
 		String recordStartTime=null;
 		

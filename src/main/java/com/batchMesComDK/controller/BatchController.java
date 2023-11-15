@@ -193,7 +193,7 @@ public class BatchController {
 						*/
 						
 						//if(!checkBatchIfExistInList(formulaId)) {//验证batch是否已创建，避免用户重复点击确认执行配方按钮后重复创建
-						Boolean batchCreated=workOrderService.getBatchCreatedById(id);
+						Boolean batchCreated=workOrderService.getBatchCreatedById(id);//有时创建batch可能会有延时，为了避免重复创建，上面那个判断不用了，改用这个判断
 						addTestLog(createTestLogByParams("getBatchCreated","","",workOrderID+","+formulaId+","+batchCreated));
 						System.out.println("batchCreated="+batchCreated);
 						if(batchCreated!=null&&!batchCreated) {
