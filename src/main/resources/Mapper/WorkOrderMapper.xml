@@ -252,4 +252,7 @@
 	<select id="getBatchCreatedById" resultType="java.lang.Boolean">
 		select BatchCreated from WorkOrder where ID=#{id}
 	</select>
+	<update id="updateApiFailDataById">
+		update WorkOrder set ApiFailData=#{apiFailData} where ID=#{id}
+	</update>
 </mapper>

@@ -177,4 +177,10 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		// TODO Auto-generated method stub
 		return workOrderDao.getBatchCreatedById(id);
 	}
+
+	@Override
+	public int updateApiFailDataById(String apiFailData, Integer id) {
+		// TODO Auto-generated method stub
+		return workOrderDao.updateApiFailDataById(apiFailData,id);
+	}
 }

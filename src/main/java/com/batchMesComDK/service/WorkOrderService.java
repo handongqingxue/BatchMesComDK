@@ -49,4 +49,6 @@ public interface WorkOrderService {
 
 	Boolean getBatchCreatedById(Integer id);
 
+	int updateApiFailDataById(String apiFailData, Integer id);
+
 }

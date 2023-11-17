@@ -198,19 +198,22 @@ public class BatchController {
 						System.out.println("batchCreated="+batchCreated);
 						if(batchCreated!=null&&!batchCreated) {
 							String createBatchResultStr = createBatch(formulaId,workOrderID,identifier);
-							workOrderService.updateBatchCreatedById(true,id);
+							JSONObject createBatchResultJO = new JSONObject(createBatchResultStr);
+							String createBatchData = createBatchResultJO.getString("data");
+							System.out.println("createBatchData==="+createBatchData);
+							if(createBatchData.contains(BatchTest.SUCCESS_RESULT)) {
+								workOrderService.updateStateById(WorkOrder.BCJWB, id);//只有batch创建完毕，工单状态才变为3
+								workOrderService.updateBatchCreatedById(true,id);
+								
+								addWOPreStateInList(WorkOrder.BCJWB,workOrderID);
+							}
+							else {//当创建batch失败时，就把工单状态变为17，避免创建失败时状态一直为2巡回创建，导致没有创建成功而batch那边的id却一直增长的情况
+								workOrderService.updateStateById(WorkOrder.BCJSB, id);
+								workOrderService.updateApiFailDataById(createBatchData, id);
+								
+								addWOPreStateInList(WorkOrder.BCJSB,workOrderID);
+							}
 						}
-						
-						/*
-						JSONObject createBatchResultJO = new JSONObject(createBatchResultStr);
-						String createBatchData = createBatchResultJO.getString("data");
-						System.out.println("createBatchData==="+createBatchData);
-						if(createBatchData.contains(BatchTest.SUCCESS_RESULT)) {//这个判断是否创建batch成功的逻辑已屏蔽，避免创建失败时一直巡回创建，导致没有创建成功而batch那边的id却一直增长的情况
-						 */
-							workOrderService.updateStateById(WorkOrder.BCJWB, id);
-							
-							addWOPreStateInList(WorkOrder.BCJWB,workOrderID);
-						//}
 						break;
 					case WorkOrder.BQD:
 						boolean existRunWO=Boolean.valueOf(woMap.get("existRunWO").toString());//是否正在运行状态

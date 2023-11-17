@@ -48,6 +48,10 @@ public class WorkOrder {
 	 * 工单手工创建
 	 */
 	public static final int GDSGCJ=13;
+	/**
+	 * BATCH创建失败标识（待重新创建）
+	 */
+	public static final int BCJSB=15;
 	
 	/**
 	 * 无故障
@@ -261,6 +265,12 @@ public class WorkOrder {
 	public void setBatchCreated(Boolean batchCreated) {
 		BatchCreated = batchCreated;
 	}
+	public String getApiFailData() {
+		return ApiFailData;
+	}
+	public void setApiFailData(String apiFailData) {
+		ApiFailData = apiFailData;
+	}
 	private String WorkOrderID;
 	private String ProductCode;
 	private String ProductName;
@@ -281,6 +291,7 @@ public class WorkOrder {
 	private Integer ClearFault;
 	private Integer CreateType;
 	private Boolean BatchCreated;
+	private String ApiFailData;
 	private List<RecipePM> recipePMList;//用来存放mes那边下发的大料和工艺参数
 	private List<ManFeed> manFeedList;//用来存放mes那边下发的小料参数
 	public List<RecipePM> getRecipePMList() {
