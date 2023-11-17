@@ -183,4 +183,10 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		// TODO Auto-generated method stub
 		return workOrderDao.updateApiFailDataById(apiFailData,id);
 	}
+
+	@Override
+	public String getApiFailDataById(Integer id) {
+		// TODO Auto-generated method stub
+		return workOrderDao.getApiFailDataById(id);
+	}
 }

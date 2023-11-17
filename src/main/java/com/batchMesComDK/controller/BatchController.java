@@ -203,7 +203,10 @@ public class BatchController {
 							System.out.println("createBatchData==="+createBatchData);
 							if(createBatchData.contains(BatchTest.SUCCESS_RESULT)) {
 								workOrderService.updateStateById(WorkOrder.BCJWB, id);//只有batch创建完毕，工单状态才变为3
-								workOrderService.updateBatchCreatedById(true,id);
+								String apiFailData = workOrderService.getApiFailDataById(id);
+								if(!StringUtils.isEmpty(apiFailData))
+									workOrderService.updateApiFailDataById("", id);
+								workOrderService.updateBatchCreatedById(WorkOrder.CREATED,id);
 								
 								addWOPreStateInList(WorkOrder.BCJWB,workOrderID);
 							}
@@ -456,7 +459,7 @@ public class BatchController {
 						woSGCJ.setUnitID(unitIDSGCJ);
 						woSGCJ.setIdentifier(identifierSGCJ);
 						woSGCJ.setCreateType(WorkOrder.HAND_CREATE);
-						woSGCJ.setBatchCreated(false);
+						woSGCJ.setBatchCreated(WorkOrder.UN_CREATE);
 						
 						int sgcjEditCount=workOrderService.edit(woSGCJ);
 						if(sgcjEditCount>0) {
@@ -2240,7 +2243,7 @@ public class BatchController {
 						wo.setWorkcenterId(workcenterId);
 						wo.setFormulaIdMes(formulaIdMes);
 						wo.setCreateType(WorkOrder.MES_DOWN);
-						wo.setBatchCreated(false);
+						wo.setBatchCreated(WorkOrder.UN_CREATE);
 						
 						String unitID = recipeHeader.getUnitID();
 						if(StringUtils.isEmpty(unitID))

@@ -137,6 +137,15 @@ public class WorkOrder {
 	 * 手动创建
 	 */
 	public static final int HAND_CREATE=2;
+	
+	/**
+	 * 已创建
+	 */
+	public static final boolean CREATED=true;
+	/**
+	 * 未创建
+	 */
+	public static final boolean UN_CREATE=false;
 
 	private Integer ID;
 	public Integer getID() {

@@ -255,4 +255,7 @@
 	<update id="updateApiFailDataById">
 		update WorkOrder set ApiFailData=#{apiFailData} where ID=#{id}
 	</update>
+	<select id="getApiFailDataById" resultType="java.lang.String">
+		select ApiFailData from WorkOrder where ID=#{id}
+	</select>
 </mapper>

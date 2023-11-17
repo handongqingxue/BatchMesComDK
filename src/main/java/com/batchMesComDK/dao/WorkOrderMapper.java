@@ -50,4 +50,6 @@ public interface WorkOrderMapper {
 
 	int updateApiFailDataById(@Param("apiFailData") String apiFailData, @Param("id") Integer id);
 
+	String getApiFailDataById(@Param("id") Integer id);
+
 }

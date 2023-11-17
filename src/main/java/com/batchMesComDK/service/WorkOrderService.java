@@ -51,4 +51,6 @@ public interface WorkOrderService {
 
 	int updateApiFailDataById(String apiFailData, Integer id);
 
+	String getApiFailDataById(Integer id);
+
 }
