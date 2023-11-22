@@ -196,12 +196,12 @@ public class BatchController {
 						addTestLog(createTestLogByParams("getBatchCreated","","",workOrderID+","+formulaId+","+batchCreated));
 						System.out.println("batchCreated="+batchCreated);
 						if(batchCreated!=null) {
-							if(batchCreated) {
+							if(batchCreated) {//若已创建过就执行这里的逻辑
 								int stateCsqrwb=0;
-								if(checkBatchIfExistInList(formulaId)) {
+								if(checkBatchIfExistInList(formulaId)) {//根据执行配方id判断batchview里是否存在
 									for (int j = 1; j <= batchCount; j++) {
-										String stateVal = getItemVal(BatchTest.BL_STATE,j);
-										if(BatchTest.READY.equals(stateVal))
+										String stateVal = getItemVal(BatchTest.BL_STATE,j);//存在的话就根据在batchview里的序号获取状态
+										if(BatchTest.READY.equals(stateVal))//根据batchview里的状态同步工单表里的状态，从2变为其他状态
 											stateCsqrwb=WorkOrder.BCJWB;
 										else if(BatchTest.RUNNING.equals(stateVal))
 											stateCsqrwb=WorkOrder.BYX;
@@ -214,17 +214,17 @@ public class BatchController {
 											stateCsqrwb=WorkOrder.BJS;
 									}
 								}
-								else {
+								else {//若已经创建过，然而在batchview里不存在，说明已经从batchview里删除，就把工单状态变为1，由wincc端操作重新创建batch
 									stateCsqrwb=WorkOrder.WLQTWB;
 								}
 								workOrderService.updateStateById(stateCsqrwb, id);
 							}
-							else {
+							else {//若未创建过，就执行这里的逻辑
 								String createBatchResultStr = createBatch(formulaId,workOrderID,identifier);
 								JSONObject createBatchResultJO = new JSONObject(createBatchResultStr);
 								String createBatchData = createBatchResultJO.getString("data");
 								System.out.println("createBatchData==="+createBatchData);
-								if(createBatchData.contains(BatchTest.SUCCESS_RESULT)) {
+								if(createBatchData.contains(BatchTest.SUCCESS_RESULT)) {//batch创建成功
 									workOrderService.updateStateById(WorkOrder.BCJWB, id);//只有batch创建完毕，工单状态才变为3
 									String apiFailData = workOrderService.getApiFailDataById(id);
 									if(!StringUtils.isEmpty(apiFailData))
@@ -233,7 +233,7 @@ public class BatchController {
 									
 									addWOPreStateInList(WorkOrder.BCJWB,workOrderID);
 								}
-								else {//当创建batch失败时，就把工单状态变为17，避免创建失败时状态一直为2巡回创建，导致没有创建成功而batch那边的id却一直增长的情况
+								else {//当创建batch失败时，就把工单状态变为15(batch创建失败)，避免创建失败时状态一直为2巡回创建，导致没有创建成功而batch那边的id却一直增长的情况
 									workOrderService.updateStateById(WorkOrder.BCJSB, id);
 									workOrderService.updateApiFailDataById(createBatchData, id);
 									
