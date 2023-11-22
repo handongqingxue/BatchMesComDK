@@ -236,7 +236,7 @@ public class BatchController {
 							boolean existInBatchList=false;//在batchview里是否存在该工单
 							for (int j = 1; j <= batchCount; j++) {
 								String batchIDVal = getItemVal(BatchTest.BL_BATCH_ID,j);
-								System.out.println("batchIDVal==="+batchIDVal);
+								//System.out.println("batchIDVal==="+batchIDVal);
 								if(formulaId.equals(batchIDVal)) {
 									existInBatchList=true;//工单存在于batchList中，接下来验证工单在batch端的状态
 									
@@ -254,7 +254,7 @@ public class BatchController {
 										
 										if(qdCOSSuccess) {
 											String createIDVal = getItemVal(BatchTest.BL_CREATE_ID,j);
-											System.out.println("createIDVal==="+createIDVal);
+											//System.out.println("createIDVal==="+createIDVal);
 											
 											//调用batch环境的启动接口
 											commandBatch(createIDVal,BatchTest.START);
@@ -352,7 +352,7 @@ public class BatchController {
 							if(formulaIdStr.equals(batchIDVal)) {
 								existQXInBatchList=true;//存在取消状态的工单，说明该工单待终止，状态同步正确
 								String createIDVal = getItemVal(BatchTest.BL_CREATE_ID,j);
-								System.out.println("createIDVal==="+createIDVal);
+								//System.out.println("createIDVal==="+createIDVal);
 
 								String stateVal = getItemVal(BatchTest.BL_STATE,j);
 								if(BatchTest.READY.equals(stateVal)) {//工单取消时，若batch状态是已创建，还未执行，就没必要停止batch，直接移除batch就行
@@ -1080,7 +1080,7 @@ public class BatchController {
 			String batchListResultStr = getItem(BatchTest.BATCH_LIST);
 			System.out.println("batchListResultStr==="+batchListResultStr);
 
-			//addTestLog(createTestLogByParams("batchListResultStr","","",batchListResultStr));
+			addTestLog(createTestLogByParams("batchListResultStr","","",batchListResultStr));
 			
 			JSONObject batchListResultJO = new JSONObject(batchListResultStr);
 			int status = batchListResultJO.getInt("status");
@@ -1839,7 +1839,9 @@ public class BatchController {
 		try {
 			//item="80\tCLS_SWEETCREAM_UP:1Data";
 			//80	CLS_SWEETCREAM_UP:1Data
-			System.out.println("item==="+item);
+			if(!item.startsWith(BatchTest.BL_BATCH_ID)
+			 &&!item.startsWith(BatchTest.BL_CREATE_ID))
+				System.out.println("item==="+item);
 			result = BatchComBridge.getInstance().callGetItem(item);
 			System.out.println("result==="+result);
 			if(StringUtils.isEmpty(result)||
