@@ -1867,7 +1867,9 @@ public class BatchController {
 			 &&!item.startsWith(BatchTest.BL_CREATE_ID))
 				System.out.println("item==="+item);
 			result = BatchComBridge.getInstance().callGetItem(item);
-			System.out.println("result==="+result);
+			if(!item.startsWith(BatchTest.BL_BATCH_ID))
+				System.out.println("result==="+result);
+			
 			if(StringUtils.isEmpty(result)||
 			   BatchTest.CANT_PASS_IN_NULL_DISPATCH_OBJECT.equals(result)||
 			   BatchTest.CANT_MAP_NAME_TO_DISPID_GETITEM.equals(result)) {
