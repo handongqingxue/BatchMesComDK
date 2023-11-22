@@ -192,29 +192,53 @@ public class BatchController {
 						addManFeedFromRecipePM(workOrderID,productCode,productName);//工单创建时，从配方参数表里取数据，放入人工投料表
 						*/
 						
-						//if(!checkBatchIfExistInList(formulaId)) {//验证batch是否已创建，避免用户重复点击确认执行配方按钮后重复创建
-						Boolean batchCreated=workOrderService.getBatchCreatedById(id);//有时创建batch可能会有延时，为了避免重复创建，上面那个判断不用了，改用这个判断
+						Boolean batchCreated=workOrderService.getBatchCreatedById(id);//验证batch是否已创建，避免用户重复点击确认执行配方按钮后重复创建
 						addTestLog(createTestLogByParams("getBatchCreated","","",workOrderID+","+formulaId+","+batchCreated));
 						System.out.println("batchCreated="+batchCreated);
-						if(batchCreated!=null&&!batchCreated) {
-							String createBatchResultStr = createBatch(formulaId,workOrderID,identifier);
-							JSONObject createBatchResultJO = new JSONObject(createBatchResultStr);
-							String createBatchData = createBatchResultJO.getString("data");
-							System.out.println("createBatchData==="+createBatchData);
-							if(createBatchData.contains(BatchTest.SUCCESS_RESULT)) {
-								workOrderService.updateStateById(WorkOrder.BCJWB, id);//只有batch创建完毕，工单状态才变为3
-								String apiFailData = workOrderService.getApiFailDataById(id);
-								if(!StringUtils.isEmpty(apiFailData))
-									workOrderService.updateApiFailDataById("", id);
-								workOrderService.updateBatchCreatedById(WorkOrder.CREATED,id);
-								
-								addWOPreStateInList(WorkOrder.BCJWB,workOrderID);
+						if(batchCreated!=null) {
+							if(batchCreated) {
+								int stateCsqrwb=0;
+								if(checkBatchIfExistInList(formulaId)) {
+									for (int j = 1; j <= batchCount; j++) {
+										String stateVal = getItemVal(BatchTest.BL_STATE,j);
+										if(BatchTest.READY.equals(stateVal))
+											stateCsqrwb=WorkOrder.BCJWB;
+										else if(BatchTest.RUNNING.equals(stateVal))
+											stateCsqrwb=WorkOrder.BYX;
+										else if(BatchTest.HELD.equals(stateVal))
+											stateCsqrwb=WorkOrder.BZT;
+										else if(BatchTest.STOPPED.equals(stateVal)||
+												BatchTest.ABORTED.equals(stateVal))
+											stateCsqrwb=WorkOrder.BYWZZ;
+										else if(BatchTest.COMPLETE.equals(stateVal))
+											stateCsqrwb=WorkOrder.BJS;
+									}
+								}
+								else {
+									stateCsqrwb=WorkOrder.WLQTWB;
+								}
+								workOrderService.updateStateById(stateCsqrwb, id);
 							}
-							else {//当创建batch失败时，就把工单状态变为17，避免创建失败时状态一直为2巡回创建，导致没有创建成功而batch那边的id却一直增长的情况
-								workOrderService.updateStateById(WorkOrder.BCJSB, id);
-								workOrderService.updateApiFailDataById(createBatchData, id);
-								
-								addWOPreStateInList(WorkOrder.BCJSB,workOrderID);
+							else {
+								String createBatchResultStr = createBatch(formulaId,workOrderID,identifier);
+								JSONObject createBatchResultJO = new JSONObject(createBatchResultStr);
+								String createBatchData = createBatchResultJO.getString("data");
+								System.out.println("createBatchData==="+createBatchData);
+								if(createBatchData.contains(BatchTest.SUCCESS_RESULT)) {
+									workOrderService.updateStateById(WorkOrder.BCJWB, id);//只有batch创建完毕，工单状态才变为3
+									String apiFailData = workOrderService.getApiFailDataById(id);
+									if(!StringUtils.isEmpty(apiFailData))
+										workOrderService.updateApiFailDataById("", id);
+									workOrderService.updateBatchCreatedById(WorkOrder.CREATED,id);
+									
+									addWOPreStateInList(WorkOrder.BCJWB,workOrderID);
+								}
+								else {//当创建batch失败时，就把工单状态变为17，避免创建失败时状态一直为2巡回创建，导致没有创建成功而batch那边的id却一直增长的情况
+									workOrderService.updateStateById(WorkOrder.BCJSB, id);
+									workOrderService.updateApiFailDataById(createBatchData, id);
+									
+									addWOPreStateInList(WorkOrder.BCJSB,workOrderID);
+								}
 							}
 						}
 						break;
