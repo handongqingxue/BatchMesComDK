@@ -305,6 +305,13 @@ public class BatchController {
 											}
 										}
 									}
+									else if(BatchTest.RUNNING.equals(stateVal)) {//存在运行中状态的工单，说明该工单在batchview里已运行，可能是操作失误把工单表的状态变为4（启动）了，需要与batchview端的状态同步下
+										workOrderService.updateStateById(WorkOrder.BYX, id);
+										
+										woMap.put("existRunWO", true);
+
+										addWOPreStateInList(WorkOrder.BYX,workOrderID);
+									}
 									else if(BatchTest.STOPPED.equals(stateVal)) {
 										workOrderService.updateStateById(WorkOrder.BYWZZ, id);
 
@@ -334,7 +341,7 @@ public class BatchController {
 							String workOrderIDStr = wo.getWorkOrderID().toString();
 							String formulaIdStr = wo.getFormulaId().toString();
 							String batchIDVal = getItemVal(BatchTest.BL_BATCH_ID,j);
-							System.out.println("batchIDVal==="+batchIDVal);
+							//System.out.println("batchIDVal==="+batchIDVal);
 							if(formulaIdStr.equals(batchIDVal)) {
 								if(allowRestoreRun) {//重启运行
 									String createIDVal = getItemVal(BatchTest.BL_CREATE_ID,j);
@@ -1863,12 +1870,20 @@ public class BatchController {
 		try {
 			//item="80\tCLS_SWEETCREAM_UP:1Data";
 			//80	CLS_SWEETCREAM_UP:1Data
+			/*
+			 * 这块打印逻辑最初是为了调试方便加的，正式生产运行时，每隔3s调用一次batchApi，就算打印信息也没时间查看，就暂时屏蔽掉这块打印逻辑
 			if(!item.startsWith(BatchTest.BL_BATCH_ID)
 			 &&!item.startsWith(BatchTest.BL_CREATE_ID))
 				System.out.println("item==="+item);
+				*/
+			
 			result = BatchComBridge.getInstance().callGetItem(item);
+			
+			/*
+			 * 暂时屏蔽掉这块打印逻辑
 			if(!item.startsWith(BatchTest.BL_BATCH_ID))
 				System.out.println("result==="+result);
+				*/
 			
 			if(StringUtils.isEmpty(result)||
 			   BatchTest.CANT_PASS_IN_NULL_DISPATCH_OBJECT.equals(result)||
