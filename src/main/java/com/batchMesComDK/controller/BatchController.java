@@ -94,6 +94,25 @@ public class BatchController {
 		return jsonMap;
 	}
 	
+	@RequestMapping(value="/restartWatchDog")
+	@ResponseBody
+	public Map<String, Object> restartWatchDog() {
+		
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
+		try {
+			//https://www.nhooo.com/note/qadmhu.html
+			Runtime.getRuntime().exec("cmd /c taskkill /f /im runner.exe");
+			Thread.sleep(3000);
+			Runtime.getRuntime().exec("cmd /c c:/runner.exe");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		finally {
+			return jsonMap;
+		}
+	}
+	
 	/**
 	 * 初始化主机id工单map
 	 */
