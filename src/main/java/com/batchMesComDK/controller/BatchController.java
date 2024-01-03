@@ -1,8 +1,11 @@
 package com.batchMesComDK.controller;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.ParseException;
@@ -94,6 +97,10 @@ public class BatchController {
 		return jsonMap;
 	}
 	
+	/**
+	 * 重启看门狗程序
+	 * @return
+	 */
 	@RequestMapping(value="/restartWatchDog")
 	@ResponseBody
 	public Map<String, Object> restartWatchDog() {
@@ -101,16 +108,46 @@ public class BatchController {
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		try {
 			//https://www.nhooo.com/note/qadmhu.html
-			Runtime.getRuntime().exec("cmd /c taskkill /f /im runner.exe");
+			//Runtime.getRuntime().exec("cmd /c taskkill /f /im runner.exe");不在这边杀死看门狗，以免对其他进程造成影响，在看门狗端自行杀灭
+			System.out.println("我都不洗说你了。。。。。");
 			Thread.sleep(3000);
-			Runtime.getRuntime().exec("cmd /c c:/runner.exe");
-		} catch (IOException e) {
+			runBatFile("cmd /c D:/BatchMesComDKListener/runner.exe");
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
 		finally {
 			return jsonMap;
 		}
+	}
+	
+	/**
+	 * 执行cmd命令并关闭通道，防止出现阻塞造成进程卡死
+	 * @param fileUrl
+	 */
+	public void runBatFile(String fileUrl) {
+		//https://blog.csdn.net/m0_50852776/article/details/125668719
+		System.out.println("fileUrl==="+fileUrl);
+		StringBuilder sb = new StringBuilder();
+	    try {
+	        Process child = Runtime.getRuntime().exec(fileUrl);
+	        InputStream in = child.getInputStream();
+	        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+	        String line;
+	        while ((line = bufferedReader.readLine()) != null) {
+	        	System.out.println(line);
+	            sb.append(line + "\n");
+	        }
+	        in.close();
+	        try {
+	            child.waitFor();
+	            System.out.println("call cmd process finished");
+	        } catch (InterruptedException e) {
+	        	System.out.println("faild to call cmd process cmd because " + e.getMessage());
+	        }
+	    } catch (IOException e) {
+	    	System.out.println(e.getMessage());
+	    }
 	}
 	
 	/**
