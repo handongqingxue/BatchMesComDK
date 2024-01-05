@@ -98,65 +98,12 @@ public class BatchController {
 	}
 	
 	/**
-	 * 重启看门狗程序
-	 * @return
-	 */
-	@RequestMapping(value="/restartWatchDog")
-	@ResponseBody
-	public Map<String, Object> restartWatchDog() {
-		
-		Map<String, Object> jsonMap = new HashMap<String, Object>();
-		try {
-			//https://www.nhooo.com/note/qadmhu.html
-			//Runtime.getRuntime().exec("cmd /c taskkill /f /im runner.exe");不在这边杀死看门狗，以免对其他进程造成影响，在看门狗端自行杀灭
-			System.out.println("我都不洗说你了。。。。。");
-			Thread.sleep(3000);
-			runBatFile("cmd /c D:/BatchMesComDKListener/runner.exe");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-		finally {
-			return jsonMap;
-		}
-	}
-	
-	/**
-	 * 执行cmd命令并关闭通道，防止出现阻塞造成进程卡死
-	 * @param fileUrl
-	 */
-	public void runBatFile(String fileUrl) {
-		//https://blog.csdn.net/m0_50852776/article/details/125668719
-		System.out.println("fileUrl==="+fileUrl);
-		StringBuilder sb = new StringBuilder();
-	    try {
-	        Process child = Runtime.getRuntime().exec(fileUrl);
-	        InputStream in = child.getInputStream();
-	        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
-	        String line;
-	        while ((line = bufferedReader.readLine()) != null) {
-	        	System.out.println(line);
-	            sb.append(line + "\n");
-	        }
-	        in.close();
-	        try {
-	            child.waitFor();
-	            System.out.println("call cmd process finished");
-	        } catch (InterruptedException e) {
-	        	System.out.println("faild to call cmd process cmd because " + e.getMessage());
-	        }
-	    } catch (IOException e) {
-	    	System.out.println(e.getMessage());
-	    }
-	}
-	
-	/**
 	 * 初始化主机id工单map
 	 */
 	public void initUnitIDWOMap() {
 		Map<String, Object> wOMap=null;
 		
-		String[] unitIDArr=new String[] {"09","10","11","12"};
+		String[] unitIDArr=new String[] {"01","02","03","04","05","06","07","08","09","10","11","12"};
 		
 		unitIDWOMap=new HashMap<String,Map<String, Object>>();
 		
@@ -2689,7 +2636,23 @@ public class BatchController {
 	 */
 	private String createUnitIDByIdentifier(String identifier) {
 		String unitID=null;
-		if(identifier.contains("51"))
+		if(identifier.contains("11"))
+			unitID="01";
+		else if(identifier.contains("12"))
+			unitID="02";
+		else if(identifier.contains("21"))
+			unitID="03";
+		else if(identifier.contains("22"))
+			unitID="04";
+		else if(identifier.contains("31"))
+			unitID="05";
+		else if(identifier.contains("32"))
+			unitID="06";
+		else if(identifier.contains("41"))
+			unitID="07";
+		else if(identifier.contains("42"))
+			unitID="08";
+		else if(identifier.contains("51"))
 			unitID="09";
 		else if(identifier.contains("52"))
 			unitID="10";
