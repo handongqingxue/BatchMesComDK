@@ -1796,7 +1796,7 @@ public class BatchController {
 				fos.close();
 				
 				String apiMsg = msgJO.getString("apiMsg");
-				tl.setMsg(apiMsg+"详见工单号对应的日志记录txt文件");
+				tl.setMsg(apiMsg+"详见工单号"+workOrder+"对应的日志记录txt文件");
 			}
 			
 			int count=testLogService.add(tl);
