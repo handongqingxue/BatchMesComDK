@@ -59,6 +59,7 @@
 			<if test="BatchCreated!=null">
 				BatchCreated,
 			</if>
+				SendBRToMes
 		</trim>
 		values
 		<trim prefix="(" suffix=")" suffixOverrides=",">
@@ -115,6 +116,7 @@
 			<if test="BatchCreated!=null">
 				#{BatchCreated},
 			</if>
+				'false'
 		</trim>
 	</insert>
 	<update id="updateStateById">
@@ -257,5 +259,14 @@
 	</update>
 	<select id="getApiFailDataById" resultType="java.lang.String">
 		select ApiFailData from WorkOrder where ID=#{id}
+	</select>
+	<update id="updateSendBRToMesByWorkOrderID">
+		update WorkOrder set SendBRToMes=#{sendBRToMes} where WorkOrderID=#{workOrderID}
+	</update>
+	<select id="getUnSendBRToMesWOIDList" resultType="java.lang.String">
+		select WorkOrderID from WorkOrder where SendBRToMes='false'
+		<foreach collection="stateList" item="state" open=" and state in (" separator="," close=")">
+		#{state}
+		</foreach>
 	</select>
 </mapper>

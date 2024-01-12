@@ -146,6 +146,15 @@ public class WorkOrder {
 	 * 未创建
 	 */
 	public static final boolean UN_CREATE=false;
+	
+	/**
+	 * 已发送
+	 */
+	public static final boolean SENDED=true;
+	/**
+	 * 未发送
+	 */
+	public static final boolean UN_SEND=false;
 
 	private Integer ID;
 	public Integer getID() {
@@ -280,6 +289,12 @@ public class WorkOrder {
 	public void setApiFailData(String apiFailData) {
 		ApiFailData = apiFailData;
 	}
+	public Boolean getSendBRToMes() {
+		return SendBRToMes;
+	}
+	public void setSendBRToMes(Boolean sendBRToMes) {
+		SendBRToMes = sendBRToMes;
+	}
 	private String WorkOrderID;
 	private String ProductCode;
 	private String ProductName;
@@ -301,6 +316,7 @@ public class WorkOrder {
 	private Integer CreateType;
 	private Boolean BatchCreated;
 	private String ApiFailData;
+	private Boolean SendBRToMes;
 	private List<RecipePM> recipePMList;//用来存放mes那边下发的大料和工艺参数
 	private List<ManFeed> manFeedList;//用来存放mes那边下发的小料参数
 	public List<RecipePM> getRecipePMList() {

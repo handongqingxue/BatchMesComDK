@@ -5,6 +5,7 @@ import java.util.List;
 import org.json.JSONObject;
 
 import com.batchMesComDK.controller.BatchController;
+import com.batchMesComDK.entity.WorkOrder;
 
 public class SendRecThre implements Runnable {
 	
@@ -108,6 +109,12 @@ public class SendRecThre implements Runnable {
 			boolean success = dhmJO.getBoolean("success");
 			String apiMsg = dhmJO.getString("msg");
 			int state = dhmJO.getInt("state");
+			
+			success=true;
+			if(success) {
+				String workOrderID = bodyParamBRJO.get("workOrder").toString();
+				batchController.getWorkOrderService().updateSendBRToMesByWorkOrderID(WorkOrder.SENDED,workOrderID);
+			}
 			
 			JSONObject msgJO = new JSONObject();
 			msgJO.put("apiMsg", apiMsg);

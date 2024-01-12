@@ -53,4 +53,8 @@ public interface WorkOrderService {
 
 	String getApiFailDataById(Integer id);
 
+	int updateSendBRToMesByWorkOrderID(boolean sendBRToMes, String workOrderID);
+
+	List<String> getUnSendBRToMesWOIDList();
+
 }

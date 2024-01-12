@@ -74,6 +74,14 @@ public class BatchController {
 	private List<Map<String, Object>> woPreStateList=new ArrayList<Map<String, Object>>();
 	private Map<String,Map<String, Object>> unitIDWOMap;//根据主机id存储工单里的某几个状态(是否运行、是否存在于batch列表)
 	
+	public WorkOrderService getWorkOrderService() {
+		return workOrderService;
+	}
+
+	public void setWorkOrderService(WorkOrderService workOrderService) {
+		this.workOrderService = workOrderService;
+	}
+	
 	//http://localhost:8080/BatchMesComDK/batch/test
 	@RequestMapping(value="/test")
 	public String goTest(HttpServletRequest request) {
@@ -355,7 +363,12 @@ public class BatchController {
 								}
 								
 								String stateVal = getItemVal(BatchTest.BL_STATE,j);
-								if(BatchTest.RUNNING.equals(stateVal)) {
+								if(BatchTest.READY.equals(stateVal)) {
+									workOrderService.updateStateById(WorkOrder.BCJWB, wo.getID());
+									
+									addWOPreStateInList(WorkOrder.BCJWB,workOrderIDStr);
+								}
+								else if(BatchTest.RUNNING.equals(stateVal)) {
 									if(allowRestoreRun) {
 										workOrderService.updateStateById(WorkOrder.BYX, wo.getID());
 										
@@ -694,11 +707,13 @@ public class BatchController {
 		for (String unitID : keySet) {
 			Map<String, Object> woMap = unitIDWOMap.get(unitID);
 			Boolean existRunWO = Boolean.valueOf(woMap.get("existRunWO").toString());
-			unitIDWOSB.append("unitID===");
-			unitIDWOSB.append(unitID);
-			unitIDWOSB.append(",existRunWO===");
-			unitIDWOSB.append(existRunWO);
-			unitIDWOSB.append("\n");
+			if(existRunWO) {
+				unitIDWOSB.append("unitID===");
+				unitIDWOSB.append(unitID);
+				unitIDWOSB.append(",existRunWO===");
+				unitIDWOSB.append(existRunWO);
+				unitIDWOSB.append("\n");
+			}
 		}
 		String unitIDWOStr = unitIDWOSB.toString();
 		System.out.println(unitIDWOStr);
@@ -2909,6 +2924,28 @@ public class BatchController {
 		return jsonMap;
 	}
 	
+	@RequestMapping(value="/checkIfSendBRToMes", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> checkIfSendBRToMes(){
+
+		Map<String, Object> jsonMap = new HashMap<String, Object>();
+		
+		List<String> workOrderIDList=workOrderService.getUnSendBRToMesWOIDList();
+		if(workOrderIDList.size()>0) {
+			String workOrderIDs="";
+			for (String workOrderID : workOrderIDList) {
+				workOrderIDs+=","+workOrderID;
+			}
+			workOrderIDs=workOrderIDs.substring(1);
+			
+			addTestLog(createTestLogByParams("checkIfSendBRToMes","","",workOrderIDs));
+			
+			getSendToMesBRData("{\"workOrderIDs\":\""+workOrderIDs+"\",\"hoursAgo\":72,\"recordTypeNames\":\"\"}");
+		}
+		
+		return jsonMap;
+	}
+	
 	/**
 	 * 给mes发送批记录
 	 * @return
@@ -2934,6 +2971,7 @@ public class BatchController {
 					Integer preState = Integer.valueOf(woPreStateMap.get("state").toString());
 					if(workOrderID.equals(preWorkOrderID)&&state!=preState) {
 						System.out.println("给mes端推送批记录.......");
+						addTestLog(createTestLogByParams("给mes端推送批记录","","","pushToMesWOID:"+workOrderID));
 						sendToMesWOIDList.add(workOrderID);
 						sendToMesWOList.add(wo);
 					}
@@ -2947,16 +2985,29 @@ public class BatchController {
 				sendToMesWOIDList.add("ZK2309230101");//调试时针对单个工单发批记录
 				sendToMesWOList=workOrderService.getSendToMesListTest(sendToMesWOIDList);
 				*/
+
+				String sendToMesWOID = sendToMesWOIDList.get(0);
+				
+				addTestLog(createTestLogByParams("autoPushToMes","","",sendToMesWOID));
 				
 				count=batchRecordService.addTechFromBHBatchHis(sendToMesWOIDList);
+				addTestLog(createTestLogByParams("addTechCount","","",sendToMesWOID+":"+count));
+				
 				count=batchRecordService.addMaterialFromBHBatchHis(sendToMesWOIDList);
+				addTestLog(createTestLogByParams("addMaterialCount","","",sendToMesWOID+":"+count));
+				
 				count=batchRecordService.addPhaseFromBHBatchHis(sendToMesWOIDList);
+				addTestLog(createTestLogByParams("addPhaseCount","","",sendToMesWOID+":"+count));
+				
 				//count=batchRecordService.addBatchFromBHBatch(sendToMesWOIDList);
 			}
 			else {//手动推送给mes的逻辑
 				//{"workOrderIDs":"ZI2309220101,ZJ2309220101,ZL2309230101","hoursAgo":72,"recordTypeNames":"tech,mater,phase"}
 				net.sf.json.JSONObject bodyJO = net.sf.json.JSONObject.fromObject(bodyEnc);
 				String workOrderIDs = bodyJO.getString("workOrderIDs");
+				
+				addTestLog(createTestLogByParams("handPushToMes","","",workOrderIDs));
+				
 				String[] workOrderIDArr = workOrderIDs.split(",");
 				List<String> workOrderIDList = Arrays.asList(workOrderIDArr);
 				for (String workOrderID : workOrderIDList) {
@@ -3068,12 +3119,15 @@ public class BatchController {
 							}
 						}
 					}
-					
+
+					addTestLog(createTestLogByParams("createType","","",workOrderID+":"+createType));
 					if(createType==WorkOrder.MES_DOWN) {
+						addTestLog(createTestLogByParams("pushMesDevCount","","",workOrderID+":"+bodyParamDevJOList.size()));
 						if(bodyParamDevJOList.size()>0) {
 							SendRecThre srt=new SendRecThre(BatchController.this,bodyParamDevJOList,SendRecThre.DEV);
 							new Thread(srt).start();
 						}
+						addTestLog(createTestLogByParams("pushMesBRCount","","",workOrderID+":"+electtonBatchRecordBRJA.length()));
 						if(electtonBatchRecordBRJA.length()>0) {
 							bodyParamBRJO.put("electtonBatchRecord", electtonBatchRecordBRJA);
 							
@@ -3093,6 +3147,7 @@ public class BatchController {
 			*/
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
+			addTestLog(createTestLogByParams("pushToMesExc","","",e.getMessage()));
 			e.printStackTrace();
 		}
 		finally {

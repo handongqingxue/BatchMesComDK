@@ -189,4 +189,19 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		// TODO Auto-generated method stub
 		return workOrderDao.getApiFailDataById(id);
 	}
+
+	@Override
+	public int updateSendBRToMesByWorkOrderID(boolean sendBRToMes, String workOrderID) {
+		// TODO Auto-generated method stub
+		return workOrderDao.updateSendBRToMesByWorkOrderID(sendBRToMes,workOrderID);
+	}
+
+	@Override
+	public List<String> getUnSendBRToMesWOIDList() {
+		// TODO Auto-generated method stub
+		String states = WorkOrder.BYWZZ+","+WorkOrder.BJS;
+		String[] stateArr = states.split(",");
+		List<String> stateList = Arrays.asList(stateArr);
+		return workOrderDao.getUnSendBRToMesWOIDList(stateList);
+	}
 }
