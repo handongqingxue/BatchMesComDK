@@ -12,6 +12,11 @@ public interface RecipePM_TMPService {
 
 	RecipePM_TMP getById(Integer id);
 
+	/**
+	 * 根据配方id验证是否存在
+	 * @param recipeID
+	 * @return
+	 */
 	boolean checkIfExistByRecipeID(String recipeID);
 
 }

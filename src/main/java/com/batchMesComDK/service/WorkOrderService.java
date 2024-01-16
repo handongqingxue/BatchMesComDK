@@ -57,6 +57,11 @@ public interface WorkOrderService {
 
 	List<String> getUnSendBRToMesWOIDList();
 
+	/**
+	 * 根据工单号验证是否存在
+	 * @param workOrderID
+	 * @return
+	 */
 	boolean checkIfExistByWOID(String workOrderID);
 
 }
