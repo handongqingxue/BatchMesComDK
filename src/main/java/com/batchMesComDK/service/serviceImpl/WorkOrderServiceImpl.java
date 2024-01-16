@@ -204,4 +204,10 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		List<String> stateList = Arrays.asList(stateArr);
 		return workOrderDao.getUnSendBRToMesWOIDList(stateList);
 	}
+
+	@Override
+	public boolean checkIfExistByWOID(String workOrderID) {
+		// TODO Auto-generated method stub
+		return workOrderDao.getCountByWOID(workOrderID)==0?false:true;
+	}
 }

@@ -57,4 +57,6 @@ public interface WorkOrderService {
 
 	List<String> getUnSendBRToMesWOIDList();
 
+	boolean checkIfExistByWOID(String workOrderID);
+
 }

@@ -56,4 +56,6 @@ public interface WorkOrderMapper {
 
 	List<String> getUnSendBRToMesWOIDList(@Param("stateList") List<String> stateList);
 
+	int getCountByWOID(@Param("workOrderID") String workOrderID);
+
 }

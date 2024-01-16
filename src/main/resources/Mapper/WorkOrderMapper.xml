@@ -269,4 +269,7 @@
 		#{state}
 		</foreach>
 	</select>
+	<select id="getCountByWOID" resultType="java.lang.Integer">
+		select count(*) from WorkOrder where WorkOrderID=#{workOrderID}
+	</select>
 </mapper>

@@ -208,47 +208,83 @@ public class BatchController {
 						System.out.println("batchCreated="+batchCreated);
 						if(batchCreated!=null) {
 							if(batchCreated) {//若已创建过就执行这里的逻辑
+								System.out.println("若已创建过就执行这里的逻辑");
 								int stateCsqrwb=0;
 								if(checkBatchIfExistInList(formulaId)) {//根据执行配方id判断batchview里是否存在
 									for (int j = 1; j <= batchCount; j++) {
-										String stateVal = getItemVal(BatchTest.BL_STATE,j);//存在的话就根据在batchview里的序号获取状态
-										if(BatchTest.READY.equals(stateVal))//根据batchview里的状态同步工单表里的状态，从2变为其他状态
-											stateCsqrwb=WorkOrder.BCJWB;
-										else if(BatchTest.RUNNING.equals(stateVal))
-											stateCsqrwb=WorkOrder.BYX;
-										else if(BatchTest.HELD.equals(stateVal))
-											stateCsqrwb=WorkOrder.BZT;
-										else if(BatchTest.STOPPED.equals(stateVal)||
-												BatchTest.ABORTED.equals(stateVal))
-											stateCsqrwb=WorkOrder.BYWZZ;
-										else if(BatchTest.COMPLETE.equals(stateVal))
-											stateCsqrwb=WorkOrder.BJS;
+										String batchVal = getItemVal(BatchTest.BL_BATCH_ID,j);
+										if(batchVal.equals(formulaId)) {
+											String stateVal = getItemVal(BatchTest.BL_STATE,j);//存在的话就根据在batchview里的序号获取状态
+											if(BatchTest.READY.equals(stateVal))//根据batchview里的状态同步工单表里的状态，从2变为其他状态
+												stateCsqrwb=WorkOrder.BCJWB;
+											else if(BatchTest.RUNNING.equals(stateVal))
+												stateCsqrwb=WorkOrder.BYX;
+											else if(BatchTest.HELD.equals(stateVal))
+												stateCsqrwb=WorkOrder.BZT;
+											else if(BatchTest.STOPPED.equals(stateVal)||
+													BatchTest.ABORTED.equals(stateVal))
+												stateCsqrwb=WorkOrder.BYWZZ;
+											else if(BatchTest.COMPLETE.equals(stateVal))
+												stateCsqrwb=WorkOrder.BJS;
+											break;
+										}
 									}
 								}
 								else {//若已经创建过，然而在batchview里不存在，说明已经从batchview里删除，就把工单状态变为1，由wincc端操作重新创建batch
 									stateCsqrwb=WorkOrder.WLQTWB;
+									workOrderService.updateBatchCreatedById(WorkOrder.UN_CREATE,id);
 								}
 								workOrderService.updateStateById(stateCsqrwb, id);
+								
+								addWOPreStateInList(stateCsqrwb,workOrderID);
 							}
 							else {//若未创建过，就执行这里的逻辑
-								String createBatchResultStr = createBatch(formulaId,workOrderID,identifier);
-								JSONObject createBatchResultJO = new JSONObject(createBatchResultStr);
-								String createBatchData = createBatchResultJO.getString("data");
-								System.out.println("createBatchData==="+createBatchData);
-								if(createBatchData.contains(BatchTest.SUCCESS_RESULT)) {//batch创建成功
-									workOrderService.updateStateById(WorkOrder.BCJWB, id);//只有batch创建完毕，工单状态才变为3
-									String apiFailData = workOrderService.getApiFailDataById(id);
-									if(!StringUtils.isEmpty(apiFailData))
-										workOrderService.updateApiFailDataById("", id);
+								System.out.println("若未创建过，就执行这里的逻辑");
+								if(checkBatchIfExistInList(formulaId)) {
+									int stateCsqrwb=0;
+									for (int j = 1; j <= batchCount; j++) {
+										String batchVal = getItemVal(BatchTest.BL_BATCH_ID,j);
+										if(batchVal.equals(formulaId)) {
+											String stateVal = getItemVal(BatchTest.BL_STATE,j);//存在的话就根据在batchview里的序号获取状态
+											if(BatchTest.READY.equals(stateVal))//根据batchview里的状态同步工单表里的状态，从2变为其他状态
+												stateCsqrwb=WorkOrder.BCJWB;
+											else if(BatchTest.RUNNING.equals(stateVal))
+												stateCsqrwb=WorkOrder.BYX;
+											else if(BatchTest.HELD.equals(stateVal))
+												stateCsqrwb=WorkOrder.BZT;
+											else if(BatchTest.STOPPED.equals(stateVal)||
+													BatchTest.ABORTED.equals(stateVal))
+												stateCsqrwb=WorkOrder.BYWZZ;
+											else if(BatchTest.COMPLETE.equals(stateVal))
+												stateCsqrwb=WorkOrder.BJS;
+											break;
+										}
+									}
+									workOrderService.updateStateById(stateCsqrwb, id);
 									workOrderService.updateBatchCreatedById(WorkOrder.CREATED,id);
 									
-									addWOPreStateInList(WorkOrder.BCJWB,workOrderID);
+									addWOPreStateInList(stateCsqrwb,workOrderID);
 								}
-								else {//当创建batch失败时，就把工单状态变为15(batch创建失败)，避免创建失败时状态一直为2巡回创建，导致没有创建成功而batch那边的id却一直增长的情况
-									workOrderService.updateStateById(WorkOrder.BCJSB, id);
-									workOrderService.updateApiFailDataById(createBatchData, id);
-									
-									addWOPreStateInList(WorkOrder.BCJSB,workOrderID);
+								else {
+									String createBatchResultStr = createBatch(formulaId,workOrderID,identifier);
+									JSONObject createBatchResultJO = new JSONObject(createBatchResultStr);
+									String createBatchData = createBatchResultJO.getString("data");
+									System.out.println("createBatchData==="+createBatchData);
+									if(createBatchData.contains(BatchTest.SUCCESS_RESULT)) {//batch创建成功
+										workOrderService.updateStateById(WorkOrder.BCJWB, id);//只有batch创建完毕，工单状态才变为3
+										String apiFailData = workOrderService.getApiFailDataById(id);
+										if(!StringUtils.isEmpty(apiFailData))
+											workOrderService.updateApiFailDataById("", id);
+										workOrderService.updateBatchCreatedById(WorkOrder.CREATED,id);
+										
+										addWOPreStateInList(WorkOrder.BCJWB,workOrderID);
+									}
+									else {//当创建batch失败时，就把工单状态变为15(batch创建失败)，避免创建失败时状态一直为2巡回创建，导致没有创建成功而batch那边的id却一直增长的情况
+										workOrderService.updateStateById(WorkOrder.BCJSB, id);
+										workOrderService.updateApiFailDataById(createBatchData, id);
+										
+										addWOPreStateInList(WorkOrder.BCJSB,workOrderID);
+									}
 								}
 							}
 						}
@@ -2091,60 +2127,71 @@ public class BatchController {
 			String stateCMWODTJ = jsonMapCMWODTJ.get(APIUtil.STATE).toString();
 			if("ok".equals(stateCMWODTJ)) {
 				WorkOrder wo = (WorkOrder)jsonMapCMWODTJ.get("workOrder");
-				String recipeID = wo.getRecipeID();
-				boolean rPMTMPExist=recipePM_TMPService.checkIfExistByRecipeID(recipeID);
-				if(rPMTMPExist) {
-					int c=workOrderService.add(wo);
-					if(c>0) {
-						String workOrderID = wo.getWorkOrderID();
-						List<RecipePM> recipePMList = wo.getRecipePMList();
-						c=recipePMService.addFromTMP(workOrderID, recipeID, recipePMList);
-						//c=recipePMService.addFromWORecipePMList(workOrderID, wo.getRecipePMList());
-						if(c>0) {
-							List<ManFeed> manFeedList = wo.getManFeedList();
-							/*
-							 * 为了测试这块先屏蔽掉
-							 */
-							//c=recipePMService.updateDosageXByPMParam(workOrderID, recipePMList);
-							boolean dosageLastIfExp = DateUtil.checkDosageLastIfExp(sdf.format(new Date()));
-							if(dosageLastIfExp) {
-								c=recipePMService.updateDosageByPMParam(workOrderID, recipePMList);
-							}
-							else
-								c=recipePMService.updateDosageLastByPMParam(workOrderID, recipePMList);
-							
-							c=manFeedService.addFromList(manFeedList);
-							
-							boolean stepMesIfExp = DateUtil.checkStepMesIfExp(sdf.format(new Date()));
-							if(!stepMesIfExp) {
-								c=manFeedService.updateStepMesByWOID(workOrderID);
-							}
-							c=workOrderService.updateStateByWorkOrderID(WorkOrder.WLQTWB,workOrderID);
-						}
-						
-						success=APIUtil.SUCCESS_TRUE;
-						state=APIUtil.STATE_001;
-						
-						jsonMap.put(APIUtil.SUCCESS, success);
-						jsonMap.put(APIUtil.STATE, state);
-						jsonMap.put(APIUtil.MSG, APIUtil.MSG_NORMAL);
-					}
-					else {
-						success=APIUtil.SUCCESS_FALSE;
-						state=APIUtil.STATE_002;
-								
-						jsonMap.put(APIUtil.SUCCESS, success);
-						jsonMap.put(APIUtil.STATE, state);
-						jsonMap.put(APIUtil.MSG, APIUtil.MSG_DATA_FORMAT_ERROR);
-					}
-				}
-				else {
+				String workOrderID = wo.getWorkOrderID();
+				boolean woExist=workOrderService.checkIfExistByWOID(workOrderID);
+				if(woExist) {
 					success=APIUtil.SUCCESS_FALSE;
 					state=APIUtil.STATE_003;
 					
 					jsonMap.put(APIUtil.SUCCESS, success);
 					jsonMap.put(APIUtil.STATE, state);
-					jsonMap.put(APIUtil.MSG, "TMP表配方参数未配置");
+					jsonMap.put(APIUtil.MSG, "工单已存在，重复下发");
+				}
+				else {
+					String recipeID = wo.getRecipeID();
+					boolean rPMTMPExist=recipePM_TMPService.checkIfExistByRecipeID(recipeID);
+					if(rPMTMPExist) {
+						int c=workOrderService.add(wo);
+						if(c>0) {
+							List<RecipePM> recipePMList = wo.getRecipePMList();
+							c=recipePMService.addFromTMP(workOrderID, recipeID, recipePMList);
+							//c=recipePMService.addFromWORecipePMList(workOrderID, wo.getRecipePMList());
+							if(c>0) {
+								List<ManFeed> manFeedList = wo.getManFeedList();
+								/*
+								 * 为了测试这块先屏蔽掉
+								 */
+								//c=recipePMService.updateDosageXByPMParam(workOrderID, recipePMList);
+								boolean dosageLastIfExp = DateUtil.checkDosageLastIfExp(sdf.format(new Date()));
+								if(dosageLastIfExp) {
+									c=recipePMService.updateDosageByPMParam(workOrderID, recipePMList);
+								}
+								else
+									c=recipePMService.updateDosageLastByPMParam(workOrderID, recipePMList);
+								
+								c=manFeedService.addFromList(manFeedList);
+								
+								boolean stepMesIfExp = DateUtil.checkStepMesIfExp(sdf.format(new Date()));
+								if(!stepMesIfExp) {
+									c=manFeedService.updateStepMesByWOID(workOrderID);
+								}
+								c=workOrderService.updateStateByWorkOrderID(WorkOrder.WLQTWB,workOrderID);
+							}
+							
+							success=APIUtil.SUCCESS_TRUE;
+							state=APIUtil.STATE_001;
+							
+							jsonMap.put(APIUtil.SUCCESS, success);
+							jsonMap.put(APIUtil.STATE, state);
+							jsonMap.put(APIUtil.MSG, APIUtil.MSG_NORMAL);
+						}
+						else {
+							success=APIUtil.SUCCESS_FALSE;
+							state=APIUtil.STATE_002;
+									
+							jsonMap.put(APIUtil.SUCCESS, success);
+							jsonMap.put(APIUtil.STATE, state);
+							jsonMap.put(APIUtil.MSG, APIUtil.MSG_DATA_FORMAT_ERROR);
+						}
+					}
+					else {
+						success=APIUtil.SUCCESS_FALSE;
+						state=APIUtil.STATE_003;
+						
+						jsonMap.put(APIUtil.SUCCESS, success);
+						jsonMap.put(APIUtil.STATE, state);
+						jsonMap.put(APIUtil.MSG, "TMP表配方参数未配置");
+					}
 				}
 			}
 			else {
