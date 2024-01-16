@@ -5,7 +5,7 @@ import java.util.List;
 import org.json.JSONObject;
 
 import com.batchMesComDK.controller.BatchController;
-import com.batchMesComDK.entity.WorkOrder;
+import com.batchMesComDK.entity.*;
 
 public class SendRecThre implements Runnable {
 	
@@ -110,7 +110,6 @@ public class SendRecThre implements Runnable {
 			String apiMsg = dhmJO.getString("msg");
 			int state = dhmJO.getInt("state");
 			
-			success=true;
 			if(success) {
 				String workOrderID = bodyParamBRJO.get("workOrder").toString();
 				batchController.getWorkOrderService().updateSendBRToMesByWorkOrderID(WorkOrder.SENDED,workOrderID);
