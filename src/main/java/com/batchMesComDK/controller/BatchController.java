@@ -106,6 +106,36 @@ public class BatchController {
 	}
 	
 	/**
+	 * 根据可执行配方id，从Batchview里获取状态
+	 * @param formulaId
+	 * @param batchCount
+	 * @return
+	 * @throws JSONException
+	 */
+	public int getStateFromBVByForId(String formulaId, int batchCount) throws JSONException {
+		int state=0;
+		for (int i = 1; i <= batchCount; i++) {
+			String batchVal = getItemVal(BatchTest.BL_BATCH_ID,i);
+			if(batchVal.equals(formulaId)) {
+				String stateVal = getItemVal(BatchTest.BL_STATE,i);//存在的话就根据在batchview里的序号获取状态
+				if(BatchTest.READY.equals(stateVal))
+					state=WorkOrder.BCJWB;
+				else if(BatchTest.RUNNING.equals(stateVal))
+					state=WorkOrder.BYX;
+				else if(BatchTest.HELD.equals(stateVal))
+					state=WorkOrder.BZT;
+				else if(BatchTest.STOPPED.equals(stateVal)||
+						BatchTest.ABORTED.equals(stateVal))
+					state=WorkOrder.BYWZZ;
+				else if(BatchTest.COMPLETE.equals(stateVal))
+					state=WorkOrder.BJS;
+				break;
+			}
+		}
+		return state;
+	}
+	
+	/**
 	 * 初始化主机id工单map
 	 */
 	public void initUnitIDWOMap() {
@@ -207,65 +237,35 @@ public class BatchController {
 						addTestLog(createTestLogByParams("getBatchCreated","","",workOrderID+","+formulaId+","+batchCreated));
 						System.out.println("batchCreated="+batchCreated);
 						if(batchCreated!=null) {
-							if(batchCreated) {//若已创建过就执行这里的逻辑
+							if(batchCreated) {//若batchCreated为true，说明已创建过执行配方，但操作失误将状态写为2了，就执行这里的逻辑
 								System.out.println("若已创建过就执行这里的逻辑");
 								int stateCsqrwb=0;
 								if(checkBatchIfExistInList(formulaId)) {//根据执行配方id判断batchview里是否存在
-									for (int j = 1; j <= batchCount; j++) {
-										String batchVal = getItemVal(BatchTest.BL_BATCH_ID,j);
-										if(batchVal.equals(formulaId)) {
-											String stateVal = getItemVal(BatchTest.BL_STATE,j);//存在的话就根据在batchview里的序号获取状态
-											if(BatchTest.READY.equals(stateVal))//根据batchview里的状态同步工单表里的状态，从2变为其他状态
-												stateCsqrwb=WorkOrder.BCJWB;
-											else if(BatchTest.RUNNING.equals(stateVal))
-												stateCsqrwb=WorkOrder.BYX;
-											else if(BatchTest.HELD.equals(stateVal))
-												stateCsqrwb=WorkOrder.BZT;
-											else if(BatchTest.STOPPED.equals(stateVal)||
-													BatchTest.ABORTED.equals(stateVal))
-												stateCsqrwb=WorkOrder.BYWZZ;
-											else if(BatchTest.COMPLETE.equals(stateVal))
-												stateCsqrwb=WorkOrder.BJS;
-											break;
-										}
-									}
+									stateCsqrwb=getStateFromBVByForId(formulaId,batchCount);//根据batchview里的状态同步工单表里的状态，从2变为BatchView里的状态
 								}
-								else {//若已经创建过，然而在batchview里不存在，说明已经从batchview里删除，就把工单状态变为1，由wincc端操作重新创建batch
+								else {//若batchCreated为true，然而在batchview里不存在，说明已经从batchview里删除，就把工单状态变为1，由wincc端操作重新创建batch
 									stateCsqrwb=WorkOrder.WLQTWB;
-									workOrderService.updateBatchCreatedById(WorkOrder.UN_CREATE,id);
+									workOrderService.updateBatchCreatedById(WorkOrder.UN_CREATE,id);//将batchCreated还原回false
 								}
-								workOrderService.updateStateById(stateCsqrwb, id);
 								
-								addWOPreStateInList(stateCsqrwb,workOrderID);
-							}
-							else {//若未创建过，就执行这里的逻辑
-								System.out.println("若未创建过，就执行这里的逻辑");
-								if(checkBatchIfExistInList(formulaId)) {
-									int stateCsqrwb=0;
-									for (int j = 1; j <= batchCount; j++) {
-										String batchVal = getItemVal(BatchTest.BL_BATCH_ID,j);
-										if(batchVal.equals(formulaId)) {
-											String stateVal = getItemVal(BatchTest.BL_STATE,j);//存在的话就根据在batchview里的序号获取状态
-											if(BatchTest.READY.equals(stateVal))//根据batchview里的状态同步工单表里的状态，从2变为其他状态
-												stateCsqrwb=WorkOrder.BCJWB;
-											else if(BatchTest.RUNNING.equals(stateVal))
-												stateCsqrwb=WorkOrder.BYX;
-											else if(BatchTest.HELD.equals(stateVal))
-												stateCsqrwb=WorkOrder.BZT;
-											else if(BatchTest.STOPPED.equals(stateVal)||
-													BatchTest.ABORTED.equals(stateVal))
-												stateCsqrwb=WorkOrder.BYWZZ;
-											else if(BatchTest.COMPLETE.equals(stateVal))
-												stateCsqrwb=WorkOrder.BJS;
-											break;
-										}
-									}
+								if(stateCsqrwb>0) {//若同步状态成功，就将同步后的状态写入数据库的工单里
 									workOrderService.updateStateById(stateCsqrwb, id);
-									workOrderService.updateBatchCreatedById(WorkOrder.CREATED,id);
 									
 									addWOPreStateInList(stateCsqrwb,workOrderID);
 								}
-								else {
+							}
+							else {//若batchCreated为false，一种情况是执行配方未创建、另一种是已创建，但操作失误将状态写为2了，就执行这里的逻辑
+								System.out.println("若未创建过，就执行这里的逻辑");
+								if(checkBatchIfExistInList(formulaId)) {//根据执行配方id判断batchview里是否存在，存在说明是操作失误把状态写为2了
+									int stateCsqrwb=getStateFromBVByForId(formulaId,batchCount);//根据batchview里的状态同步工单表里的状态，从2变为BatchView里的状态
+									if(stateCsqrwb>0) {//若同步状态成功，就将同步后的状态写入数据库的工单里
+										workOrderService.updateStateById(stateCsqrwb, id);
+										workOrderService.updateBatchCreatedById(WorkOrder.CREATED,id);//将batchCreated变为true
+										
+										addWOPreStateInList(stateCsqrwb,workOrderID);
+									}
+								}
+								else {//不存在说明执行配方的确未创建，就执行这里的逻辑
 									String createBatchResultStr = createBatch(formulaId,workOrderID,identifier);
 									JSONObject createBatchResultJO = new JSONObject(createBatchResultStr);
 									String createBatchData = createBatchResultJO.getString("data");
@@ -3033,20 +3033,22 @@ public class BatchController {
 				sendToMesWOList=workOrderService.getSendToMesListTest(sendToMesWOIDList);
 				*/
 
-				String sendToMesWOID = sendToMesWOIDList.get(0);
-				
-				addTestLog(createTestLogByParams("autoPushToMes","","",sendToMesWOID));
-				
-				count=batchRecordService.addTechFromBHBatchHis(sendToMesWOIDList);
-				addTestLog(createTestLogByParams("addTechCount","","",sendToMesWOID+":"+count));
-				
-				count=batchRecordService.addMaterialFromBHBatchHis(sendToMesWOIDList);
-				addTestLog(createTestLogByParams("addMaterialCount","","",sendToMesWOID+":"+count));
-				
-				count=batchRecordService.addPhaseFromBHBatchHis(sendToMesWOIDList);
-				addTestLog(createTestLogByParams("addPhaseCount","","",sendToMesWOID+":"+count));
-				
-				//count=batchRecordService.addBatchFromBHBatch(sendToMesWOIDList);
+				if(sendToMesWOIDList.size()>0) {
+					String sendToMesWOID = sendToMesWOIDList.get(0);
+					
+					addTestLog(createTestLogByParams("autoPushToMes","","",sendToMesWOID));
+					
+					count=batchRecordService.addTechFromBHBatchHis(sendToMesWOIDList);
+					addTestLog(createTestLogByParams("addTechCount","","",sendToMesWOID+":"+count));
+					
+					count=batchRecordService.addMaterialFromBHBatchHis(sendToMesWOIDList);
+					addTestLog(createTestLogByParams("addMaterialCount","","",sendToMesWOID+":"+count));
+					
+					count=batchRecordService.addPhaseFromBHBatchHis(sendToMesWOIDList);
+					addTestLog(createTestLogByParams("addPhaseCount","","",sendToMesWOID+":"+count));
+					
+					//count=batchRecordService.addBatchFromBHBatch(sendToMesWOIDList);
+				}
 			}
 			else {//手动推送给mes的逻辑
 				//{"workOrderIDs":"ZI2309220101,ZJ2309220101,ZL2309230101","hoursAgo":72,"recordTypeNames":"tech,mater,phase"}
