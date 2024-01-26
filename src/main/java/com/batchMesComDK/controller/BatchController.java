@@ -2987,7 +2987,7 @@ public class BatchController {
 			
 			addTestLog(createTestLogByParams("checkIfSendBRToMes","","",workOrderIDs));
 			
-			getSendToMesBRData("{\"workOrderIDs\":\""+workOrderIDs+"\",\"hoursAgo\":72,\"recordTypeNames\":\"\"}");
+			getSendToMesBRData("{\"workOrderIDs\":\""+workOrderIDs+"\",\"hoursAgo\":72,\"recordTypeNames\":\"mater\"}");
 		}
 		
 		return jsonMap;
