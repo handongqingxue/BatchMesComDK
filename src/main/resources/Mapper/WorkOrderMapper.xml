@@ -116,7 +116,7 @@
 			<if test="BatchCreated!=null">
 				#{BatchCreated},
 			</if>
-				'false'
+				${@com.batchMesComDK.entity.WorkOrder@UN_SEND}
 		</trim>
 	</insert>
 	<update id="updateStateById">
@@ -261,14 +261,35 @@
 		select ApiFailData from WorkOrder where ID=#{id}
 	</select>
 	<update id="updateSendBRToMesByWorkOrderID">
-		update WorkOrder set SendBRToMes=#{sendBRToMes} where WorkOrderID=#{workOrderID}
+		update WorkOrder set 
+		<trim suffixOverrides=",">
+			SendBRToMes=${sendBRToMes},
+			<if test="sendBRToMes==@com.batchMesComDK.entity.WorkOrder@SENDING">
+				LastSendTime=GETDATE()
+			</if>
+		</trim>
+		 where WorkOrderID=#{workOrderID}
 	</update>
 	<select id="getUnSendBRToMesWOIDList" resultType="java.lang.String">
-		select WorkOrderID from WorkOrder where SendBRToMes='false'
+		select WorkOrderID from WorkOrder where SendBRToMes=${@com.batchMesComDK.entity.WorkOrder@UN_SEND}
 		<foreach collection="stateList" item="state" open=" and state in (" separator="," close=")">
 		#{state}
 		</foreach>
 	</select>
+	<select id="getSendingBRToMesWOCount" resultType="java.lang.Integer">
+		select count(*) from WorkOrder where SendBRToMes=${@com.batchMesComDK.entity.WorkOrder@SENDING}
+		<foreach collection="stateList" item="state" open=" and state in (" separator="," close=")">
+		#{state}
+		</foreach>
+		and DATEDIFF(mi,LastSendTime,GETDATE())&gt;5
+	</select>
+	<update id="restoreToUnSend">
+		update WorkOrder set SendBRToMes=${@com.batchMesComDK.entity.WorkOrder@UN_SEND} where SendBRToMes=${@com.batchMesComDK.entity.WorkOrder@SENDING}
+		<foreach collection="stateList" item="state" open=" and state in (" separator="," close=")">
+		#{state}
+		</foreach>
+		and DATEDIFF(mi,LastSendTime,GETDATE())&gt;5
+	</update>
 	<select id="getCountByWOID" resultType="java.lang.Integer">
 		select count(*) from WorkOrder where WorkOrderID=#{workOrderID}
 	</select>

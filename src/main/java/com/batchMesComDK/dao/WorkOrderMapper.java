@@ -52,9 +52,13 @@ public interface WorkOrderMapper {
 
 	String getApiFailDataById(@Param("id") Integer id);
 
-	int updateSendBRToMesByWorkOrderID(@Param("sendBRToMes") boolean sendBRToMes, @Param("workOrderID") String workOrderID);
+	int updateSendBRToMesByWorkOrderID(@Param("sendBRToMes") int sendBRToMes, @Param("workOrderID") String workOrderID);
 
 	List<String> getUnSendBRToMesWOIDList(@Param("stateList") List<String> stateList);
+
+	int getSendingBRToMesWOCount(@Param("stateList") List<String> stateList);
+
+	int restoreToUnSend(@Param("stateList") List<String> stateList);
 
 	int getCountByWOID(@Param("workOrderID") String workOrderID);
 

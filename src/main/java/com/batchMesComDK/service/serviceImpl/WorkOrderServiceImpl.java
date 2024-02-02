@@ -191,7 +191,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	}
 
 	@Override
-	public int updateSendBRToMesByWorkOrderID(boolean sendBRToMes, String workOrderID) {
+	public int updateSendBRToMesByWorkOrderID(int sendBRToMes, String workOrderID) {
 		// TODO Auto-generated method stub
 		return workOrderDao.updateSendBRToMesByWorkOrderID(sendBRToMes,workOrderID);
 	}
@@ -202,6 +202,8 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 		String states = WorkOrder.BYWZZ+","+WorkOrder.BJS;
 		String[] stateArr = states.split(",");
 		List<String> stateList = Arrays.asList(stateArr);
+		if(workOrderDao.getSendingBRToMesWOCount(stateList)>0)
+			workOrderDao.restoreToUnSend(stateList);
 		return workOrderDao.getUnSendBRToMesWOIDList(stateList);
 	}
 

@@ -3035,6 +3035,7 @@ public class BatchController {
 
 				if(sendToMesWOIDList.size()>0) {
 					String sendToMesWOID = sendToMesWOIDList.get(0);
+					workOrderService.updateSendBRToMesByWorkOrderID(WorkOrder.SENDING,sendToMesWOID);
 					
 					addTestLog(createTestLogByParams("autoPushToMes","","",sendToMesWOID));
 					
@@ -3060,6 +3061,7 @@ public class BatchController {
 				String[] workOrderIDArr = workOrderIDs.split(",");
 				List<String> workOrderIDList = Arrays.asList(workOrderIDArr);
 				for (String workOrderID : workOrderIDList) {
+					workOrderService.updateSendBRToMesByWorkOrderID(WorkOrder.SENDING,workOrderID);
 					sendToMesWOIDList.add(workOrderID);//调试时针对单个工单发批记录
 				}
 				Integer hoursAgo = bodyJO.getInt("hoursAgo");
@@ -3171,17 +3173,22 @@ public class BatchController {
 
 					addTestLog(createTestLogByParams("createType","","",workOrderID+":"+createType));
 					if(createType==WorkOrder.MES_DOWN) {
-						addTestLog(createTestLogByParams("pushMesDevCount","","",workOrderID+":"+bodyParamDevJOList.size()));
-						if(bodyParamDevJOList.size()>0) {
+						int bodyParamDevJOListSize = bodyParamDevJOList.size();
+						addTestLog(createTestLogByParams("pushMesDevCount","","",workOrderID+":"+bodyParamDevJOListSize));
+						if(bodyParamDevJOListSize>0) {
 							SendRecThre srt=new SendRecThre(BatchController.this,bodyParamDevJOList,SendRecThre.DEV);
 							new Thread(srt).start();
 						}
-						addTestLog(createTestLogByParams("pushMesBRCount","","",workOrderID+":"+electtonBatchRecordBRJA.length()));
-						if(electtonBatchRecordBRJA.length()>0) {
+						int electtonBatchRecordBRJALength = electtonBatchRecordBRJA.length();
+						addTestLog(createTestLogByParams("pushMesBRCount","","",workOrderID+":"+electtonBatchRecordBRJALength));
+						if(electtonBatchRecordBRJALength>0) {
 							bodyParamBRJO.put("electtonBatchRecord", electtonBatchRecordBRJA);
 							
 							SendRecThre srt=new SendRecThre(BatchController.this,bodyParamBRJO,SendRecThre.BR);
 							new Thread(srt).start();
+						}
+						else {
+							workOrderService.updateSendBRToMesByWorkOrderID(WorkOrder.SENDED,workOrderID);
 						}
 					}
 				}
