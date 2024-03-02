@@ -167,6 +167,14 @@
 		and DATEDIFF(hh,CreateTime,GETDATE())&lt;${hoursAgo}
 		order by CreateTime
 	</select>
+	<select id="getEndListByStateList" resultType="com.batchMesComDK.entity.WorkOrder">
+		select FormulaId from WorkOrder where 1=1
+		<foreach collection="stateList" item="state" open=" and cast(state as char) in (" separator="," close=")">
+		#{state}
+		</foreach>
+		and DATEDIFF(hh,CreateTime,GETDATE())&lt;720
+		order by CreateTime
+	</select>
 	<update id="edit" parameterType="com.batchMesComDK.entity.WorkOrder">
 		update WorkOrder set 
 		<trim suffixOverrides=",">

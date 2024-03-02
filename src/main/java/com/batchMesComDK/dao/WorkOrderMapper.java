@@ -26,6 +26,8 @@ public interface WorkOrderMapper {
 
 	List<WorkOrder> getSendToMesListByStateListTest(@Param("workOrderIDList") List<String> workOrderIDList, @Param("stateList") List<String> stateList, @Param("hoursAgo") Integer hoursAgo);
 
+	List<WorkOrder> getEndListByStateList(@Param("stateList") List<String> stateList);
+
 	int edit(WorkOrder wo);
 
 	WorkOrder getById(@Param("id") Integer id);

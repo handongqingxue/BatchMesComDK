@@ -238,7 +238,6 @@ public class BatchController {
 						System.out.println("batchCreated="+batchCreated);
 						if(batchCreated!=null) {
 							if(batchCreated) {//若batchCreated为true，说明已创建过执行配方，但操作失误将状态写为2了，就执行这里的逻辑
-								System.out.println("若已创建过就执行这里的逻辑");
 								int stateCsqrwb=0;
 								if(checkBatchIfExistInList(formulaId)) {//根据执行配方id判断batchview里是否存在
 									stateCsqrwb=getStateFromBVByForId(formulaId,batchCount);//根据batchview里的状态同步工单表里的状态，从2变为BatchView里的状态
@@ -255,7 +254,6 @@ public class BatchController {
 								}
 							}
 							else {//若batchCreated为false，一种情况是执行配方未创建、另一种是已创建，但操作失误将状态写为2了，就执行这里的逻辑
-								System.out.println("若未创建过，就执行这里的逻辑");
 								if(checkBatchIfExistInList(formulaId)) {//根据执行配方id判断batchview里是否存在，存在说明是操作失误把状态写为2了
 									int stateCsqrwb=getStateFromBVByForId(formulaId,batchCount);//根据batchview里的状态同步工单表里的状态，从2变为BatchView里的状态
 									if(stateCsqrwb>0) {//若同步状态成功，就将同步后的状态写入数据库的工单里
@@ -266,6 +264,8 @@ public class BatchController {
 									}
 								}
 								else {//不存在说明执行配方的确未创建，就执行这里的逻辑
+									removeEndBatchInList();
+									
 									String createBatchResultStr = createBatch(formulaId,workOrderID,identifier);
 									JSONObject createBatchResultJO = new JSONObject(createBatchResultStr);
 									String createBatchData = createBatchResultJO.getString("data");
@@ -290,6 +290,8 @@ public class BatchController {
 						}
 						break;
 					case WorkOrder.BQD:
+						LogUtil.writeInLog(workOrderID+" start,state="+state);
+						
 						boolean existRunWO=Boolean.valueOf(woMap.get("existRunWO").toString());//是否正在运行状态
 	
 						boolean allowRestoreStart=false;
@@ -324,6 +326,8 @@ public class BatchController {
 										}
 										
 										if(qdCOSSuccess) {
+											removeRepBatchInList(formulaId);
+											
 											String createIDVal = getItemVal(BatchTest.BL_CREATE_ID,j);
 											//System.out.println("createIDVal==="+createIDVal);
 											
@@ -1191,6 +1195,64 @@ public class BatchController {
 	}
 	
 	/**
+	 * 从BatchView里移除执行完的batch
+	 */
+	private void removeEndBatchInList() {
+		try {
+			List<WorkOrder> endWOList=workOrderService.getEndList();
+			String batchListResultStr = getItem(BatchTest.BATCH_LIST);
+			JSONObject batchListResultJO = new JSONObject(batchListResultStr);
+			int status = batchListResultJO.getInt("status");
+			if(status==1) {
+				String batchList = batchListResultJO.getString("data");
+				String[] batchArr = batchList.split(BatchTest.CRLF_SPACE_SIGN);
+				for (String batch:batchArr) {
+					String[] batchValArr = batch.split(BatchTest.T_SPACE_SIGN);
+					String batchID = batchValArr[0];
+					String createID = batchValArr[8];
+					for(WorkOrder endWO:endWOList) {
+						String formulaId = endWO.getFormulaId();
+						if(batchID.equals(formulaId)) {
+							removeBatch(createID);
+							break;
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private void removeRepBatchInList(String formulaId) {
+		try {
+			boolean existInBV=false;
+			String batchListResultStr = getItem(BatchTest.BATCH_LIST);
+			JSONObject batchListResultJO = new JSONObject(batchListResultStr);
+			int status = batchListResultJO.getInt("status");
+			if(status==1) {
+				String batchList = batchListResultJO.getString("data");
+				String[] batchArr = batchList.split(BatchTest.CRLF_SPACE_SIGN);
+				for (String batch:batchArr) {
+					String[] batchValArr = batch.split(BatchTest.T_SPACE_SIGN);
+					String batchID = batchValArr[0];
+					String createID = batchValArr[8];
+					if(batchID.equals(formulaId)) {
+						if(!existInBV)
+							existInBV=true;
+						else
+							removeBatch(createID);
+					}
+				}
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	/**
 	 * 改变batch状态
 	 * @param createID
 	 * @param cmd
@@ -1832,19 +1894,8 @@ public class BatchController {
 				String bodyMsg = msgJO.getString("bodyMsg");
 				net.sf.json.JSONObject bodyMsgJO = net.sf.json.JSONObject.fromObject(bodyMsg);
 				String workOrder = bodyMsgJO.getString("workOrder");
-				String testLogDirStr=Constant.RESOURCES_DIR+"/TestLog/";
-				File testLogDir = new File(testLogDirStr);
-				if(!testLogDir.exists())
-					testLogDir.mkdir();
-				File workOrderBRFile=new File(testLogDirStr+workOrder+".txt");
-				workOrderBRFile.createNewFile();
 				
-				byte bytes[]=new byte[512];
-				bytes=msg.getBytes();
-				int b=bytes.length; //是字节的长度，不是字符串的长度
-				FileOutputStream fos=new FileOutputStream(workOrderBRFile);
-				fos.write(bytes,0,b);
-				fos.close();
+				LogUtil.addBRLog(msg,workOrder);
 				
 				String apiMsg = msgJO.getString("apiMsg");
 				tl.setMsg(apiMsg+"详见工单号"+workOrder+"对应的日志记录txt文件");
@@ -2987,7 +3038,7 @@ public class BatchController {
 			
 			addTestLog(createTestLogByParams("checkIfSendBRToMes","","",workOrderIDs));
 			
-			getSendToMesBRData("{\"workOrderIDs\":\""+workOrderIDs+"\",\"hoursAgo\":72,\"recordTypeNames\":\"mater\"}");
+			getSendToMesBRData("{\"workOrderIDs\":\""+workOrderIDs+"\",\"hoursAgo\":720,\"recordTypeNames\":\"mater\"}");
 		}
 		
 		return jsonMap;

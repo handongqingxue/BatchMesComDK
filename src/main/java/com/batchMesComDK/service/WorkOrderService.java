@@ -20,6 +20,8 @@ public interface WorkOrderService {
 
 	List<WorkOrder> getSendToMesList();
 
+	List<WorkOrder> getEndList();
+
 	/**
 	 * 这个方法供调试用，手动创建工单号集合，防止出现越界情况
 	 * @param workOrderIDList
