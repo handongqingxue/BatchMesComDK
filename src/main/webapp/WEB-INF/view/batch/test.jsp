@@ -1415,7 +1415,8 @@ function splitUnitTagData(data){
 		<option value="[BATCH(Item,batchsvr1\ADMINISTRATOR,CLS_FRENCHVANILLA.BPC,BATCH_ID,100,FRENCHVANILLA PREMIUM -CLASSBASED,FREEZER,4,MIXER,2,PARMS,CREAM_AMOUNT,2001,EGG_AMOUNT,200,FLAVOR_AMOUNT,50,MILK_AMOUNT,1999,SUGAR_AMOUNT, 750)]">Batch</option>
 		<option value="[COMMAND(Item,batchsvr1\ADMINISTRATOR,ProcedureID,Cmd)]">COMMAND</option>
 		<option value="[REMOVE(Item,batchsvr1\ADMINISTRATOR,CreateID)]">REMOVE</option>
-		<option value="[FORMULATIONS_INFO(<Item>,batchsvr1\ADMINISTRATOR,PRODUCT_X.BPC)]">Formulations_Info</option>
+		<option value="[FORMULATIONS_DATA(<Item>,batchsvr1\ADMINISTRATOR,CLS_FRENCHVANILLA.BPC,Premium)]">Formulations_Data</option>
+		<option value="[FORMULATIONS_INFO(<Item>,batchsvr1\ADMINISTRATOR,CLS_FRENCHVANILLA.BPC)]">Formulations_Info</option>
 		<option value="[INFO2(<Item>,batchsvr1\ADMINISTRATOR,PRODUCT_X.BPC)]">Info2</option>
 		<option value="[MESSAGES(Item,batchsvr1\ADMINISTRATOR,PhaseID)]">Messages</option>
 		<option value="[MTRL_INFO(Item,batchsvr1\ADMINISTRATOR,PRODUCT_X.BPC)]">Mtrl_Info</option>
