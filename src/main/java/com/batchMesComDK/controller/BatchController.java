@@ -264,7 +264,7 @@ public class BatchController {
 									}
 								}
 								else {//不存在说明执行配方的确未创建，就执行这里的逻辑
-									removeEndBatchInList();
+									removeEndBatchInList();//在创建配方前，得先从BatchView里移除已完成的执行配方
 									
 									String createBatchResultStr = createBatch(formulaId,workOrderID,identifier);
 									JSONObject createBatchResultJO = new JSONObject(createBatchResultStr);
@@ -290,7 +290,7 @@ public class BatchController {
 						}
 						break;
 					case WorkOrder.BQD:
-						LogUtil.writeInLog(workOrderID+" start,state="+state);
+						LogUtil.writeInLog(workOrderID+" start,state="+state);//只要状态是启动，就记录日志
 						
 						boolean existRunWO=Boolean.valueOf(woMap.get("existRunWO").toString());//是否正在运行状态
 	
@@ -1213,6 +1213,7 @@ public class BatchController {
 					for(WorkOrder endWO:endWOList) {
 						String formulaId = endWO.getFormulaId();
 						if(batchID.equals(formulaId)) {
+							LogUtil.writeInLog(batchID+" removeEndBatch");//移除完成的执行配方时，得先记录日志
 							removeBatch(createID);
 							break;
 						}
@@ -1241,8 +1242,10 @@ public class BatchController {
 					if(batchID.equals(formulaId)) {
 						if(!existInBV)
 							existInBV=true;
-						else
+						else {
+							LogUtil.writeInLog(formulaId+" removeRepBatch");
 							removeBatch(createID);
+						}
 					}
 				}
 			}

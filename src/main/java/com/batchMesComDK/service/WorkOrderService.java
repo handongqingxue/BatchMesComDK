@@ -20,6 +20,10 @@ public interface WorkOrderService {
 
 	List<WorkOrder> getSendToMesList();
 
+	/**
+	 * 获得已结束(终止或已完成)的工单列表
+	 * @return
+	 */
 	List<WorkOrder> getEndList();
 
 	/**

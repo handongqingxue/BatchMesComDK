@@ -26,6 +26,11 @@ public interface WorkOrderMapper {
 
 	List<WorkOrder> getSendToMesListByStateListTest(@Param("workOrderIDList") List<String> workOrderIDList, @Param("stateList") List<String> stateList, @Param("hoursAgo") Integer hoursAgo);
 
+	/**
+	 * 获得已结束(终止或已完成)的工单列表
+	 * @param stateList
+	 * @return
+	 */
 	List<WorkOrder> getEndListByStateList(@Param("stateList") List<String> stateList);
 
 	int edit(WorkOrder wo);
