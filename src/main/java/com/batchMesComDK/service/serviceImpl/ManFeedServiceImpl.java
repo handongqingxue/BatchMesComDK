@@ -76,7 +76,7 @@ public class ManFeedServiceImpl implements ManFeedService {
 	}
 	
 	@Override
-	public int editByWorkOrderIDFeedPortList(List<ManFeed> mfList) {
+	public int editByWOIDFeedPortList(List<ManFeed> mfList) {
 		// TODO Auto-generated method stub
 		int count=0;
 		/*
@@ -91,9 +91,15 @@ public class ManFeedServiceImpl implements ManFeedService {
 	}
 
 	@Override
-	public ManFeed getByWorkOrderIDFeedPort(String workOrderID,String feedPort) {
+	public int editByWOIDFeedPortStepMesList(List<ManFeed> mfList) {
 		// TODO Auto-generated method stub
-		return manFeedDao.getByWorkOrderIDFeedPort(workOrderID,feedPort);
+		return manFeedDao.reEditByList(mfList);
+	}
+
+	@Override
+	public ManFeed getByWOIDFeedPort(String workOrderID,String feedPort) {
+		// TODO Auto-generated method stub
+		return manFeedDao.getByWOIDFeedPort(workOrderID,feedPort);
 	}
 
 	@Override

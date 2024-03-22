@@ -200,6 +200,10 @@ public class BatchController {
 					String identifier = wo.getIdentifier();
 					String updateUser = wo.getUpdateUser();
 					Integer createType = wo.getCreateType();
+					Integer batchEndType = wo.getBatchEndType();
+					String reFeedPort = wo.getReFeedPort();
+					Integer reFeedStepMes = wo.getReFeedStepMes();
+					String apiFailData = wo.getApiFailData();
 					
 					StringBuilder woSB=new StringBuilder();
 					woSB.append("workOrderID=");
@@ -242,9 +246,21 @@ public class BatchController {
 								if(checkBatchIfExistInList(formulaId)) {//根据执行配方id判断batchview里是否存在
 									stateCsqrwb=getStateFromBVByForId(formulaId,batchCount);//根据batchview里的状态同步工单表里的状态，从2变为BatchView里的状态
 								}
-								else {//若batchCreated为true，然而在batchview里不存在，说明已经从batchview里删除，就把工单状态变为1，由wincc端操作重新创建batch
-									stateCsqrwb=WorkOrder.WLQTWB;
-									workOrderService.updateBatchCreatedById(WorkOrder.UN_CREATE,id);//将batchCreated还原回false
+								else {//若batchCreated为true，然而在batchview里不存在，说明已经从batchview里删除
+									//接下来判断下batchEndType的值，看看是否是已结束的工单。是的话就还原状态到已结束，不是的话，就把工单状态变为1，由wincc端操作重新创建batch
+									if(batchEndType==WorkOrder.BATCH_STOPPED) {
+										LogUtil.writeInLog(workOrderID+" batch stopped,preState="+state);
+										stateCsqrwb=WorkOrder.BYWZZ;
+									}
+									else if(batchEndType==WorkOrder.BATCH_FINISHED) {
+										LogUtil.writeInLog(workOrderID+" batch finished,preState="+state);
+										stateCsqrwb=WorkOrder.BJS;
+									}
+									else {
+										LogUtil.writeInLog(workOrderID+" batch unEnd,preState="+state);
+										stateCsqrwb=WorkOrder.WLQTWB;
+										workOrderService.updateBatchCreatedById(WorkOrder.UN_CREATE,id);//将batchCreated还原回false
+									}
 								}
 								
 								if(stateCsqrwb>0) {//若同步状态成功，就将同步后的状态写入数据库的工单里
@@ -272,7 +288,7 @@ public class BatchController {
 									System.out.println("createBatchData==="+createBatchData);
 									if(createBatchData.contains(BatchTest.SUCCESS_RESULT)) {//batch创建成功
 										workOrderService.updateStateById(WorkOrder.BCJWB, id);//只有batch创建完毕，工单状态才变为3
-										String apiFailData = workOrderService.getApiFailDataById(id);
+										//String apiFailData = workOrderService.getApiFailDataById(id);
 										if(!StringUtils.isEmpty(apiFailData))
 											workOrderService.updateApiFailDataById("", id);
 										workOrderService.updateBatchCreatedById(WorkOrder.CREATED,id);
@@ -281,7 +297,7 @@ public class BatchController {
 									}
 									else {//当创建batch失败时，就把工单状态变为15(batch创建失败)，避免创建失败时状态一直为2巡回创建，导致没有创建成功而batch那边的id却一直增长的情况
 										workOrderService.updateStateById(WorkOrder.BCJSB, id);
-										workOrderService.updateApiFailDataById(createBatchData, id);
+										workOrderService.updateApiFailDataById(tranToCH(createBatchData), id);
 										
 										addWOPreStateInList(WorkOrder.BCJSB,workOrderID);
 									}
@@ -376,8 +392,24 @@ public class BatchController {
 								}
 							}
 							
-							if(!existInBatchList) {//在batchview里不存在启动状态的工单，说明该工单对应的批次可能在batchview里已被删除，就还原状态到2，下一轮重新创建批次
-								workOrderService.updateStateById(WorkOrder.CSQRWB, id);
+							if(!existInBatchList) {//在batchview里不存在启动状态的工单，说明该工单对应的批次可能在batchview里已被删除
+								//接下来判断下batchEndType的值，看看是否是已结束的工单。是的话就还原状态到已结束，不是的话，就还原状态到2，下一轮重新创建批次
+								if(batchEndType==WorkOrder.BATCH_STOPPED) {
+									LogUtil.writeInLog(workOrderID+" batch stopped,preState="+state);
+									workOrderService.updateStateById(WorkOrder.BYWZZ, id);
+									
+									addWOPreStateInList(WorkOrder.BYWZZ,workOrderID);
+								}
+								else if(batchEndType==WorkOrder.BATCH_FINISHED) {
+									LogUtil.writeInLog(workOrderID+" batch finished,preState="+state);
+									workOrderService.updateStateById(WorkOrder.BJS, id);
+
+									addWOPreStateInList(WorkOrder.BJS,workOrderID);
+								}
+								else {
+									LogUtil.writeInLog(workOrderID+" batch unEnd,preState="+state);
+									workOrderService.updateStateById(WorkOrder.CSQRWB, id);
+								}
 							}
 						}
 						break;
@@ -445,14 +477,15 @@ public class BatchController {
 								if(BatchTest.READY.equals(stateVal)) {//工单取消时，若batch状态是已创建，还未执行，就没必要停止batch，直接移除batch就行
 									removeBatch(createIDVal);
 									
-									workOrderService.updateStateById(WorkOrder.BYWZZ, wo.getID());
+									workOrderService.updateStateById(WorkOrder.BYWZZ, id);
 									
-									addWOPreStateInList(WorkOrder.BYWZZ,wo.getWorkOrderID());
+									addWOPreStateInList(WorkOrder.BYWZZ,workOrderID);
 								}
 								else if(BatchTest.COMPLETE.equals(stateVal)) {//工单取消时，若工单对应的batch已完成，就把数据库的工单状态也改为已完成
-									workOrderService.updateStateById(WorkOrder.BJS, wo.getID());
+									workOrderService.updateStateById(WorkOrder.BJS, id);
+									workOrderService.updateBatchEndTypeById(WorkOrder.BATCH_FINISHED,id);
 									
-									addWOPreStateInList(WorkOrder.BJS,wo.getWorkOrderID());
+									addWOPreStateInList(WorkOrder.BJS,workOrderID);
 								}
 								else {//若工单已经执行了，就得停止batch运行
 									//commandBatch(createIDVal,BatchTest.STOP);
@@ -461,7 +494,8 @@ public class BatchController {
 									stateVal = getItemVal(BatchTest.BL_STATE,j);
 									//if(BatchTest.STOPPED.equals(stateVal)) {
 									if(BatchTest.ABORTED.equals(stateVal)) {
-										workOrderService.updateStateById(WorkOrder.BYWZZ, wo.getID());
+										workOrderService.updateStateById(WorkOrder.BYWZZ, id);
+										workOrderService.updateBatchEndTypeById(WorkOrder.BATCH_STOPPED,id);
 										
 										woMap.put("existRunWO", false);
 										
@@ -472,7 +506,7 @@ public class BatchController {
 											changeOrderStatus(jsBodyStr);
 										}
 										
-										addWOPreStateInList(WorkOrder.BYWZZ,wo.getWorkOrderID());
+										addWOPreStateInList(WorkOrder.BYWZZ,workOrderID);
 										
 										removeBatch(createIDVal);//取消操作执行后,从batchview里移除batchview,便于下个batch顺利执行
 									}
@@ -481,8 +515,18 @@ public class BatchController {
 							}
 						}
 						
-						if(!existQXInBatchList) {//在batchview里不存在取消状态的工单，说明该工单对应的批次可能在batchview里已被删除，就把状态自动到8
-							workOrderService.updateStateById(WorkOrder.BYWZZ, id);
+						if(!existQXInBatchList) {//在batchview里不存在取消状态的工单，说明该工单对应的批次可能在batchview里已被删除
+							//接下来判断下batchEndType的值，看看是否是已完成的工单。是的话就还原状态到已完成，不是的话，就自动状态到8
+							if(batchEndType==WorkOrder.BATCH_FINISHED) {
+								workOrderService.updateStateById(WorkOrder.BJS, id);
+
+								addWOPreStateInList(WorkOrder.BJS,workOrderID);
+							}
+							else {
+								workOrderService.updateStateById(WorkOrder.BYWZZ, id);
+								
+								addWOPreStateInList(WorkOrder.BYWZZ,workOrderID);
+							}
 						}
 						break;
 					case WorkOrder.BZT:
@@ -572,6 +616,29 @@ public class BatchController {
 						addWOPreStateInList(WorkOrder.PJLSCCG,workOrderID);
 						break;
 						*/
+					case WorkOrder.CXTL:
+						if(StringUtils.isEmpty(reFeedPort)) {
+							workOrderService.updateApiFailDataById("缺少投料口", id);
+						}
+						else if(reFeedStepMes==null) {
+							workOrderService.updateApiFailDataById("缺少投料口的第几步投料", id);
+						}
+						else {
+							if(!StringUtils.isEmpty(apiFailData)) {
+								workOrderService.updateApiFailDataById("", id);
+							}
+							
+							StringBuffer cxtlMfJASB=new StringBuffer();
+							cxtlMfJASB.append("[");
+							cxtlMfJASB.append("{\"feedTime\":\"2023-08-11 19:00:37\",\"feedportCode\":\"ZPM030501\",\"id\":\"1689845778586009602\",\"materialCode\":\"2010040\",\"materialName\":\"JX\",\"phase\":\"2\",\"reser3\":\"0.0\",\"step\":\"1\",\"suttle\":\"79.208\",\"tolerance\":\"0.0\",\"unit\":\"KG\",\"workOrder\":\"ZI2308090101\"},");
+							cxtlMfJASB.append("{\"feedTime\":\"2023-08-11 19:00:37\",\"feedportCode\":\"ZPM030501\",\"id\":\"1689845778636341249\",\"materialCode\":\"9010001\",\"materialName\":\"去离子水\",\"phase\":\"4\",\"reser3\":\"0.0\",\"step\":\"1\",\"suttle\":\"39.604\",\"tolerance\":\"0.0\",\"unit\":\"KG\",\"workOrder\":\"ZI2308090101\"},");
+							cxtlMfJASB.append("{\"feedTime\":\"2023-08-11 19:00:37\",\"feedportCode\":\"ZPM030501\",\"id\":\"1689845778661507074\",\"materialCode\":\"2010009\",\"materialName\":\"SL\",\"phase\":\"2\",\"reser3\":\"0.0\",\"step\":\"1\",\"suttle\":\"5.941\",\"tolerance\":\"0.0\",\"unit\":\"KG\",\"workOrder\":\"ZI2308090101\"}");
+							cxtlMfJASB.append("]");
+							
+							List<ManFeed> cxtlMfList = (List<ManFeed>)new JSONArray(cxtlMfJASB.toString());
+							manFeedService.editByWOIDFeedPortStepMesList(cxtlMfList);
+						}
+						break;
 					}
 					
 					if(state==WorkOrder.BYX||state==WorkOrder.BZT) {
@@ -644,6 +711,7 @@ public class BatchController {
 									else {//没故障的话,才执行下面逻辑
 										if(BatchTest.COMPLETE.equals(stateVal)) {
 											workOrderService.updateStateByFormulaId(WorkOrder.BJS, formulaId);
+											workOrderService.updateBatchEndTypeByFormulaId(WorkOrder.BATCH_FINISHED,formulaId);
 											
 											woMap.put("existRunWO", false);
 											
@@ -685,6 +753,7 @@ public class BatchController {
 												BatchTest.ABORTED.equals(stateVal)) {
 											if(WorkOrder.BYWZZ!=getWOPreStateByWOID(workOrderID)) {
 												workOrderService.updateStateByFormulaId(WorkOrder.BYWZZ, formulaId);
+												workOrderService.updateBatchEndTypeByFormulaId(WorkOrder.BATCH_STOPPED,formulaId);
 												
 												getSendToMesBRData(null);//检索是否存在给mes端推送批记录的工单
 												
@@ -736,6 +805,23 @@ public class BatchController {
 			return jsonMap;
 		}
 		
+	}
+	
+	/**
+	 * 翻译成中文
+	 * @param msg
+	 */
+	private String tranToCH(String msg) {
+		String ch=null;
+		if(msg.contains("UNABLE TO LOCATE RECIPE PARAMETER IN DOCUMENT"))
+			ch="配方参数不完整，请重新验证后再尝试创建执行配方。";
+		else if(msg.contains("UNABLE TO OPEN PROCEDURE DOCUMENT")&&msg.contains("DOESN'T EXIST"))
+			ch="配方不存在";
+		else if(msg.contains("UNABLE TO OPEN PROCEDURE DOCUMENT")&&msg.contains("EXISTS, BUT AN ERROR OCCURRED WHEN READING IT"))
+			ch="配方信息不完整，请重新验证并保存配方后，再尝试创建执行配方。";
+		else
+			ch=msg;
+		return ch;
 	}
 
 	/**
@@ -1732,7 +1818,7 @@ public class BatchController {
 		Map<String, Object> jsonMap = new HashMap<String, Object>();
 		
 		try {
-			ManFeed mf=manFeedService.getByWorkOrderIDFeedPort(workOrderID,feedPort);
+			ManFeed mf=manFeedService.getByWOIDFeedPort(workOrderID,feedPort);
 			if(mf==null) {
 				jsonMap.put("message", "no");
 				jsonMap.put("info", "查询人工投料信息失败");
@@ -2938,7 +3024,7 @@ public class BatchController {
 				/*
 				 * 为了测试暂时屏蔽掉
 				*/
-				int c=manFeedService.editByWorkOrderIDFeedPortList(mfList);
+				int c=manFeedService.editByWOIDFeedPortList(mfList);
 				//int c=manFeedService.addTestFromList(mfList);
 			
 				if(c>0) {

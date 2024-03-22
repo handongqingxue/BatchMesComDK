@@ -217,6 +217,18 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	}
 
 	@Override
+	public int updateBatchEndTypeById(int batchEndType, Integer id) {
+		// TODO Auto-generated method stub
+		return workOrderDao.updateBatchEndTypeById(batchEndType,id);
+	}
+
+	@Override
+	public int updateBatchEndTypeByFormulaId(int batchEndType, String formulaId) {
+		// TODO Auto-generated method stub
+		return workOrderDao.updateBatchEndTypeByFormulaId(batchEndType,formulaId);
+	}
+
+	@Override
 	public boolean checkIfExistByWOID(String workOrderID) {
 		// TODO Auto-generated method stub
 		return workOrderDao.getCountByWOID(workOrderID)==0?false:true;

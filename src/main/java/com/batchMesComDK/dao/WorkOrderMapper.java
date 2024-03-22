@@ -63,6 +63,10 @@ public interface WorkOrderMapper {
 
 	List<String> getUnSendBRToMesWOIDList(@Param("stateList") List<String> stateList);
 
+	int updateBatchEndTypeById(@Param("batchEndType") int batchEndType, @Param("id") Integer id);
+
+	int updateBatchEndTypeByFormulaId(@Param("batchEndType") int batchEndType, @Param("formulaId") String formulaId);
+
 	int getSendingBRToMesWOCount(@Param("stateList") List<String> stateList);
 
 	int restoreToUnSend(@Param("stateList") List<String> stateList);

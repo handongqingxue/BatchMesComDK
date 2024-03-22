@@ -14,9 +14,11 @@ public interface ManFeedService {
 
 	int editByWorkOrderIDFeedPort(ManFeed mf);
 
-	int editByWorkOrderIDFeedPortList(List<ManFeed> mfList);
+	int editByWOIDFeedPortList(List<ManFeed> mfList);
 
-	ManFeed getByWorkOrderIDFeedPort(String workOrderID,String feedPort);
+	int editByWOIDFeedPortStepMesList(List<ManFeed> mfList);
+
+	ManFeed getByWOIDFeedPort(String workOrderID,String feedPort);
 
 	/**
 	 * 直接把下单时带的小料数据插入人工投料表

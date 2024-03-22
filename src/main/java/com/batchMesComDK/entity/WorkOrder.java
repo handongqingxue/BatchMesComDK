@@ -52,6 +52,10 @@ public class WorkOrder {
 	 * BATCH创建失败标识（待重新创建）
 	 */
 	public static final int BCJSB=15;
+	/**
+	 * 重新投料标识
+	 */
+	public static final int CXTL=16;
 	
 	/**
 	 * 无故障
@@ -159,6 +163,19 @@ public class WorkOrder {
 	 * 已发送
 	 */
 	public static final int SENDED=3;
+	
+	/**
+	 * batch未结束
+	 */
+	public static final int BATCH_UN_END=0;
+	/**
+	 * batch已完成
+	 */
+	public static final int BATCH_FINISHED=1;
+	/**
+	 * batch已终止
+	 */
+	public static final int BATCH_STOPPED=2;
 
 	private Integer ID;
 	public Integer getID() {
@@ -305,6 +322,24 @@ public class WorkOrder {
 	public void setLastSendTime(String lastSendTime) {
 		LastSendTime = lastSendTime;
 	}
+	public Integer getBatchEndType() {
+		return BatchEndType;
+	}
+	public void setBatchEndType(Integer batchEndType) {
+		BatchEndType = batchEndType;
+	}
+	public String getReFeedPort() {
+		return ReFeedPort;
+	}
+	public void setReFeedPort(String reFeedPort) {
+		ReFeedPort = reFeedPort;
+	}
+	public Integer getReFeedStepMes() {
+		return ReFeedStepMes;
+	}
+	public void setReFeedStepMes(Integer reFeedStepMes) {
+		ReFeedStepMes = reFeedStepMes;
+	}
 	private String WorkOrderID;
 	private String ProductCode;
 	private String ProductName;
@@ -328,6 +363,9 @@ public class WorkOrder {
 	private String ApiFailData;
 	private Integer SendBRToMes;
 	private String LastSendTime;
+	private Integer BatchEndType;//记录BatchView里结束时的类型(已完成、已终止),用于执行配方从BatchView里移除后判断是否已结束
+  	private String ReFeedPort;//重新投料的投料口
+  	private Integer ReFeedStepMes;//重新投料的第几步
 	private List<RecipePM> recipePMList;//用来存放mes那边下发的大料和工艺参数
 	private List<ManFeed> manFeedList;//用来存放mes那边下发的小料参数
 	public List<RecipePM> getRecipePMList() {

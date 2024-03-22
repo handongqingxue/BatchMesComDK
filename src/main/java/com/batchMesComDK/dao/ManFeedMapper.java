@@ -28,7 +28,9 @@ public interface ManFeedMapper {
 	 */
 	int editByList(@Param("mfList") List<ManFeed> mfList);
 
-	ManFeed getByWorkOrderIDFeedPort(@Param("workOrderID") String workOrderID,@Param("feedPort") String feedPort);
+	int reEditByList(@Param("mfList") List<ManFeed> mfList);
+
+	ManFeed getByWOIDFeedPort(@Param("workOrderID") String workOrderID,@Param("feedPort") String feedPort);
 
 	int updateMarkBitByParamsList(@Param("mfList") List<ManFeed> mfList);
 

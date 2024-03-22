@@ -63,6 +63,10 @@ public interface WorkOrderService {
 
 	List<String> getUnSendBRToMesWOIDList();
 
+	int updateBatchEndTypeById(int batchEndType, Integer id);
+
+	int updateBatchEndTypeByFormulaId(int batchEndType, String formulaId);
+
 	/**
 	 * 根据工单号验证是否存在
 	 * @param workOrderID

@@ -59,7 +59,8 @@
 			<if test="BatchCreated!=null">
 				BatchCreated,
 			</if>
-				SendBRToMes
+				SendBRToMes,
+				BatchEndType
 		</trim>
 		values
 		<trim prefix="(" suffix=")" suffixOverrides=",">
@@ -116,7 +117,8 @@
 			<if test="BatchCreated!=null">
 				#{BatchCreated},
 			</if>
-				${@com.batchMesComDK.entity.WorkOrder@UN_SEND}
+				${@com.batchMesComDK.entity.WorkOrder@UN_SEND},
+				${@com.batchMesComDK.entity.WorkOrder@BATCH_UN_END}
 		</trim>
 	</insert>
 	<update id="updateStateById">
@@ -284,6 +286,12 @@
 		#{state}
 		</foreach>
 	</select>
+	<update id="updateBatchEndTypeById">
+		update WorkOrder set BatchEndType=#{batchEndType} where ID=#{id}
+	</update>
+	<update id="updateBatchEndTypeByFormulaId">
+		update WorkOrder set BatchEndType=#{batchEndType} where FormulaId=#{formulaId}
+	</update>
 	<select id="getSendingBRToMesWOCount" resultType="java.lang.Integer">
 		select count(*) from WorkOrder where SendBRToMes=${@com.batchMesComDK.entity.WorkOrder@SENDING}
 		<foreach collection="stateList" item="state" open=" and state in (" separator="," close=")">
