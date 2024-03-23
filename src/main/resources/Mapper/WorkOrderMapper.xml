@@ -292,6 +292,9 @@
 	<update id="updateBatchEndTypeByFormulaId">
 		update WorkOrder set BatchEndType=#{batchEndType} where FormulaId=#{formulaId}
 	</update>
+	<update id="updateReFeedInfoById">
+		update WorkOrder set ReFeedPort=#{reFeedPort},ReFeedStepMes=#{reFeedStepMes} where ID=#{id}
+	</update>
 	<select id="getSendingBRToMesWOCount" resultType="java.lang.Integer">
 		select count(*) from WorkOrder where SendBRToMes=${@com.batchMesComDK.entity.WorkOrder@SENDING}
 		<foreach collection="stateList" item="state" open=" and state in (" separator="," close=")">

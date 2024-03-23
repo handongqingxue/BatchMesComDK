@@ -55,7 +55,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	@Override
 	public List<WorkOrder> getKeepWatchList(List<String> woEndIDList) {
 		// TODO Auto-generated method stub
-		String states = WorkOrder.CSQRWB+","+WorkOrder.BQD+","+WorkOrder.BYX+","+WorkOrder.BQX+","+WorkOrder.BZT+","+WorkOrder.GDLXZXQX+","+WorkOrder.GDSGCJ;
+		String states = WorkOrder.CSQRWB+","+WorkOrder.BQD+","+WorkOrder.BYX+","+WorkOrder.BQX+","+WorkOrder.BZT+","+WorkOrder.GDLXZXQX+","+WorkOrder.GDSGCJ+","+WorkOrder.CXTL;
 		String[] stateArr = states.split(",");
 		List<String> stateList = Arrays.asList(stateArr);
 		List<WorkOrder> kwwoList=null;
@@ -226,6 +226,12 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 	public int updateBatchEndTypeByFormulaId(int batchEndType, String formulaId) {
 		// TODO Auto-generated method stub
 		return workOrderDao.updateBatchEndTypeByFormulaId(batchEndType,formulaId);
+	}
+
+	@Override
+	public int updateReFeedInfoById(String reFeedPort, Integer reFeedStepMes, Integer id) {
+		// TODO Auto-generated method stub
+		return workOrderDao.updateReFeedInfoById(reFeedPort,reFeedStepMes,id);
 	}
 
 	@Override

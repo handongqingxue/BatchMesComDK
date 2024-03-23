@@ -67,6 +67,8 @@ public interface WorkOrderService {
 
 	int updateBatchEndTypeByFormulaId(int batchEndType, String formulaId);
 
+	int updateReFeedInfoById(String reFeedPort, Integer reFeedStepMes, Integer id);
+
 	/**
 	 * 根据工单号验证是否存在
 	 * @param workOrderID

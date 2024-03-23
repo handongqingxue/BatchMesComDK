@@ -630,13 +630,28 @@ public class BatchController {
 							
 							StringBuffer cxtlMfJASB=new StringBuffer();
 							cxtlMfJASB.append("[");
-							cxtlMfJASB.append("{\"feedTime\":\"2023-08-11 19:00:37\",\"feedportCode\":\"ZPM030501\",\"id\":\"1689845778586009602\",\"materialCode\":\"2010040\",\"materialName\":\"JX\",\"phase\":\"2\",\"reser3\":\"0.0\",\"step\":\"1\",\"suttle\":\"79.208\",\"tolerance\":\"0.0\",\"unit\":\"KG\",\"workOrder\":\"ZI2308090101\"},");
-							cxtlMfJASB.append("{\"feedTime\":\"2023-08-11 19:00:37\",\"feedportCode\":\"ZPM030501\",\"id\":\"1689845778636341249\",\"materialCode\":\"9010001\",\"materialName\":\"去离子水\",\"phase\":\"4\",\"reser3\":\"0.0\",\"step\":\"1\",\"suttle\":\"39.604\",\"tolerance\":\"0.0\",\"unit\":\"KG\",\"workOrder\":\"ZI2308090101\"},");
-							cxtlMfJASB.append("{\"feedTime\":\"2023-08-11 19:00:37\",\"feedportCode\":\"ZPM030501\",\"id\":\"1689845778661507074\",\"materialCode\":\"2010009\",\"materialName\":\"SL\",\"phase\":\"2\",\"reser3\":\"0.0\",\"step\":\"1\",\"suttle\":\"5.941\",\"tolerance\":\"0.0\",\"unit\":\"KG\",\"workOrder\":\"ZI2308090101\"}");
+							cxtlMfJASB.append("{\"feedTime\":\"2023-08-11 19:00:37\",\"feedportCode\":\"ZPM030501\",\"materialCode\":\"2010040\",\"materialName\":\"JX\",\"phase\":\"2\",\"reser3\":\"0.0\",\"step\":\"1\",\"suttle\":\"79.208\",\"tolerance\":\"0.0\",\"unit\":\"KG\",\"workOrder\":\"ZI2308090101\"},");
+							cxtlMfJASB.append("{\"feedTime\":\"2023-08-11 19:00:37\",\"feedportCode\":\"ZPM030501\",\"materialCode\":\"9010001\",\"materialName\":\"去离子水\",\"phase\":\"4\",\"reser3\":\"0.0\",\"step\":\"1\",\"suttle\":\"39.604\",\"tolerance\":\"0.0\",\"unit\":\"KG\",\"workOrder\":\"ZI2308090101\"},");
+							cxtlMfJASB.append("{\"feedTime\":\"2023-08-11 19:00:37\",\"feedportCode\":\"ZPM030501\",\"materialCode\":\"2010009\",\"materialName\":\"SL\",\"phase\":\"2\",\"reser3\":\"0.0\",\"step\":\"1\",\"suttle\":\"5.941\",\"tolerance\":\"0.0\",\"unit\":\"KG\",\"workOrder\":\"ZI2308090101\"}");
 							cxtlMfJASB.append("]");
 							
-							List<ManFeed> cxtlMfList = (List<ManFeed>)new JSONArray(cxtlMfJASB.toString());
-							manFeedService.editByWOIDFeedPortStepMesList(cxtlMfList);
+							Map<String, Object> jsonMapCMFIDTJ = convertMesFeedIssusDownToJava(cxtlMfJASB.toString());
+
+							String stateCMFIDTJ = jsonMapCMFIDTJ.get(APIUtil.STATE).toString();
+							if("ok".equals(stateCMFIDTJ)) {
+								List<ManFeed> cxtlMfList = (List<ManFeed>)jsonMapCMFIDTJ.get("mfList");
+								//List<ManFeed> cxtlMfList = com.alibaba.fastjson.JSONObject.parseArray(cxtlMfJASB.toString(), ManFeed.class);
+								System.out.println("cxtlMfList==="+cxtlMfList.toString());
+								int editFeedInfoCOunt = manFeedService.editByWOIDFeedPortStepMesList(cxtlMfList);
+								System.out.println("editFeedInfoCOunt==="+editFeedInfoCOunt);
+								if(editFeedInfoCOunt>0) {
+									workOrderService.updateReFeedInfoById(null,null,id);
+									int stateCxtl = getStateFromBVByForId(formulaId,batchCount);//根据batchview里的状态同步工单表里的状态，从16变为BatchView里的状态
+									if(stateCxtl==0)
+										stateCxtl=WorkOrder.BYWZZ;
+									workOrderService.updateStateById(stateCxtl, id);
+								}
+							}
 						}
 						break;
 					}

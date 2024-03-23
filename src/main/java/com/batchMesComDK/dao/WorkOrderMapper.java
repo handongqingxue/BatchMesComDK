@@ -67,6 +67,8 @@ public interface WorkOrderMapper {
 
 	int updateBatchEndTypeByFormulaId(@Param("batchEndType") int batchEndType, @Param("formulaId") String formulaId);
 
+	int updateReFeedInfoById(@Param("reFeedPort") String reFeedPort, @Param("reFeedStepMes") Integer reFeedStepMes, @Param("id") Integer id);
+
 	int getSendingBRToMesWOCount(@Param("stateList") List<String> stateList);
 
 	int restoreToUnSend(@Param("stateList") List<String> stateList);
