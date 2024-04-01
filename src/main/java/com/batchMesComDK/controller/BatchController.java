@@ -331,10 +331,11 @@ public class BatchController {
 									
 									String stateVal = getItemVal(BatchTest.BL_STATE,j);
 									if(BatchTest.READY.equals(stateVal)) {//存在准备状态的工单，说明该工单待运行，状态同步正确
+										Map<String, Object> qdCOSMap = null;
 										boolean qdCOSSuccess = false;
 										if(createType==WorkOrder.MES_DOWN) {
 											String qdBodyStr=getChaOrdStaBodyStr(workOrderID,WorkOrder.PRODUCTION,updateUser);
-											Map<String, Object> qdCOSMap = changeOrderStatus(qdBodyStr);
+											qdCOSMap = changeOrderStatus(qdBodyStr);
 											qdCOSSuccess = Boolean.valueOf(qdCOSMap.get(APIUtil.SUCCESS).toString());
 										}
 										else if(createType==WorkOrder.HAND_CREATE) {
@@ -353,6 +354,9 @@ public class BatchController {
 											if(BatchTest.RUNNING.equals(getItemVal(BatchTest.BL_STATE,j))) {
 												workOrderService.updateStateById(WorkOrder.BYX, id);
 												
+												if(!StringUtils.isEmpty(apiFailData))
+													workOrderService.updateApiFailDataById("", id);
+												
 												woMap.put("existRunWO", true);//工单运行了，就把存在运行中的状态值1，其他启动了的工单就无法运行了，直到状态置0才能运行下一个时间点的工单
 												
 												/*
@@ -370,6 +374,13 @@ public class BatchController {
 		
 												addWOPreStateInList(WorkOrder.BZT,workOrderID);
 											}
+										}
+										else {
+											workOrderService.updateStateById(WorkOrder.QDDJY, id);
+											
+											workOrderService.updateApiFailDataById(qdCOSMap.get(APIUtil.MSG).toString(), id);
+											
+											addWOPreStateInList(WorkOrder.QDDJY,workOrderID);
 										}
 									}
 									else if(BatchTest.RUNNING.equals(stateVal)) {//存在运行中状态的工单，说明该工单在batchview里已运行，可能是操作失误把工单表的状态变为4（启动）了，需要与batchview端的状态同步下
@@ -2048,7 +2059,10 @@ public class BatchController {
 		//val = BLKey_x("key",rowNumber);
 		String resultJOStr = getItem(key+rowNumber);
 		JSONObject resultJO = new JSONObject(resultJOStr);
-		String val = resultJO.getString("data");
+		String val = null;
+		Object dataObj = resultJO.get("data");
+		if(dataObj!=null)
+			val = dataObj.toString();
 		//val = val.substring(0, val.indexOf(Constant.END_SUCCESS));
 		return val;
 	}

@@ -56,6 +56,10 @@ public class WorkOrder {
 	 * 重新投料标识
 	 */
 	public static final int CXTL=16;
+	/**
+	 * 启动待校验标识
+	 */
+	public static final int QDDJY=17;
 	
 	/**
 	 * 无故障

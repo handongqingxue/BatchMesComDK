@@ -9,8 +9,8 @@ public class Constant {
 	public static final String USERID="batchsvr1/ADMINISTRATOR";
 	public static final String ITEM_BATCH_LIST_CT="BatchListCt";
 	public static final String END_SUCCESS="/nSuccess";
-	public static final String RESOURCES_DIR="C:/resource/BatchMesComDK";
-	//public static final String RESOURCES_DIR="D:/resource/BatchMesComDK";
+	//public static final String RESOURCES_DIR="C:/resource/BatchMesComDK";
+	public static final String RESOURCES_DIR="D:/resource/BatchMesComDK";
 
 	public static void setWorkOrderStateInRequest(HttpServletRequest request) {
 		
